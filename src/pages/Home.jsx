@@ -9,13 +9,13 @@ const Home = () => {
   return (
     <div>
       {/* HERO  */}
-      <div className="hero w-full py-32">
-        <ContainerCenter className={`gap-7 flex flex-col`}>
-          <h1 className="text-white text-4xl">
+      <div className="hero w-full py-16 md:py-24 lg:py-32">
+        <ContainerCenter className={`flex flex-col`}>
+          <h1 className="text-white text-5xl mb-[40px]">
             Find Properties in DHA Defence
           </h1>
           <HeroSearchForm color="#fff"/>
-          <h3 className="text-white text-2xl">
+          <h3 className="text-white text-3xl mt-[40px]">
             We’ve 38705 properties for you!
           </h3>
         </ContainerCenter>
