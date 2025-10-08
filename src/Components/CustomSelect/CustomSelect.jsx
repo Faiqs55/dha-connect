@@ -1,15 +1,15 @@
 import React from "react";
 import styles from "./CustomSelect.module.css";
 
-const CustomSelect = ({ name, options, ref }) => {
+const CustomSelect = ({ name, style={}, selectStyle={}, options, ref }) => {
 
   
 
   return (
-    <div className="bg-white text-gray-500 rounded-md text-lg">
+    <div className={`${style}`}>
       <select
         ref={ref}
-        className={`${styles.select} p-5 px-7 outline-none rounded-md w-full`}
+        className={`${styles.select} ${selectStyle}`}
         name={name}
         id=""
       >

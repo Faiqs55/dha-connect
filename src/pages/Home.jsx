@@ -4,6 +4,9 @@ import properties from "../Properties";
 import PropertiesCard from "../Components/PropertiesCard";
 import Carousel from "../Components/Carousel/Carousel";
 import HeroSearchForm from "../Components/HeroSearchForm";
+import WidgetSearchFrom from "../Components/WidgetSearchFrom";
+import { FaRegEnvelope } from "react-icons/fa6";
+import Footer from "../Components/Footer";
 
 const Home = () => {
   return (
@@ -81,13 +84,26 @@ const Home = () => {
           </div>
 
           {/* RIGHT  */}
-          <div className="right-widget">
-            <div className="search-agencies">
-              <h3 className="text-2xl">Search Agencies</h3>
+          <div className="right-widget w-full xl:w-[30%]">
+            <div className="search-agencies w-full mb-10">
+              <h3 className="text-2xl mb-10">Search Agencies</h3>
+              <WidgetSearchFrom/>
+            </div>
+
+            {/* GOT ANY QUESTIONS  */}
+            <div className="contact-cta w-full">
+             <h3 className="text-2xl mb-5">Got Any Questions?</h3>
+             <div className="bg-[#f9fafd] px-[30px] py-[25px] rounded-sm border-t-2 border-t-[#274abb]">
+                <p className="mb-5 text-[#2828cf]">If you are having any questions, please feel free to ask.</p>
+                <a href="/contact" className="bg-[#274abb] text-white px-[20px] py-[10px] rounded-sm flex items-center justify-center gap-3"><FaRegEnvelope /> Drop us a line</a>
+
+             </div>
             </div>
           </div>
         </ContainerCenter>
       </div>
+
+      <Footer/>
     </div>
   );
 };
