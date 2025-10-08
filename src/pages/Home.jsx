@@ -1,9 +1,9 @@
-import SearchBar from "../Components/SearchBar";
 import ContainerCenter from "../Components/ContainerCenter";
-import Carousel from "../Components/Carousel";
 import agencies from "../Agencies";
 import properties from "../Properties";
 import PropertiesCard from "../Components/PropertiesCard";
+import Carousel from "../Components/Carousel/Carousel";
+import HeroSearchForm from "../Components/HeroSearchForm";
 
 const Home = () => {
   return (
@@ -14,44 +14,57 @@ const Home = () => {
           <h1 className="text-white text-4xl">
             Find Properties in DHA Defence
           </h1>
-          <SearchBar />
+          <HeroSearchForm color="#fff"/>
           <h3 className="text-white text-2xl">
             We’ve 38705 properties for you!
           </h3>
         </ContainerCenter>
       </div>
 
-      {/* FEATURED AGENCIES  */}
-      <div className="featured-agencies mt-10">
+      {/* FEATURED AGENCIES SECTION  */}
+      <section className="mt-10">
         <ContainerCenter>
-          <h2 className="text-3xl">
-            Featured Agencies
-            <div>
-              <Carousel autoplay={true} cardsToShow={4} interval={3000}>
-                {agencies.map(agency => (
-                  <div key={agency.img} className="w-[170px]">
-                     <img className="w-full h-full object-cover object-center" src={agency.img} alt="" />
-                  </div>
-                ))}
-              </Carousel>
-            </div>
-          </h2>
-        </ContainerCenter>
-      </div>
-
-      {/* HOT PROPERTIES  */}
-      <div className="hot-properties mt-10">
-        <ContainerCenter>
-          <h2 className="text-3xl">Recent Properties</h2>
-          <Carousel autoplay cardsToShow={4} gap={10}>
-            {properties.map(prop => (
-              <div key={prop.id} className="w-[220px]">
-                 <img className="w-full" src={prop.img} alt="" />
+          <h2 className="text-3xl mb-10">Featured Agencies</h2>
+          <Carousel
+            show={{ xl: 5, l: 3, md: 2, sm: 1 }}
+            gap={20}
+            autoPlay={true}
+            autoPlayInterval={3000}
+          >
+            {agencies.map((a) => (
+              <div key={a.id} className="w-full flex justify-center">
+                <img className="w-[150px]" src={a.img} alt="" />
               </div>
             ))}
           </Carousel>
         </ContainerCenter>
-      </div>
+      </section>
+
+      {/* HOT PROPERTIES SECTION  */}
+      <section className="mt-10">
+        <ContainerCenter>
+          <h2 className="text-3xl mb-10">Hot Properties</h2>
+          <Carousel
+            show={{ xl: 4, l: 3, md: 2, sm: 1 }}
+            gap={20}
+            autoPlay={true}
+            autoPlayInterval={3000}
+          >
+            {properties.map((p) => (
+              <div
+                key={p.id}
+                className="w-full flex justify-center lg:bg-none bg-gray-100 p-4 lg:p-0"
+              >
+                <img
+                  className="w-[250px] lg:w-full shadow-xl"
+                  src={p.img}
+                  alt=""
+                />
+              </div>
+            ))}
+          </Carousel>
+        </ContainerCenter>
+      </section>
 
       {/* MAIN SECTION  */}
       <div className="main mt-10">
@@ -61,7 +74,9 @@ const Home = () => {
             <h2 className="text-3xl">Recent Properties</h2>
             {/* PROPERTIES CARDS  */}
             <div className="flex flex-col gap-10 mt-10">
-                 {properties.map((data, index) => <PropertiesCard data={data} />)}
+              {properties.map((data, index) => (
+                <PropertiesCard key={data.id} data={data} />
+              ))}
             </div>
           </div>
 
