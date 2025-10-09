@@ -7,9 +7,12 @@ import HeroSearchForm from "../Components/HeroSearchForm";
 import WidgetSearchFrom from "../Components/WidgetSearchFrom";
 import { FaRegEnvelope } from "react-icons/fa6";
 import Footer from "../Components/Footer";
+import Navbar from "../Components/Navbar";
 
 const Home = () => {
   return (
+    <>
+    <Navbar/>
     <div>
       {/* HERO  */}
       <div className="hero w-full py-16 md:py-24 lg:py-32">
@@ -105,6 +108,7 @@ const Home = () => {
 
       <Footer/>
     </div>
+    </>
   );
 };
 
