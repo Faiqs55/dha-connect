@@ -1,0 +1,30 @@
+const express = require("express");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const { connectDB } = require("./config/db.config");
+const { agencyRouter } = require("./routes/Admin/agency.routes");
+
+dotenv.config();
+const app = express();
+const port = process.env.PORT || 3000;
+
+// MIDDLEWARE
+app.use(express.json());
+app.use(
+  cors()
+);
+
+
+// DATABASE CONNECTION
+connectDB();
+
+
+
+// ROUTES
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", message: "API health is good" });
+});
+
+app.use("/api/agency", agencyRouter)
+
+app.listen(port, () => console.log(`Server is running on PORT: ${port}`));
