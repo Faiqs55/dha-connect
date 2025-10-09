@@ -6,13 +6,9 @@ import Carousel from "../Components/Carousel/Carousel";
 import HeroSearchForm from "../Components/HeroSearchForm";
 import WidgetSearchFrom from "../Components/WidgetSearchFrom";
 import { FaRegEnvelope } from "react-icons/fa6";
-import Footer from "../Components/Footer";
-import Navbar from "../Components/Navbar";
 
 const Home = () => {
   return (
-    <>
-    <Navbar/>
     <div>
       {/* HERO  */}
       <div className="hero w-full py-16 md:py-24 lg:py-32">
@@ -20,7 +16,7 @@ const Home = () => {
           <h1 className="text-white text-5xl mb-[40px]">
             Find Properties in DHA Defence
           </h1>
-          <HeroSearchForm color="#fff"/>
+          <HeroSearchForm color="#fff" />
           <h3 className="text-white text-3xl mt-[40px]">
             We’ve 38705 properties for you!
           </h3>
@@ -90,25 +86,28 @@ const Home = () => {
           <div className="right-widget w-full xl:w-[30%]">
             <div className="search-agencies w-full mb-10">
               <h3 className="text-2xl mb-10">Search Agencies</h3>
-              <WidgetSearchFrom/>
+              <WidgetSearchFrom />
             </div>
 
             {/* GOT ANY QUESTIONS  */}
             <div className="contact-cta w-full">
-             <h3 className="text-2xl mb-5">Got Any Questions?</h3>
-             <div className="bg-[#f9fafd] px-[30px] py-[25px] rounded-sm border-t-2 border-t-[#274abb]">
-                <p className="mb-5 text-[#2828cf]">If you are having any questions, please feel free to ask.</p>
-                <a href="/contact" className="bg-[#274abb] text-white px-[20px] py-[10px] rounded-sm flex items-center justify-center gap-3"><FaRegEnvelope /> Drop us a line</a>
-
-             </div>
+              <h3 className="text-2xl mb-5">Got Any Questions?</h3>
+              <div className="bg-[#f9fafd] px-[30px] py-[25px] rounded-sm border-t-2 border-t-[#274abb]">
+                <p className="mb-5 text-[#2828cf]">
+                  If you are having any questions, please feel free to ask.
+                </p>
+                <a
+                  href="/contact"
+                  className="bg-[#274abb] text-white px-[20px] py-[10px] rounded-sm flex items-center justify-center gap-3"
+                >
+                  <FaRegEnvelope /> Drop us a line
+                </a>
+              </div>
             </div>
           </div>
         </ContainerCenter>
       </div>
-
-      <Footer/>
     </div>
-    </>
   );
 };
 

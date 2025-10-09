@@ -5,3 +5,8 @@
     background-size: cover;
     background-repeat: no-repeat;
 }
+a.active{
+    border: 1px solid #274abb;
+    border-radius: 3px;
+    color: #274abb;
+}
