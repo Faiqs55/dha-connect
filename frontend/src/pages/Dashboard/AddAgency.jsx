@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PlusCircle, Trash2 } from "lucide-react";
+import agencyService from "../../services/agency.service";
 
 export default function AddAgencyDhaPlus() {
   const [form, setForm] = useState({
@@ -36,7 +37,10 @@ export default function AddAgencyDhaPlus() {
   const addStaff = () => {
     setForm((prev) => ({
       ...prev,
-      staff: [...prev.staff, { staffName: "", staffDesignation: "", staffPhone: "" }],
+      staff: [
+        ...prev.staff,
+        { staffName: "", staffDesignation: "", staffPhone: "" },
+      ],
     }));
   };
 
@@ -46,17 +50,51 @@ export default function AddAgencyDhaPlus() {
     setForm((prev) => ({ ...prev, staff: updated }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data Submitted:", form);
-    alert("✅ Agency data submitted successfully!");
+    const formData = form;
+    if (
+      formData.staff[0].staffName === "" &&
+      formData.staff[0].staffDesignation === "" &&
+      formData.staff[0].staffPhone === ""
+    ) {
+      delete formData.staff;
+    }
+
+    const res = await agencyService.addAgency(formData);
+    if (!res.success) {
+      return alert(res.message);
+    }
+    setForm({
+      agencyName: "",
+      agencyEmail: "",
+      ceoName: "",
+      ceoPhone1: "",
+      ceoPhone2: "",
+      city: "",
+      phase: "",
+      address: "",
+      website: "",
+      staff: [
+        {
+          staffName: "",
+          staffDesignation: "",
+          staffPhone: "",
+        },
+      ],
+    });
+    alert(
+      `New Agency Added! Agency: ${res.data.agencyName} ID: ${res.data._id}`
+    );
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex flex-col">
       {/* Header */}
       <header className="bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-white shadow-lg text-center">
-        <h1 className="text-3xl font-bold tracking-wide">🏢 Add Agency (DHA Plus)</h1>
+        <h1 className="text-3xl font-bold tracking-wide">
+          🏢 Add Agency (DHA Plus)
+        </h1>
         <p className="mt-2 text-blue-100 text-sm sm:text-base">
           Enter your agency details below to get listed professionally
         </p>
@@ -77,14 +115,37 @@ export default function AddAgencyDhaPlus() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
               {[
-                { label: "Agency Name", name: "agencyName", placeholder: "e.g., DHA Property Advisors" },
-                { label: "Agency Email", name: "agencyEmail", placeholder: "e.g., info@agency.com", type: "email" },
-                { label: "CEO Name", name: "ceoName", placeholder: "e.g., Ali Khan" },
-                { label: "CEO Phone 1", name: "ceoPhone1", placeholder: "e.g., 0300-1234567" },
-                { label: "CEO Phone 2", name: "ceoPhone2", placeholder: "e.g., 0300-7654321" },
+                {
+                  label: "Agency Name",
+                  name: "agencyName",
+                  placeholder: "e.g., DHA Property Advisors",
+                },
+                {
+                  label: "Agency Email",
+                  name: "agencyEmail",
+                  placeholder: "e.g., info@agency.com",
+                  type: "email",
+                },
+                {
+                  label: "CEO Name",
+                  name: "ceoName",
+                  placeholder: "e.g., Ali Khan",
+                },
+                {
+                  label: "CEO Phone 1",
+                  name: "ceoPhone1",
+                  placeholder: "e.g., 0300-1234567",
+                },
+                {
+                  label: "CEO Phone 2",
+                  name: "ceoPhone2",
+                  placeholder: "e.g., 0300-7654321",
+                },
               ].map((item) => (
                 <div key={item.name}>
-                  <label className="block text-gray-700 font-medium mb-1">{item.label}</label>
+                  <label className="block text-gray-700 font-medium mb-1">
+                    {item.label}
+                  </label>
                   <input
                     type={item.type || "text"}
                     name={item.name}
@@ -97,7 +158,9 @@ export default function AddAgencyDhaPlus() {
               ))}
 
               <div>
-                <label className="block text-gray-700 font-medium mb-1">City</label>
+                <label className="block text-gray-700 font-medium mb-1">
+                  City
+                </label>
                 <select
                   name="city"
                   value={form.city}
@@ -112,7 +175,9 @@ export default function AddAgencyDhaPlus() {
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-1">Phase</label>
+                <label className="block text-gray-700 font-medium mb-1">
+                  Phase
+                </label>
                 <select
                   name="phase"
                   value={form.phase}
@@ -128,7 +193,9 @@ export default function AddAgencyDhaPlus() {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-gray-700 font-medium mb-1">Address</label>
+                <label className="block text-gray-700 font-medium mb-1">
+                  Address
+                </label>
                 <input
                   type="text"
                   name="address"
@@ -165,12 +232,26 @@ export default function AddAgencyDhaPlus() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {[
-                    { label: "Staff Name", name: "staffName", placeholder: "e.g., Ahmed" },
-                    { label: "Designation", name: "staffDesignation", placeholder: "e.g., Sales Manager" },
-                    { label: "Phone", name: "staffPhone", placeholder: "e.g., 0311-6543210" },
+                    {
+                      label: "Staff Name",
+                      name: "staffName",
+                      placeholder: "e.g., Ahmed",
+                    },
+                    {
+                      label: "Designation",
+                      name: "staffDesignation",
+                      placeholder: "e.g., Sales Manager",
+                    },
+                    {
+                      label: "Phone",
+                      name: "staffPhone",
+                      placeholder: "e.g., 0311-6543210",
+                    },
                   ].map((field) => (
                     <div key={field.name}>
-                      <label className="block text-gray-700 font-medium mb-1">{field.label}</label>
+                      <label className="block text-gray-700 font-medium mb-1">
+                        {field.label}
+                      </label>
                       <input
                         type="text"
                         name={field.name}
