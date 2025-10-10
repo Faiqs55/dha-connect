@@ -11,9 +11,10 @@ const port = process.env.PORT || 3000;
 // MIDDLEWARE
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  cors()
-);
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://dha-connect.netlify.app/'], // Add your frontend URLs
+  credentials: true
+}));
 
 
 // DATABASE CONNECTION

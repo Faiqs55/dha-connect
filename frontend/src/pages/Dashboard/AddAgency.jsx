@@ -5,7 +5,8 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import axios from "axios";
 import AgencyFormInput from "../../Components/AgencyForm/FormSection/AgencyFormInput";
 import { FaPlus } from "react-icons/fa";
-
+import AgencyFormSelect from "../../Components/AgencyForm/FormSection/AgencyFormSelect";
+import agencyService from "../../services/agency.service";
 
 const cityOptions = [
   {val: "lahore", label: "Lahore"},
@@ -17,7 +18,6 @@ const phaseOptions = [
   {val: "phase2", label: "Phase 2"},
   {val: "phase3", label: "Phase 3"},
 ];
-
 
 const AddAgency = () => {
   const agencyLogoRef = useRef(null);
@@ -40,11 +40,48 @@ const AddAgency = () => {
     },
   ]);
 
+  // State for form data
+  const [formData, setFormData] = useState({
+    agencyName: "",
+    agencyEmail: "",
+    ceoName: "",
+    ceoPhone1: "",
+    ceoPhone2: "",
+    whatsapp: "",
+    city: "",
+    phase: "",
+    streetAddress: "",
+    facebook: "",
+    youtube: "",
+    twitter: "",
+    instagram: "",
+    about: "",
+    website: ""
+  });
+
   // Refs for staff image inputs
   const staffImageRefs = useRef([]);
 
   const cloudName = "dhdgrfseu";
   const uploadPreset = "dha-agency-logo";
+
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Handle select changes
+  const handleSelectChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   // Add new agency member section
   const addAgencyMember = () => {
@@ -82,7 +119,6 @@ const AddAgency = () => {
     const file = event.target.files[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        // You might want to show error for specific staff member
         alert("File size must be less than 5MB");
         return;
       }
@@ -237,8 +273,40 @@ const AddAgency = () => {
           })
         );
 
-        const formData = {
-          agencyLogo: logoUrl,
+        // Prepare the final data object
+        const finalData = {
+          // Agency Information
+          agencyInfo: {
+            agencyName: formData.agencyName,
+            agencyEmail: formData.agencyEmail,
+            ceoName: formData.ceoName,
+            ceoPhone1: formData.ceoPhone1,
+            ceoPhone2: formData.ceoPhone2,
+            whatsapp: formData.whatsapp,
+          },
+          // Location
+          location: {
+            city: formData.city,
+            phase: formData.phase,
+            streetAddress: formData.streetAddress,
+          },
+          // Social Media
+          socials: {
+            facebook: formData.facebook,
+            youtube: formData.youtube,
+            twitter: formData.twitter,
+            instagram: formData.instagram,
+          },
+          // About
+          about: {
+            about: formData.about,
+            website: formData.website,
+          },
+          // Images
+          images: {
+            agencyLogo: logoUrl,
+          },
+          // Staff Members
           staff: staffWithImages.filter(
             (member) =>
               member.staffName ||
@@ -248,14 +316,18 @@ const AddAgency = () => {
           ),
         };
 
-        console.log("Final Form Data:", formData);
-        alert("Form submitted successfully! Check console for data.");
+        let res = await agencyService.addAgency(finalData);
+
+        if(!res.success){
+           alert("Failed to add agency");
+        }
+
+        console.log(res);
       } else {
         alert("Agency logo upload failed");
       }
     } catch (error) {
       console.log("Form submission Error: ", error);
-      alert("An error occurred during submission");
     } finally {
       setIsSubmitting(false);
     }
@@ -321,17 +393,123 @@ const AddAgency = () => {
 
           {/* AGENCY INFORMATION  */}
           <AgencyFormSection title={"Agency Information"} innerStyle="grid grid-cols-2 gap-4">
-            <AgencyFormInput label={"Agency Name"} placeholder={"Agency Name"} name={"agencyName"} />
-            <AgencyFormInput label={"Agency Email"} placeholder={"Agency Email"} name={"agencyEmail"} />
-            <AgencyFormInput label={"Ceo Name"} placeholder={"Ceo Name"} name={"ceoName"} />
-            <AgencyFormInput label={"Ceo Phone 1"} placeholder={"Ceo Phone 1"} name={"ceoPhone1"} />
-            <AgencyFormInput label={"Ceo Phone 2"} placeholder={"Ceo Phone 2"} name={"ceoPhone2"} />
-            <AgencyFormInput label={"Whatsapp"} placeholder={"Whatsapp"} name={"whatsapp"} />
+            <AgencyFormInput 
+              label={"Agency Name"} 
+              placeholder={"Agency Name"} 
+              name={"agencyName"} 
+              value={formData.agencyName}
+              onChange={handleInputChange}
+            />
+            <AgencyFormInput 
+              label={"Agency Email"} 
+              placeholder={"Agency Email"} 
+              name={"agencyEmail"} 
+              value={formData.agencyEmail}
+              onChange={handleInputChange}
+            />
+            <AgencyFormInput 
+              label={"Ceo Name"} 
+              placeholder={"Ceo Name"} 
+              name={"ceoName"} 
+              value={formData.ceoName}
+              onChange={handleInputChange}
+            />
+            <AgencyFormInput 
+              label={"Ceo Phone 1"} 
+              placeholder={"Ceo Phone 1"} 
+              name={"ceoPhone1"} 
+              value={formData.ceoPhone1}
+              onChange={handleInputChange}
+            />
+            <AgencyFormInput 
+              label={"Ceo Phone 2"} 
+              placeholder={"Ceo Phone 2"} 
+              name={"ceoPhone2"} 
+              value={formData.ceoPhone2}
+              onChange={handleInputChange}
+            />
+            <AgencyFormInput 
+              label={"Whatsapp"} 
+              placeholder={"Whatsapp"} 
+              name={"whatsapp"} 
+              value={formData.whatsapp}
+              onChange={handleInputChange}
+            />
           </AgencyFormSection>
 
           {/* AGENCY LOCATION  */}
-          <AgencyFormSection title={"Location"}>
-             
+          <AgencyFormSection title={"Location"} innerStyle={"grid grid-cols-2 gap-4"}>
+             <AgencyFormSelect 
+               label={"City"} 
+               options={cityOptions} 
+               name={"city"} 
+               value={formData.city}
+               onChange={handleSelectChange}
+             />
+             <AgencyFormSelect 
+               label={"Phase"} 
+               options={phaseOptions} 
+               name={"phase"} 
+               value={formData.phase}
+               onChange={handleSelectChange}
+             />
+             <AgencyFormInput 
+               label={"Street Address"} 
+               name={"streetAddress"} 
+               placeholder={"Street Address"} 
+               value={formData.streetAddress}
+               onChange={handleInputChange}
+             />
+          </AgencyFormSection>
+
+          {/* AGENCY SOCIALS  */}
+          <AgencyFormSection title={"Socials"} innerStyle={"grid grid-cols-2 gap-4"} >
+            <AgencyFormInput 
+              label={"Facebook"} 
+              placeholder={"Facebook"} 
+              name={"facebook"} 
+              value={formData.facebook}
+              onChange={handleInputChange}
+            />
+            <AgencyFormInput 
+              label={"Youtube"} 
+              placeholder={"Youtube"} 
+              name={"youtube"} 
+              value={formData.youtube}
+              onChange={handleInputChange}
+            />
+            <AgencyFormInput 
+              label={"Twitter"} 
+              placeholder={"Twitter"} 
+              name={"twitter"} 
+              value={formData.twitter}
+              onChange={handleInputChange}
+            />
+            <AgencyFormInput 
+              label={"Instagram"} 
+              placeholder={"Instagram"} 
+              name={"instagram"} 
+              value={formData.instagram}
+              onChange={handleInputChange}
+            />
+          </AgencyFormSection>
+
+          {/* ABOUT AGENCY  */}
+          <AgencyFormSection title={"About"} innerStyle={"grid grid-cols-2 gap-4"}>
+            <AgencyFormInput 
+              label={"About"} 
+              placeholder={"About"} 
+              name={"about"} 
+              value={formData.about}
+              onChange={handleInputChange}
+            />
+            <AgencyFormInput 
+              label={"Website"} 
+              placeholder={"Website"} 
+              name={"website"} 
+              value={formData.website}
+              onChange={handleInputChange}
+            />
           </AgencyFormSection>
 
           {/* AGENCY MEMBERS SECTION */}
