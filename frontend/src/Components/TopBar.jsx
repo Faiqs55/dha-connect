@@ -3,6 +3,7 @@ import { FaPhoneAlt } from "react-icons/fa";
 import { IoMail } from "react-icons/io5";
 import { FaHouseChimney } from "react-icons/fa6";
 import { FaFacebookF } from "react-icons/fa";
+import {Link} from "react-router"
 
 const TopBar = () => {
   return (
@@ -17,13 +18,13 @@ const TopBar = () => {
             <IoMail />
             <a href="#">info@dha-clone.com</a>
           </span>
-          <a
-            href="#"
+          <Link
+            to={"/dashboard/agency/add"}
             className="flex items-center gap-2 bg-red-600 px-4 py-1 rounded-sm font-semibold"
           >
             <FaHouseChimney />
             Submit Agency
-          </a>
+          </Link>
         </div>
 
         <div className="socials hidden lg:block">
