@@ -13,9 +13,9 @@ const cityOptions = [
   {val: "multan", label: "Multan"},
 ];
 const phaseOptions = [
-  {val: "phase 1", label: "phase 1"},
-  {val: "phase 2", label: "phase 2"},
-  {val: "phase 3", label: "phase 3"},
+  {val: "phase1", label: "Phase 1"},
+  {val: "phase2", label: "Phase 2"},
+  {val: "phase3", label: "Phase 3"},
 ];
 
 
@@ -331,7 +331,7 @@ const AddAgency = () => {
 
           {/* AGENCY LOCATION  */}
           <AgencyFormSection title={"Location"}>
-  
+             
           </AgencyFormSection>
 
           {/* AGENCY MEMBERS SECTION */}

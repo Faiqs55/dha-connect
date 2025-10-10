@@ -1,4 +1,4 @@
-const properties = [
+export const hotProperties = [
     {
         img: "https://media.zameen.com/thumbnails/279679251-400x300.jpeg",
         name: "Zameen ARX",
@@ -70,5 +70,147 @@ const properties = [
         maxArea: 4367
     },
 ];
-
-export default properties
+export const featuredProperties = [
+    {
+        img: "https://media.zameen.com/thumbnails/281880055-400x300.jpeg",
+        name: "Zameen ARX",
+        description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
+        author: "Sabhi",
+        date: "October 07, 2025",
+        id: 1,
+        price: "2 Crore",
+        city: "Lahore",
+        location: "CBD Punjab (PCBDDA)",
+        category: "Flats, Penthouse, Offices, Commercial",
+        minArea: 225,
+        maxArea: 4367
+    },
+    {
+        img: "https://media.zameen.com/thumbnails/281880055-400x300.jpeg",
+        name: "Zameen ARX",
+        description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
+        author: "Sabhi",
+        date: "October 07, 2025",
+        id: 2,
+        price: "2 Crore",
+        city: "Lahore",
+        location: "CBD Punjab (PCBDDA)",
+        category: "Flats, Penthouse, Offices, Commercial",
+        minArea: 225,
+        maxArea: 4367
+    },
+    {
+        img: "https://media.zameen.com/thumbnails/281880055-400x300.jpeg",
+        name: "Zameen ARX",
+        description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
+        author: "Sabhi",
+        date: "October 07, 2025",
+        id: 3,
+        price: "2 Crore",
+        city: "Lahore",
+        location: "CBD Punjab (PCBDDA)",
+        category: "Flats, Penthouse, Offices, Commercial",
+        minArea: 225,
+        maxArea: 4367
+    },
+    {
+        img: "https://media.zameen.com/thumbnails/281880055-400x300.jpeg",
+        name: "Zameen ARX",
+        description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
+        author: "Sabhi",
+        date: "October 07, 2025",
+        id: 4,
+        price: "2 Crore",
+        city: "Lahore",
+        location: "CBD Punjab (PCBDDA)",
+        category: "Flats, Penthouse, Offices, Commercial",
+        minArea: 225,
+        maxArea: 4367
+    },
+    {
+        img: "https://media.zameen.com/thumbnails/281880055-400x300.jpeg",
+        name: "Zameen ARX",
+        description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
+        author: "Sabhi",
+        date: "October 07, 2025",
+        id: 5,
+        price: "2 Crore",
+        city: "Lahore",
+        location: "CBD Punjab (PCBDDA)",
+        category: "Flats, Penthouse, Offices, Commercial",
+        minArea: 225,
+        maxArea: 4367
+    },
+];
+export const newProperties = [
+    {
+        img: "https://media.zameen.com/thumbnails/255023430-400x300.jpeg",
+        name: "Zameen ARX",
+        description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
+        author: "Sabhi",
+        date: "October 07, 2025",
+        id: 1,
+        price: "2 Crore",
+        city: "Lahore",
+        location: "CBD Punjab (PCBDDA)",
+        category: "Flats, Penthouse, Offices, Commercial",
+        minArea: 225,
+        maxArea: 4367
+    },
+    {
+        img: "https://media.zameen.com/thumbnails/255023430-400x300.jpeg",
+        name: "Zameen ARX",
+        description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
+        author: "Sabhi",
+        date: "October 07, 2025",
+        id: 2,
+        price: "2 Crore",
+        city: "Lahore",
+        location: "CBD Punjab (PCBDDA)",
+        category: "Flats, Penthouse, Offices, Commercial",
+        minArea: 225,
+        maxArea: 4367
+    },
+    {
+        img: "https://media.zameen.com/thumbnails/255023430-400x300.jpeg",
+        name: "Zameen ARX",
+        description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
+        author: "Sabhi",
+        date: "October 07, 2025",
+        id: 3,
+        price: "2 Crore",
+        city: "Lahore",
+        location: "CBD Punjab (PCBDDA)",
+        category: "Flats, Penthouse, Offices, Commercial",
+        minArea: 225,
+        maxArea: 4367
+    },
+    {
+        img: "https://media.zameen.com/thumbnails/255023430-400x300.jpeg",
+        name: "Zameen ARX",
+        description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
+        author: "Sabhi",
+        date: "October 07, 2025",
+        id: 4,
+        price: "2 Crore",
+        city: "Lahore",
+        location: "CBD Punjab (PCBDDA)",
+        category: "Flats, Penthouse, Offices, Commercial",
+        minArea: 225,
+        maxArea: 4367
+    },
+    {
+        img: "https://media.zameen.com/thumbnails/255023430-400x300.jpeg",
+        name: "Zameen ARX",
+        description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
+        author: "Sabhi",
+        date: "October 07, 2025",
+        id: 5,
+        price: "2 Crore",
+        city: "Lahore",
+        location: "CBD Punjab (PCBDDA)",
+        category: "Flats, Penthouse, Offices, Commercial",
+        minArea: 225,
+        maxArea: 4367
+    },
+];

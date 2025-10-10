@@ -1,6 +1,6 @@
 import ContainerCenter from "../Components/ContainerCenter";
 import agencies from "../Agencies";
-import properties from "../Properties";
+import {hotProperties, newProperties, featuredProperties} from "../Properties";
 import PropertiesCard from "../Components/PropertiesCard";
 import Carousel from "../Components/Carousel/Carousel";
 import HeroSearchForm from "../Components/HeroSearchForm";
@@ -70,7 +70,77 @@ const Home = () => {
             autoPlay={true}
             autoPlayInterval={3000}
           >
-            {properties.map((p) => (
+            {hotProperties.map((p) => (
+              <div
+                key={p.id}
+                className="w-full flex flex-col gap-3 justify-center lg:bg-none bg-[#274abb10] p-6 rounded-md"
+              >
+                <img
+                  className="w-full rounded-md"
+                  src={p.img}
+                  alt=""
+                />
+
+                <div className="flex flex-col">
+                  <h3 className="font-semibold text-base"><span className="text-xs">PKR</span> {p.price}</h3>
+                  <h3 className="font-semibold text-lg">{p.name}, {p.city}</h3>
+                  <span className="text-sm text-gray-500 my-2">{p.city}, {p.location}</span>
+                  <span className="flex items-center gap-2 text-sm mb-1"><LuBuilding2 className="text-xs text-gray-500" /> {p.category}</span>
+                  <span className="flex items-center gap-2 text-sm"><LuGitCompareArrows className="text-xs text-gray-500" /> {p.minArea} sqft to {p.maxArea} sqft</span>
+                </div>
+              </div>
+            ))}
+          </Carousel>
+        </ContainerCenter>
+      </section>
+
+
+        {/* FEATURED PROPERTIES  */}
+      <section className="mt-10">
+        <ContainerCenter>
+          <h2 className="text-3xl mb-10">Featured Properties</h2>
+          <Carousel
+            show={{ xl: 3, l: 3, md: 2, sm: 1 }}
+            gap={20}
+            autoPlay={true}
+            autoPlayInterval={3000}
+          >
+            {featuredProperties.map((p) => (
+              <div
+                key={p.id}
+                className="w-full flex flex-col gap-3 justify-center lg:bg-none bg-[#274abb10] p-6 rounded-md"
+              >
+                <img
+                  className="w-full rounded-md"
+                  src={p.img}
+                  alt=""
+                />
+
+                <div className="flex flex-col">
+                  <h3 className="font-semibold text-base"><span className="text-xs">PKR</span> {p.price}</h3>
+                  <h3 className="font-semibold text-lg">{p.name}, {p.city}</h3>
+                  <span className="text-sm text-gray-500 my-2">{p.city}, {p.location}</span>
+                  <span className="flex items-center gap-2 text-sm mb-1"><LuBuilding2 className="text-xs text-gray-500" /> {p.category}</span>
+                  <span className="flex items-center gap-2 text-sm"><LuGitCompareArrows className="text-xs text-gray-500" /> {p.minArea} sqft to {p.maxArea} sqft</span>
+                </div>
+              </div>
+            ))}
+          </Carousel>
+        </ContainerCenter>
+      </section>
+
+
+        {/* New PROPERTIES  */}
+      <section className="mt-10">
+        <ContainerCenter>
+          <h2 className="text-3xl mb-10">New Properties</h2>
+          <Carousel
+            show={{ xl: 3, l: 3, md: 2, sm: 1 }}
+            gap={20}
+            autoPlay={true}
+            autoPlayInterval={3000}
+          >
+            {newProperties.map((p) => (
               <div
                 key={p.id}
                 className="w-full flex flex-col gap-3 justify-center lg:bg-none bg-[#274abb10] p-6 rounded-md"
@@ -102,7 +172,7 @@ const Home = () => {
             <h2 className="text-3xl">Recent Properties</h2>
             {/* PROPERTIES CARDS  */}
             <div className="flex flex-col gap-10 mt-10">
-              {properties.map((data, index) => (
+              {hotProperties.map((data, index) => (
                 <PropertiesCard key={data.id} data={data} />
               ))}
             </div>
