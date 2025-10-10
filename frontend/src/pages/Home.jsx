@@ -6,6 +6,11 @@ import Carousel from "../Components/Carousel/Carousel";
 import HeroSearchForm from "../Components/HeroSearchForm";
 import WidgetSearchFrom from "../Components/WidgetSearchFrom";
 import { FaRegEnvelope } from "react-icons/fa6";
+import { IoLocationSharp } from "react-icons/io5";
+import { LuBuilding2 } from "react-icons/lu";
+import { LuGitCompareArrows } from "react-icons/lu";
+
+
 
 const Home = () => {
   return (
@@ -28,14 +33,27 @@ const Home = () => {
         <ContainerCenter>
           <h2 className="text-3xl mb-10">Featured Agencies</h2>
           <Carousel
-            show={{ xl: 5, l: 3, md: 2, sm: 1 }}
-            gap={20}
+            show={{ xl: 4, l: 3, md: 2, sm: 1 }}
+            gap={10}
             autoPlay={true}
             autoPlayInterval={3000}
           >
             {agencies.map((a) => (
-              <div key={a.id} className="w-full flex justify-center">
-                <img className="w-[150px]" src={a.img} alt="" />
+              <div
+                key={a.id}
+                className="w-full gap-2 flex items-center justify-center p-3 cursor-pointer rounded-md duration-200 hover:bg-gray-50"
+              >
+                <img
+                  className="w-[70px] p-3 border-[1px] rounded-md border-gray-300"
+                  src={a.img}
+                  alt=""
+                />
+                <div className="flex flex-col gap-1">
+                  <h3 className="font-semibold">Agency Name</h3>
+                  <p className="text-xs text-gray-500 flex items-center gap-2">
+                    <IoLocationSharp className="text-[#274abb]" /> <span>Islamabad</span>
+                  </p>
+                </div>
               </div>
             ))}
           </Carousel>
@@ -47,7 +65,7 @@ const Home = () => {
         <ContainerCenter>
           <h2 className="text-3xl mb-10">Hot Properties</h2>
           <Carousel
-            show={{ xl: 4, l: 3, md: 2, sm: 1 }}
+            show={{ xl: 3, l: 3, md: 2, sm: 1 }}
             gap={20}
             autoPlay={true}
             autoPlayInterval={3000}
@@ -55,13 +73,21 @@ const Home = () => {
             {properties.map((p) => (
               <div
                 key={p.id}
-                className="w-full flex justify-center lg:bg-none bg-gray-100 p-4 lg:p-0"
+                className="w-full flex flex-col gap-3 justify-center lg:bg-none bg-[#274abb10] p-6 rounded-md"
               >
                 <img
-                  className="w-[250px] lg:w-full shadow-xl"
+                  className="w-full rounded-md"
                   src={p.img}
                   alt=""
                 />
+
+                <div className="flex flex-col">
+                  <h3 className="font-semibold text-base"><span className="text-xs">PKR</span> {p.price}</h3>
+                  <h3 className="font-semibold text-lg">{p.name}, {p.city}</h3>
+                  <span className="text-sm text-gray-500 my-2">{p.city}, {p.location}</span>
+                  <span className="flex items-center gap-2 text-sm mb-1"><LuBuilding2 className="text-xs text-gray-500" /> {p.category}</span>
+                  <span className="flex items-center gap-2 text-sm"><LuGitCompareArrows className="text-xs text-gray-500" /> {p.minArea} sqft to {p.maxArea} sqft</span>
+                </div>
               </div>
             ))}
           </Carousel>

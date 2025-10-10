@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const agencySchema = new mongoose.Schema(
   {
+    agencyLogo: {
+      required: true,
+      type: String
+    },
     agencyName: {
       type: String,
       required: true,

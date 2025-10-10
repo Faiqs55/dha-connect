@@ -1,292 +1,463 @@
-import { useEffect, useState } from "react";
-import { PlusCircle, Trash2 } from "lucide-react";
-import agencyService from "../../services/agency.service";
+import ContainerCenter from "../../Components/ContainerCenter";
+import AgencyFormSection from "../../Components/AgencyForm/FormSection/AgencyFormSection";
+import { useRef, useState } from "react";
+import { FaRegTrashAlt } from "react-icons/fa";
+import axios from "axios";
+import AgencyFormInput from "../../Components/AgencyForm/FormSection/AgencyFormInput";
+import { FaPlus } from "react-icons/fa";
 
-export default function AddAgencyDhaPlus() {
-  const [form, setForm] = useState({
-    agencyName: "",
-    agencyEmail: "",
-    ceoName: "",
-    ceoPhone1: "",
-    ceoPhone2: "",
-    city: "",
-    phase: "",
-    address: "",
-    website: "",
-    staff: [
+
+const cityOptions = [
+  {val: "lahore", label: "Lahore"},
+  {val: "karachi", label: "Karachi"},
+  {val: "multan", label: "Multan"},
+];
+const phaseOptions = [
+  {val: "phase 1", label: "phase 1"},
+  {val: "phase 2", label: "phase 2"},
+  {val: "phase 3", label: "phase 3"},
+];
+
+
+const AddAgency = () => {
+  const agencyLogoRef = useRef(null);
+  const [agencyLogo, setAgencyLogo] = useState(null);
+  const [agencyLogoPreview, setAgencyLogoPreview] = useState(null);
+  const [uploadImageUrl, setUploadImageUrl] = useState(null);
+  const [cloudinaryError, setCloudinaryError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  // State for multiple agency members - now includes staff image
+  const [agencyMembers, setAgencyMembers] = useState([
+    {
+      staffName: "",
+      staffDesignation: "",
+      staffPhone: "",
+      staffImage: null,
+      staffImagePreview: null,
+      staffImageUrl: null,
+    },
+  ]);
+
+  // Refs for staff image inputs
+  const staffImageRefs = useRef([]);
+
+  const cloudName = "dhdgrfseu";
+  const uploadPreset = "dha-agency-logo";
+
+  // Add new agency member section
+  const addAgencyMember = () => {
+    setAgencyMembers([
+      ...agencyMembers,
       {
         staffName: "",
         staffDesignation: "",
         staffPhone: "",
+        staffImage: null,
+        staffImagePreview: null,
+        staffImageUrl: null,
       },
-    ],
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    ]);
   };
 
-  const handleStaffChange = (index, e) => {
-    const { name, value } = e.target;
-    const updatedStaff = [...form.staff];
-    updatedStaff[index][name] = value;
-    setForm((prev) => ({ ...prev, staff: updatedStaff }));
+  // Remove specific agency member section
+  const removeAgencyMember = (index) => {
+    if (agencyMembers.length > 1) {
+      const updatedMembers = [...agencyMembers];
+      updatedMembers.splice(index, 1);
+      setAgencyMembers(updatedMembers);
+    }
   };
 
-  const addStaff = () => {
-    setForm((prev) => ({
-      ...prev,
-      staff: [
-        ...prev.staff,
-        { staffName: "", staffDesignation: "", staffPhone: "" },
-      ],
-    }));
+  // Handle input change for agency members
+  const handleMemberChange = (index, field, value) => {
+    const updatedMembers = [...agencyMembers];
+    updatedMembers[index][field] = value;
+    setAgencyMembers(updatedMembers);
   };
 
-  const removeStaff = (index) => {
-    const updated = [...form.staff];
-    updated.splice(index, 1);
-    setForm((prev) => ({ ...prev, staff: updated }));
+  // Handle staff image upload
+  const handleStaffImageUpload = (event, index) => {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        // You might want to show error for specific staff member
+        alert("File size must be less than 5MB");
+        return;
+      }
+      if (!file.type.startsWith("image/")) {
+        alert("Please select an image file");
+        return;
+      }
+
+      const updatedMembers = [...agencyMembers];
+      updatedMembers[index].staffImage = file;
+      updatedMembers[index].staffImageUrl = null;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const newUpdatedMembers = [...agencyMembers];
+        newUpdatedMembers[index].staffImagePreview = e.target.result;
+        setAgencyMembers(newUpdatedMembers);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Handle drag and drop for staff images
+  const handleStaffDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleStaffDrop = (e, index) => {
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith("image/")) {
+        handleStaffImageUpload({ target: { files: [file] } }, index);
+      }
+    }
+  };
+
+  // Handle delete staff image
+  const handleDeleteStaffImage = (index) => {
+    const updatedMembers = [...agencyMembers];
+    updatedMembers[index].staffImage = null;
+    updatedMembers[index].staffImagePreview = null;
+    updatedMembers[index].staffImageUrl = null;
+    setAgencyMembers(updatedMembers);
+
+    if (staffImageRefs.current[index]) {
+      staffImageRefs.current[index].value = "";
+    }
+  };
+
+  const handleLogoUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setCloudinaryError("File size must be less than 5MB");
+        return;
+      }
+      if (!file.type.startsWith("image/")) {
+        setCloudinaryError("Please select an image file");
+        return;
+      }
+      setAgencyLogo(file);
+      setUploadImageUrl(null);
+      setCloudinaryError(null);
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAgencyLogoPreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith("image/")) {
+        handleLogoUpload({ target: { files: [file] } });
+      }
+    }
+  };
+
+  const handleDeleteLogo = () => {
+    setAgencyLogo(null);
+    setAgencyLogoPreview(null);
+    setUploadImageUrl(null);
+    setCloudinaryError(null);
+
+    if (agencyLogoRef.current) {
+      agencyLogoRef.current.value = "";
+    }
+  };
+
+  // Generic function to upload any image to Cloudinary
+  const uploadImageToCloudinary = async (imageFile) => {
+    if (!imageFile) {
+      return null;
+    }
+
+    const formData = new FormData();
+    formData.append("file", imageFile);
+    formData.append("upload_preset", uploadPreset);
+
+    try {
+      const res = await axios.post(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return res.data.secure_url;
+    } catch (error) {
+      console.error("Cloudinary upload error:", error);
+      const errMessage =
+        error.response?.data?.error?.message || "Failed To upload Image";
+      return null;
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = form;
-    if (
-      formData.staff[0].staffName === "" &&
-      formData.staff[0].staffDesignation === "" &&
-      formData.staff[0].staffPhone === ""
-    ) {
-      delete formData.staff;
-    }
+    setIsSubmitting(true);
 
-    const res = await agencyService.addAgency(formData);
-    if (!res.success) {
-      return alert(res.message);
+    try {
+      // Upload agency logo
+      const logoUrl = await uploadImageToCloudinary(agencyLogo);
+
+      if (logoUrl) {
+        // Upload all staff images
+        const staffWithImages = await Promise.all(
+          agencyMembers.map(async (member) => {
+            let staffImageUrl = null;
+            if (member.staffImage) {
+              staffImageUrl = await uploadImageToCloudinary(member.staffImage);
+            }
+            return {
+              staffName: member.staffName,
+              staffDesignation: member.staffDesignation,
+              staffPhone: member.staffPhone,
+              staffImageUrl: staffImageUrl,
+            };
+          })
+        );
+
+        const formData = {
+          agencyLogo: logoUrl,
+          staff: staffWithImages.filter(
+            (member) =>
+              member.staffName ||
+              member.staffDesignation ||
+              member.staffPhone ||
+              member.staffImageUrl
+          ),
+        };
+
+        console.log("Final Form Data:", formData);
+        alert("Form submitted successfully! Check console for data.");
+      } else {
+        alert("Agency logo upload failed");
+      }
+    } catch (error) {
+      console.log("Form submission Error: ", error);
+      alert("An error occurred during submission");
+    } finally {
+      setIsSubmitting(false);
     }
-    setForm({
-      agencyName: "",
-      agencyEmail: "",
-      ceoName: "",
-      ceoPhone1: "",
-      ceoPhone2: "",
-      city: "",
-      phase: "",
-      address: "",
-      website: "",
-      staff: [
-        {
-          staffName: "",
-          staffDesignation: "",
-          staffPhone: "",
-        },
-      ],
-    });
-    alert(
-      `New Agency Added! Agency: ${res.data.agencyName} ID: ${res.data._id}`
-    );
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex flex-col">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-white shadow-lg text-center">
-        <h1 className="text-3xl font-bold tracking-wide">
-          🏢 Add Agency (DHA Plus)
-        </h1>
-        <p className="mt-2 text-blue-100 text-sm sm:text-base">
-          Enter your agency details below to get listed professionally
-        </p>
-      </header>
+    <div>
+      <div className="page-head bg-gray-100">
+        <ContainerCenter className="py-15">
+          <h1 className="text-4xl">Agency Creation Form</h1>
+        </ContainerCenter>
+      </div>
 
-      {/* Form Container */}
-      <div className="flex-grow flex justify-center items-start py-10 px-4 sm:px-8">
-        <form
-          onSubmit={handleSubmit}
-          className="w-full max-w-5xl bg-white/80 backdrop-blur-lg border border-blue-100 shadow-xl rounded-3xl p-10"
-        >
-          {/* Agency Info Section */}
-          <section>
-            <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-              <span className="w-1 h-6 bg-blue-600 rounded-full"></span>
-              Agency Information
-            </h2>
+      <form onSubmit={handleSubmit} className="py-10">
+        <ContainerCenter>
+          {/* AGENCY LOGO SECTION */}
+          <AgencyFormSection title={"Agency Logo"}>
+            <input
+              type="file"
+              className="hidden"
+              ref={agencyLogoRef}
+              onChange={handleLogoUpload}
+              accept="image/*"
+            />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-              {[
-                {
-                  label: "Agency Name",
-                  name: "agencyName",
-                  placeholder: "e.g., DHA Property Advisors",
-                },
-                {
-                  label: "Agency Email",
-                  name: "agencyEmail",
-                  placeholder: "e.g., info@agency.com",
-                  type: "email",
-                },
-                {
-                  label: "CEO Name",
-                  name: "ceoName",
-                  placeholder: "e.g., Ali Khan",
-                },
-                {
-                  label: "CEO Phone 1",
-                  name: "ceoPhone1",
-                  placeholder: "e.g., 0300-1234567",
-                },
-                {
-                  label: "CEO Phone 2",
-                  name: "ceoPhone2",
-                  placeholder: "e.g., 0300-7654321",
-                },
-              ].map((item) => (
-                <div key={item.name}>
-                  <label className="block text-gray-700 font-medium mb-1">
-                    {item.label}
-                  </label>
-                  <input
-                    type={item.type || "text"}
-                    name={item.name}
-                    value={form[item.name]}
-                    onChange={handleChange}
-                    placeholder={item.placeholder}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm"
-                  />
-                </div>
-              ))}
-
-              <div>
-                <label className="block text-gray-700 font-medium mb-1">
-                  City
-                </label>
-                <select
-                  name="city"
-                  value={form.city}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm"
-                >
-                  <option value="">Select City</option>
-                  <option>Lahore</option>
-                  <option>Karachi</option>
-                  <option>Islamabad</option>
-                </select>
+            {!agencyLogoPreview ? (
+              <div
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onClick={() => {
+                  agencyLogoRef.current.click();
+                }}
+                className="file-input bg-gray-200 text-gray-600 text-center py-6 rounded-md cursor-pointer hover:bg-gray-300 transition-colors"
+              >
+                <p>
+                  Drag & Drop your files or{" "}
+                  <span className="underline">Browse</span>
+                </p>
               </div>
-
-              <div>
-                <label className="block text-gray-700 font-medium mb-1">
-                  Phase
-                </label>
-                <select
-                  name="phase"
-                  value={form.phase}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm"
-                >
-                  <option value="">Select Phase</option>
-                  <option>Phase 1</option>
-                  <option>Phase 2</option>
-                  <option>Phase 3</option>
-                  <option>Phase 4</option>
-                </select>
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-gray-700 font-medium mb-1">
-                  Address
-                </label>
-                <input
-                  type="text"
-                  name="address"
-                  value={form.address}
-                  onChange={handleChange}
-                  placeholder="e.g., DHA Phase 5, Lahore"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm"
+            ) : (
+              <div className="relative w-full bg-gray-200 py-6 flex items-center justify-center">
+                <img
+                  src={agencyLogoPreview}
+                  alt="Agency logo preview"
+                  className="max-h-40"
                 />
+                <button
+                  type="button"
+                  onClick={handleDeleteLogo}
+                  className="absolute top-5 right-5 bg-red-500 text-white p-3 rounded-sm cursor-pointer"
+                >
+                  <FaRegTrashAlt />
+                </button>
               </div>
-            </div>
-          </section>
+            )}
 
-          {/* Staff Info Section */}
-          <section>
-            <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-              <span className="w-1 h-6 bg-blue-600 rounded-full"></span>
-              Staff Information
-            </h2>
+            {cloudinaryError && (
+              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-800">{cloudinaryError}</p>
+              </div>
+            )}
+          </AgencyFormSection>
 
-            {form.staff.map((member, index) => (
+          {/* AGENCY INFORMATION  */}
+          <AgencyFormSection title={"Agency Information"} innerStyle="grid grid-cols-2 gap-4">
+            <AgencyFormInput label={"Agency Name"} placeholder={"Agency Name"} name={"agencyName"} />
+            <AgencyFormInput label={"Agency Email"} placeholder={"Agency Email"} name={"agencyEmail"} />
+            <AgencyFormInput label={"Ceo Name"} placeholder={"Ceo Name"} name={"ceoName"} />
+            <AgencyFormInput label={"Ceo Phone 1"} placeholder={"Ceo Phone 1"} name={"ceoPhone1"} />
+            <AgencyFormInput label={"Ceo Phone 2"} placeholder={"Ceo Phone 2"} name={"ceoPhone2"} />
+            <AgencyFormInput label={"Whatsapp"} placeholder={"Whatsapp"} name={"whatsapp"} />
+          </AgencyFormSection>
+
+          {/* AGENCY LOCATION  */}
+          <AgencyFormSection title={"Location"}>
+  
+          </AgencyFormSection>
+
+          {/* AGENCY MEMBERS SECTION */}
+          <AgencyFormSection title={"Agency Members"}>
+            {agencyMembers.map((member, index) => (
               <div
                 key={index}
-                className="border border-blue-100 bg-blue-50/30 rounded-xl p-6 mb-6 shadow-sm relative transition-all duration-200 hover:shadow-md"
+                className="relative border border-gray-300 p-6 rounded-md mb-6"
               >
-                {form.staff.length > 1 && (
+                {/* Remove button - only show if more than one member exists */}
+                {agencyMembers.length > 1 && (
                   <button
                     type="button"
-                    onClick={() => removeStaff(index)}
-                    className="absolute top-3 right-3 text-red-500 hover:text-red-700 transition"
+                    onClick={() => removeAgencyMember(index)}
+                    className="absolute top-4 right-4 bg-red-500 text-white p-2 rounded-sm cursor-pointer hover:bg-red-600 transition-colors"
                   >
-                    <Trash2 size={20} />
+                    <FaRegTrashAlt />
                   </button>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {[
-                    {
-                      label: "Staff Name",
-                      name: "staffName",
-                      placeholder: "e.g., Ahmed",
-                    },
-                    {
-                      label: "Designation",
-                      name: "staffDesignation",
-                      placeholder: "e.g., Sales Manager",
-                    },
-                    {
-                      label: "Phone",
-                      name: "staffPhone",
-                      placeholder: "e.g., 0311-6543210",
-                    },
-                  ].map((field) => (
-                    <div key={field.name}>
-                      <label className="block text-gray-700 font-medium mb-1">
-                        {field.label}
-                      </label>
-                      <input
-                        type="text"
-                        name={field.name}
-                        value={member[field.name]}
-                        onChange={(e) => handleStaffChange(index, e)}
-                        placeholder={field.placeholder}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm"
-                      />
+                <h3 className="text-lg font-semibold mb-4 text-gray-700">
+                  Member {index + 1}
+                </h3>
+
+                <div className="grid grid-cols-3 gap-5 mb-6">
+                  <AgencyFormInput
+                    name={`staffName-${index}`}
+                    placeholder={"Name"}
+                    label={"Name"}
+                    value={member.staffName}
+                    onChange={(e) =>
+                      handleMemberChange(index, "staffName", e.target.value)
+                    }
+                  />
+                  <AgencyFormInput
+                    name={`staffDesignation-${index}`}
+                    placeholder={"Designation"}
+                    label={"Designation"}
+                    value={member.staffDesignation}
+                    onChange={(e) =>
+                      handleMemberChange(
+                        index,
+                        "staffDesignation",
+                        e.target.value
+                      )
+                    }
+                  />
+                  <AgencyFormInput
+                    name={`staffPhone-${index}`}
+                    placeholder={"Phone"}
+                    label={"Phone"}
+                    value={member.staffPhone}
+                    onChange={(e) =>
+                      handleMemberChange(index, "staffPhone", e.target.value)
+                    }
+                  />
+                </div>
+
+                {/* Staff Image Upload Section */}
+                <div className="mt-4">
+                  <h4 className="text-md font-medium mb-3">Staff Image</h4>
+                  <input
+                    type="file"
+                    className="hidden"
+                    ref={(el) => (staffImageRefs.current[index] = el)}
+                    onChange={(e) => handleStaffImageUpload(e, index)}
+                    accept="image/*"
+                  />
+
+                  {!member.staffImagePreview ? (
+                    <div
+                      onDragOver={handleStaffDragOver}
+                      onDrop={(e) => handleStaffDrop(e, index)}
+                      onClick={() => staffImageRefs.current[index].click()}
+                      className="file-input bg-gray-200 text-gray-600 text-center py-4 rounded-md cursor-pointer hover:bg-gray-300 transition-colors"
+                    >
+                      <p>
+                        Drag & Drop staff image or{" "}
+                        <span className="underline">Browse</span>
+                      </p>
                     </div>
-                  ))}
+                  ) : (
+                    <div className="relative w-full bg-gray-200 py-4 flex items-center justify-center">
+                      <img
+                        src={member.staffImagePreview}
+                        alt={`Staff ${index + 1} preview`}
+                        className="max-h-32"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteStaffImage(index)}
+                        className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-sm cursor-pointer"
+                      >
+                        <FaRegTrashAlt />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
 
+            {/* Add More Members Button */}
             <button
               type="button"
-              onClick={addStaff}
-              className="flex items-center gap-2 text-blue-600 font-medium hover:text-blue-800 transition mb-8"
+              onClick={addAgencyMember}
+              className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
             >
-              <PlusCircle size={22} />
-              Add More Staff
+              <FaPlus />
+              Add Another Member
             </button>
-          </section>
+          </AgencyFormSection>
 
           {/* Submit Button */}
-          <div className="flex justify-center mt-6">
+          <div className="mt-8 flex justify-end">
             <button
               type="submit"
-              className="w-full sm:w-1/2 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-3 rounded-xl shadow-lg hover:scale-[1.02] transition-all duration-300"
+              disabled={isSubmitting || !agencyLogo}
+              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              🚀 Submit Agency
+              {isSubmitting ? "Submitting..." : "Create Agency"}
             </button>
           </div>
-        </form>
-      </div>
+        </ContainerCenter>
+      </form>
     </div>
   );
-}
+};
+
+export default AddAgency;

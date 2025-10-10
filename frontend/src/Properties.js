@@ -1,43 +1,73 @@
 const properties = [
     {
-        img: "https://assets.dhaplus.com/fb-images/thumb/39065.jpg",
-        name: "1 Kanal Residential House for Rent in Sector Y - Phase 7, Lahore - (DP-39768)",
+        img: "https://media.zameen.com/thumbnails/279679251-400x300.jpeg",
+        name: "Zameen ARX",
         description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
         author: "Sabhi",
         date: "October 07, 2025",
-        id: 1
+        id: 1,
+        price: "2 Crore",
+        city: "Lahore",
+        location: "CBD Punjab (PCBDDA)",
+        category: "Flats, Penthouse, Offices, Commercial",
+        minArea: 225,
+        maxArea: 4367
     },
     {
-        img: "https://assets.dhaplus.com/fb-images/thumb/39065.jpg",
-        name: "1 Kanal Residential House for Rent in Sector Y - Phase 7, Lahore - (DP-39768)",
+        img: "https://media.zameen.com/thumbnails/279679251-400x300.jpeg",
+        name: "Zameen ARX",
         description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
         author: "Sabhi",
         date: "October 07, 2025",
-        id: 2
+        id: 2,
+        price: "2 Crore",
+        city: "Lahore",
+        location: "CBD Punjab (PCBDDA)",
+        category: "Flats, Penthouse, Offices, Commercial",
+        minArea: 225,
+        maxArea: 4367
     },
     {
-        img: "https://assets.dhaplus.com/fb-images/thumb/39065.jpg",
-        name: "1 Kanal Residential House for Rent in Sector Y - Phase 7, Lahore - (DP-39768)",
+        img: "https://media.zameen.com/thumbnails/279679251-400x300.jpeg",
+        name: "Zameen ARX",
         description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
         author: "Sabhi",
         date: "October 07, 2025",
-        id: 3
+        id: 3,
+        price: "2 Crore",
+        city: "Lahore",
+        location: "CBD Punjab (PCBDDA)",
+        category: "Flats, Penthouse, Offices, Commercial",
+        minArea: 225,
+        maxArea: 4367
     },
     {
-        img: "https://assets.dhaplus.com/fb-images/thumb/39065.jpg",
-        name: "1 Kanal Residential House for Rent in Sector Y - Phase 7, Lahore - (DP-39768)",
+        img: "https://media.zameen.com/thumbnails/279679251-400x300.jpeg",
+        name: "Zameen ARX",
         description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
         author: "Sabhi",
         date: "October 07, 2025",
-        id: 4
+        id: 4,
+        price: "2 Crore",
+        city: "Lahore",
+        location: "CBD Punjab (PCBDDA)",
+        category: "Flats, Penthouse, Offices, Commercial",
+        minArea: 225,
+        maxArea: 4367
     },
     {
-        img: "https://assets.dhaplus.com/fb-images/thumb/39065.jpg",
-        name: "1 Kanal Residential House for Rent in Sector Y - Phase 7, Lahore - (DP-39768)",
+        img: "https://media.zameen.com/thumbnails/279679251-400x300.jpeg",
+        name: "Zameen ARX",
         description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
         author: "Sabhi",
         date: "October 07, 2025",
-        id: 5
+        id: 5,
+        price: "2 Crore",
+        city: "Lahore",
+        location: "CBD Punjab (PCBDDA)",
+        category: "Flats, Penthouse, Offices, Commercial",
+        minArea: 225,
+        maxArea: 4367
     },
 ];
 
