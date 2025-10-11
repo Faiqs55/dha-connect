@@ -277,36 +277,32 @@ const AddAgency = () => {
         // Prepare the final data object
         const finalData = {
           // Agency Information
-          agencyInfo: {
             agencyName: formData.agencyName,
             agencyEmail: formData.agencyEmail,
             ceoName: formData.ceoName,
             ceoPhone1: formData.ceoPhone1,
             ceoPhone2: formData.ceoPhone2,
             whatsapp: formData.whatsapp,
-          },
+
           // Location
-          location: {
             city: formData.city,
             phase: formData.phase,
             streetAddress: formData.streetAddress,
-          },
+
+
           // Social Media
-          socials: {
             facebook: formData.facebook,
             youtube: formData.youtube,
             twitter: formData.twitter,
             instagram: formData.instagram,
-          },
+
           // About
-          about: {
             about: formData.about,
             website: formData.website,
-          },
+
           // Images
-          images: {
             agencyLogo: logoUrl,
-          },
+            
           // Staff Members
           staff: staffWithImages.filter(
             (member) =>
@@ -318,7 +314,10 @@ const AddAgency = () => {
         };
 
         let res = await agencyService.addAgency(finalData);
-
+        console.log(JSON.stringify(finalData));
+        
+         console.log(res);
+         
         if (!res.success) {
           setResult({
             result: `Error! Something Went Wrong.`,
@@ -328,7 +327,7 @@ const AddAgency = () => {
         }
 
         setResult({
-          result: `The Agency "${res.data.agencyInfo.agencyName} has been Added."`,
+          result: `The Agency "${res.data.agencyName} has been Added."`,
           message: "Your Agency has been added. You can now add another one.",
           color: "green",
         });
@@ -447,7 +446,7 @@ const AddAgency = () => {
           {/* AGENCY INFORMATION  */}
           <AgencyFormSection
             title={"Agency Information"}
-            innerStyle="grid grid-cols-2 gap-4"
+            innerStyle="grid md:grid-cols-2 gap-4"
           >
             <AgencyFormInput
               label={"Agency Name"}
@@ -496,7 +495,7 @@ const AddAgency = () => {
           {/* AGENCY LOCATION  */}
           <AgencyFormSection
             title={"Location"}
-            innerStyle={"grid grid-cols-2 gap-4"}
+            innerStyle={"grid md:grid-cols-2 gap-4"}
           >
             <AgencyFormSelect
               label={"City"}
@@ -524,7 +523,7 @@ const AddAgency = () => {
           {/* AGENCY SOCIALS  */}
           <AgencyFormSection
             title={"Socials"}
-            innerStyle={"grid grid-cols-2 gap-4"}
+            innerStyle={"grid md:grid-cols-2 gap-4"}
           >
             <AgencyFormInput
               label={"Facebook"}
@@ -559,7 +558,7 @@ const AddAgency = () => {
           {/* ABOUT AGENCY  */}
           <AgencyFormSection
             title={"About"}
-            innerStyle={"grid grid-cols-2 gap-4"}
+            innerStyle={"grid md:grid-cols-2 gap-4"}
           >
             <AgencyFormInput
               label={"About"}
@@ -578,7 +577,7 @@ const AddAgency = () => {
           </AgencyFormSection>
 
           {/* AGENCY MEMBERS SECTION */}
-          <AgencyFormSection title={"Agency Members"}>
+          <AgencyFormSection title={"Agency Members"} innerStyle={""}>
             {agencyMembers.map((member, index) => (
               <div
                 key={index}
@@ -599,7 +598,7 @@ const AddAgency = () => {
                   Member {index + 1}
                 </h3>
 
-                <div className="grid grid-cols-3 gap-5 mb-6">
+                <div className="grid md:grid-cols-3 gap-5 mb-6">
                   <AgencyFormInput
                     name={`staffName-${index}`}
                     placeholder={"Name"}
