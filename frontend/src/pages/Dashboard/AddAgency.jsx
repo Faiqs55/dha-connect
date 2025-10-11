@@ -7,16 +7,17 @@ import AgencyFormInput from "../../Components/AgencyForm/FormSection/AgencyFormI
 import { FaPlus } from "react-icons/fa";
 import AgencyFormSelect from "../../Components/AgencyForm/FormSection/AgencyFormSelect";
 import agencyService from "../../services/agency.service";
+import Toast from "../../Components/Toast";
 
 const cityOptions = [
-  {val: "lahore", label: "Lahore"},
-  {val: "karachi", label: "Karachi"},
-  {val: "multan", label: "Multan"},
+  { val: "lahore", label: "Lahore" },
+  { val: "karachi", label: "Karachi" },
+  { val: "multan", label: "Multan" },
 ];
 const phaseOptions = [
-  {val: "phase1", label: "Phase 1"},
-  {val: "phase2", label: "Phase 2"},
-  {val: "phase3", label: "Phase 3"},
+  { val: "phase1", label: "Phase 1" },
+  { val: "phase2", label: "Phase 2" },
+  { val: "phase3", label: "Phase 3" },
 ];
 
 const AddAgency = () => {
@@ -26,7 +27,7 @@ const AddAgency = () => {
   const [uploadImageUrl, setUploadImageUrl] = useState(null);
   const [cloudinaryError, setCloudinaryError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [toast, setToast] = useState(null);
+  const [result, setResult] = useState(null);
 
   // State for multiple agency members - now includes staff image
   const [agencyMembers, setAgencyMembers] = useState([
@@ -56,7 +57,7 @@ const AddAgency = () => {
     twitter: "",
     instagram: "",
     about: "",
-    website: ""
+    website: "",
   });
 
   // Refs for staff image inputs
@@ -68,18 +69,18 @@ const AddAgency = () => {
   // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   // Handle select changes
   const handleSelectChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -251,7 +252,7 @@ const AddAgency = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
+    setResult(null);
     try {
       // Upload agency logo
       const logoUrl = await uploadImageToCloudinary(agencyLogo);
@@ -318,23 +319,66 @@ const AddAgency = () => {
 
         let res = await agencyService.addAgency(finalData);
 
-        if(!res.success){
-           alert("Failed to add agency");
+        if (!res.success) {
+          setResult({
+            result: `Error! Something Went Wrong.`,
+            message: `${res.message}`,
+            color: "red",
+          });
         }
 
-        console.log(res);
+        setResult({
+          result: `The Agency "${res.data.agencyInfo.agencyName} has been Added."`,
+          message: "Your Agency has been added. You can now add another one.",
+          color: "green",
+        });
+        setFormData({
+          agencyName: "",
+          agencyEmail: "",
+          ceoName: "",
+          ceoPhone1: "",
+          ceoPhone2: "",
+          whatsapp: "",
+          city: "",
+          phase: "",
+          streetAddress: "",
+          facebook: "",
+          youtube: "",
+          twitter: "",
+          instagram: "",
+          about: "",
+          website: "",
+        });
+        setAgencyMembers([
+          {
+            staffName: "",
+            staffDesignation: "",
+            staffPhone: "",
+            staffImage: null,
+            staffImagePreview: null,
+            staffImageUrl: null,
+          },
+        ]);
       } else {
-        alert("Agency logo upload failed");
+        setResult({
+          result: `Error! Something Went Wrong.`,
+          message: `Could not upload the Agency Logo`,
+          color: "red",
+        });
       }
     } catch (error) {
-      console.log("Form submission Error: ", error);
+      setResult({
+        result: `Error! Something Went Wrong.`,
+        message: `${error.message}`,
+        color: "red",
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div>
+    <div className="">
       <div className="page-head bg-gray-100">
         <ContainerCenter className="py-15">
           <h1 className="text-4xl">Agency Creation Form</h1>
@@ -343,6 +387,15 @@ const AddAgency = () => {
 
       <form onSubmit={handleSubmit} className="py-10">
         <ContainerCenter>
+          {result && (
+            <div className={`mt-10`}>
+              <Toast
+                color={result?.color}
+                result={result?.result}
+                message={result?.message}
+              />
+            </div>
+          )}
           {/* AGENCY LOGO SECTION */}
           <AgencyFormSection title={"Agency Logo"}>
             <input
@@ -392,121 +445,133 @@ const AddAgency = () => {
           </AgencyFormSection>
 
           {/* AGENCY INFORMATION  */}
-          <AgencyFormSection title={"Agency Information"} innerStyle="grid grid-cols-2 gap-4">
-            <AgencyFormInput 
-              label={"Agency Name"} 
-              placeholder={"Agency Name"} 
-              name={"agencyName"} 
+          <AgencyFormSection
+            title={"Agency Information"}
+            innerStyle="grid grid-cols-2 gap-4"
+          >
+            <AgencyFormInput
+              label={"Agency Name"}
+              placeholder={"Agency Name"}
+              name={"agencyName"}
               value={formData.agencyName}
               onChange={handleInputChange}
             />
-            <AgencyFormInput 
-              label={"Agency Email"} 
-              placeholder={"Agency Email"} 
-              name={"agencyEmail"} 
+            <AgencyFormInput
+              label={"Agency Email"}
+              placeholder={"Agency Email"}
+              name={"agencyEmail"}
               value={formData.agencyEmail}
               onChange={handleInputChange}
             />
-            <AgencyFormInput 
-              label={"Ceo Name"} 
-              placeholder={"Ceo Name"} 
-              name={"ceoName"} 
+            <AgencyFormInput
+              label={"Ceo Name"}
+              placeholder={"Ceo Name"}
+              name={"ceoName"}
               value={formData.ceoName}
               onChange={handleInputChange}
             />
-            <AgencyFormInput 
-              label={"Ceo Phone 1"} 
-              placeholder={"Ceo Phone 1"} 
-              name={"ceoPhone1"} 
+            <AgencyFormInput
+              label={"Ceo Phone 1"}
+              placeholder={"Ceo Phone 1"}
+              name={"ceoPhone1"}
               value={formData.ceoPhone1}
               onChange={handleInputChange}
             />
-            <AgencyFormInput 
-              label={"Ceo Phone 2"} 
-              placeholder={"Ceo Phone 2"} 
-              name={"ceoPhone2"} 
+            <AgencyFormInput
+              label={"Ceo Phone 2"}
+              placeholder={"Ceo Phone 2"}
+              name={"ceoPhone2"}
               value={formData.ceoPhone2}
               onChange={handleInputChange}
             />
-            <AgencyFormInput 
-              label={"Whatsapp"} 
-              placeholder={"Whatsapp"} 
-              name={"whatsapp"} 
+            <AgencyFormInput
+              label={"Whatsapp"}
+              placeholder={"Whatsapp"}
+              name={"whatsapp"}
               value={formData.whatsapp}
               onChange={handleInputChange}
             />
           </AgencyFormSection>
 
           {/* AGENCY LOCATION  */}
-          <AgencyFormSection title={"Location"} innerStyle={"grid grid-cols-2 gap-4"}>
-             <AgencyFormSelect 
-               label={"City"} 
-               options={cityOptions} 
-               name={"city"} 
-               value={formData.city}
-               onChange={handleSelectChange}
-             />
-             <AgencyFormSelect 
-               label={"Phase"} 
-               options={phaseOptions} 
-               name={"phase"} 
-               value={formData.phase}
-               onChange={handleSelectChange}
-             />
-             <AgencyFormInput 
-               label={"Street Address"} 
-               name={"streetAddress"} 
-               placeholder={"Street Address"} 
-               value={formData.streetAddress}
-               onChange={handleInputChange}
-             />
+          <AgencyFormSection
+            title={"Location"}
+            innerStyle={"grid grid-cols-2 gap-4"}
+          >
+            <AgencyFormSelect
+              label={"City"}
+              options={cityOptions}
+              name={"city"}
+              value={formData.city}
+              onChange={handleSelectChange}
+            />
+            <AgencyFormSelect
+              label={"Phase"}
+              options={phaseOptions}
+              name={"phase"}
+              value={formData.phase}
+              onChange={handleSelectChange}
+            />
+            <AgencyFormInput
+              label={"Street Address"}
+              name={"streetAddress"}
+              placeholder={"Street Address"}
+              value={formData.streetAddress}
+              onChange={handleInputChange}
+            />
           </AgencyFormSection>
 
           {/* AGENCY SOCIALS  */}
-          <AgencyFormSection title={"Socials"} innerStyle={"grid grid-cols-2 gap-4"} >
-            <AgencyFormInput 
-              label={"Facebook"} 
-              placeholder={"Facebook"} 
-              name={"facebook"} 
+          <AgencyFormSection
+            title={"Socials"}
+            innerStyle={"grid grid-cols-2 gap-4"}
+          >
+            <AgencyFormInput
+              label={"Facebook"}
+              placeholder={"Facebook"}
+              name={"facebook"}
               value={formData.facebook}
               onChange={handleInputChange}
             />
-            <AgencyFormInput 
-              label={"Youtube"} 
-              placeholder={"Youtube"} 
-              name={"youtube"} 
+            <AgencyFormInput
+              label={"Youtube"}
+              placeholder={"Youtube"}
+              name={"youtube"}
               value={formData.youtube}
               onChange={handleInputChange}
             />
-            <AgencyFormInput 
-              label={"Twitter"} 
-              placeholder={"Twitter"} 
-              name={"twitter"} 
+            <AgencyFormInput
+              label={"Twitter"}
+              placeholder={"Twitter"}
+              name={"twitter"}
               value={formData.twitter}
               onChange={handleInputChange}
             />
-            <AgencyFormInput 
-              label={"Instagram"} 
-              placeholder={"Instagram"} 
-              name={"instagram"} 
+            <AgencyFormInput
+              label={"Instagram"}
+              placeholder={"Instagram"}
+              name={"instagram"}
               value={formData.instagram}
               onChange={handleInputChange}
             />
           </AgencyFormSection>
 
           {/* ABOUT AGENCY  */}
-          <AgencyFormSection title={"About"} innerStyle={"grid grid-cols-2 gap-4"}>
-            <AgencyFormInput 
-              label={"About"} 
-              placeholder={"About"} 
-              name={"about"} 
+          <AgencyFormSection
+            title={"About"}
+            innerStyle={"grid grid-cols-2 gap-4"}
+          >
+            <AgencyFormInput
+              label={"About"}
+              placeholder={"About"}
+              name={"about"}
               value={formData.about}
               onChange={handleInputChange}
             />
-            <AgencyFormInput 
-              label={"Website"} 
-              placeholder={"Website"} 
-              name={"website"} 
+            <AgencyFormInput
+              label={"Website"}
+              placeholder={"Website"}
+              name={"website"}
               value={formData.website}
               onChange={handleInputChange}
             />
@@ -622,16 +687,22 @@ const AddAgency = () => {
             </button>
           </AgencyFormSection>
 
-          {/* Submit Button */}
-          <div className="mt-8 flex justify-end">
-            <button
-              type="submit"
-              disabled={isSubmitting || !agencyLogo}
-              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? "Submitting..." : "Create Agency"}
-            </button>
+          <div className="mt-10">
+            <Toast
+              color={"red"}
+              result={"Error! Something Went Wrong."}
+              message={"Could not create the agency."}
+            />
           </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={isSubmitting || !agencyLogo}
+            className="bg-blue-600 mt-10 w-full text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? "Submitting..." : "Create Agency"}
+          </button>
         </ContainerCenter>
       </form>
     </div>
