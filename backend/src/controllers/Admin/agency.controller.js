@@ -2,6 +2,7 @@ const { Agency } = require("../../models/agency.model");
 
 const addAgencyController = async (req, res) => {
   try {
+    
     const data = req.body;
     const agency = await Agency.create(data);
     if (!agency) {

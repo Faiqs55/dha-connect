@@ -687,13 +687,15 @@ const AddAgency = () => {
             </button>
           </AgencyFormSection>
 
-          <div className="mt-10">
-            <Toast
-              color={"red"}
-              result={"Error! Something Went Wrong."}
-              message={"Could not create the agency."}
-            />
-          </div>
+          {result && (
+            <div className={`mt-10`}>
+              <Toast
+                color={result?.color}
+                result={result?.result}
+                message={result?.message}
+              />
+            </div>
+          )}
 
           {/* Submit Button */}
           <button

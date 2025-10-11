@@ -20,8 +20,6 @@ app.use(cors({
 // DATABASE CONNECTION
 connectDB();
 
-
-
 // ROUTES
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok", message: "API health is good" });
