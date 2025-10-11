@@ -1,6 +1,10 @@
 import ContainerCenter from "../Components/ContainerCenter";
 import agencies from "../Agencies";
-import {hotProperties, newProperties, featuredProperties} from "../Properties";
+import {
+  hotProperties,
+  newProperties,
+  featuredProperties,
+} from "../Properties";
 import PropertiesCard from "../Components/PropertiesCard";
 import Carousel from "../Components/Carousel/Carousel";
 import HeroSearchForm from "../Components/HeroSearchForm";
@@ -9,10 +13,24 @@ import { FaRegEnvelope } from "react-icons/fa6";
 import { IoLocationSharp } from "react-icons/io5";
 import { LuBuilding2 } from "react-icons/lu";
 import { LuGitCompareArrows } from "react-icons/lu";
-
-
+import { useEffect, useState } from "react";
+import agencyService from "../services/agency.service";
 
 const Home = () => {
+  const [agenciesData, setAgenciesData] = useState(null);
+  const getAgencies = async () => {
+    const data = await agencyService.getAllAgencies();
+    if (!data.success) {
+      setAgenciesData(null);
+    }
+    setAgenciesData(data.data);
+  };
+  useEffect(() => {
+    getAgencies();
+  }, []);
+
+  
+
   return (
     <div>
       {/* HERO  */}
@@ -38,20 +56,21 @@ const Home = () => {
             autoPlay={true}
             autoPlayInterval={3000}
           >
-            {agencies.map((a) => (
+            {agenciesData && agenciesData.length > 0 && agenciesData.map((a) => (
               <div
                 key={a.id}
                 className="w-full gap-2 flex items-center justify-center p-3 cursor-pointer rounded-md duration-200 hover:bg-gray-50"
               >
                 <img
                   className="w-[70px] p-3 border-[1px] rounded-md border-gray-300"
-                  src={a.img}
+                  src={a.agencyLogo}
                   alt=""
                 />
                 <div className="flex flex-col gap-1">
-                  <h3 className="font-semibold">Agency Name</h3>
+                  <h3 className="font-semibold">{a.agencyName}</h3>
                   <p className="text-xs text-gray-500 flex items-center gap-2">
-                    <IoLocationSharp className="text-[#274abb]" /> <span>Islamabad</span>
+                    <IoLocationSharp className="text-[#274abb]" />{" "}
+                    <span>{a.city}</span>
                   </p>
                 </div>
               </div>
@@ -75,18 +94,26 @@ const Home = () => {
                 key={p.id}
                 className="w-full flex flex-col gap-3 justify-center lg:bg-none bg-[#274abb10] p-6 rounded-md"
               >
-                <img
-                  className="w-full rounded-md"
-                  src={p.img}
-                  alt=""
-                />
+                <img className="w-full rounded-md" src={p.img} alt="" />
 
                 <div className="flex flex-col">
-                  <h3 className="font-semibold text-base"><span className="text-xs">PKR</span> {p.price}</h3>
-                  <h3 className="font-semibold text-lg">{p.name}, {p.city}</h3>
-                  <span className="text-sm text-gray-500 my-2">{p.city}, {p.location}</span>
-                  <span className="flex items-center gap-2 text-sm mb-1"><LuBuilding2 className="text-xs text-gray-500" /> {p.category}</span>
-                  <span className="flex items-center gap-2 text-sm"><LuGitCompareArrows className="text-xs text-gray-500" /> {p.minArea} sqft to {p.maxArea} sqft</span>
+                  <h3 className="font-semibold text-base">
+                    <span className="text-xs">PKR</span> {p.price}
+                  </h3>
+                  <h3 className="font-semibold text-lg">
+                    {p.name}, {p.city}
+                  </h3>
+                  <span className="text-sm text-gray-500 my-2">
+                    {p.city}, {p.location}
+                  </span>
+                  <span className="flex items-center gap-2 text-sm mb-1">
+                    <LuBuilding2 className="text-xs text-gray-500" />{" "}
+                    {p.category}
+                  </span>
+                  <span className="flex items-center gap-2 text-sm">
+                    <LuGitCompareArrows className="text-xs text-gray-500" />{" "}
+                    {p.minArea} sqft to {p.maxArea} sqft
+                  </span>
                 </div>
               </div>
             ))}
@@ -94,8 +121,7 @@ const Home = () => {
         </ContainerCenter>
       </section>
 
-
-        {/* FEATURED PROPERTIES  */}
+      {/* FEATURED PROPERTIES  */}
       <section className="mt-10">
         <ContainerCenter>
           <h2 className="text-3xl mb-10">Featured Properties</h2>
@@ -110,18 +136,26 @@ const Home = () => {
                 key={p.id}
                 className="w-full flex flex-col gap-3 justify-center lg:bg-none bg-[#274abb10] p-6 rounded-md"
               >
-                <img
-                  className="w-full rounded-md"
-                  src={p.img}
-                  alt=""
-                />
+                <img className="w-full rounded-md" src={p.img} alt="" />
 
                 <div className="flex flex-col">
-                  <h3 className="font-semibold text-base"><span className="text-xs">PKR</span> {p.price}</h3>
-                  <h3 className="font-semibold text-lg">{p.name}, {p.city}</h3>
-                  <span className="text-sm text-gray-500 my-2">{p.city}, {p.location}</span>
-                  <span className="flex items-center gap-2 text-sm mb-1"><LuBuilding2 className="text-xs text-gray-500" /> {p.category}</span>
-                  <span className="flex items-center gap-2 text-sm"><LuGitCompareArrows className="text-xs text-gray-500" /> {p.minArea} sqft to {p.maxArea} sqft</span>
+                  <h3 className="font-semibold text-base">
+                    <span className="text-xs">PKR</span> {p.price}
+                  </h3>
+                  <h3 className="font-semibold text-lg">
+                    {p.name}, {p.city}
+                  </h3>
+                  <span className="text-sm text-gray-500 my-2">
+                    {p.city}, {p.location}
+                  </span>
+                  <span className="flex items-center gap-2 text-sm mb-1">
+                    <LuBuilding2 className="text-xs text-gray-500" />{" "}
+                    {p.category}
+                  </span>
+                  <span className="flex items-center gap-2 text-sm">
+                    <LuGitCompareArrows className="text-xs text-gray-500" />{" "}
+                    {p.minArea} sqft to {p.maxArea} sqft
+                  </span>
                 </div>
               </div>
             ))}
@@ -129,8 +163,7 @@ const Home = () => {
         </ContainerCenter>
       </section>
 
-
-        {/* New PROPERTIES  */}
+      {/* New PROPERTIES  */}
       <section className="mt-10">
         <ContainerCenter>
           <h2 className="text-3xl mb-10">New Properties</h2>
@@ -145,18 +178,26 @@ const Home = () => {
                 key={p.id}
                 className="w-full flex flex-col gap-3 justify-center lg:bg-none bg-[#274abb10] p-6 rounded-md"
               >
-                <img
-                  className="w-full rounded-md"
-                  src={p.img}
-                  alt=""
-                />
+                <img className="w-full rounded-md" src={p.img} alt="" />
 
                 <div className="flex flex-col">
-                  <h3 className="font-semibold text-base"><span className="text-xs">PKR</span> {p.price}</h3>
-                  <h3 className="font-semibold text-lg">{p.name}, {p.city}</h3>
-                  <span className="text-sm text-gray-500 my-2">{p.city}, {p.location}</span>
-                  <span className="flex items-center gap-2 text-sm mb-1"><LuBuilding2 className="text-xs text-gray-500" /> {p.category}</span>
-                  <span className="flex items-center gap-2 text-sm"><LuGitCompareArrows className="text-xs text-gray-500" /> {p.minArea} sqft to {p.maxArea} sqft</span>
+                  <h3 className="font-semibold text-base">
+                    <span className="text-xs">PKR</span> {p.price}
+                  </h3>
+                  <h3 className="font-semibold text-lg">
+                    {p.name}, {p.city}
+                  </h3>
+                  <span className="text-sm text-gray-500 my-2">
+                    {p.city}, {p.location}
+                  </span>
+                  <span className="flex items-center gap-2 text-sm mb-1">
+                    <LuBuilding2 className="text-xs text-gray-500" />{" "}
+                    {p.category}
+                  </span>
+                  <span className="flex items-center gap-2 text-sm">
+                    <LuGitCompareArrows className="text-xs text-gray-500" />{" "}
+                    {p.minArea} sqft to {p.maxArea} sqft
+                  </span>
                 </div>
               </div>
             ))}

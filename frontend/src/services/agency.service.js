@@ -20,6 +20,15 @@ class Agency {
             console.log(error.message);
         }
     }
+
+    async getAllAgencies() {
+        try {
+            let res = await fetch(`${this.apiURL}/agency`);
+            return res.json();
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
 };
 
 const agencyService = new Agency();
