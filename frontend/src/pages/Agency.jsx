@@ -28,6 +28,7 @@ const Agency = () => {
     <div>
       {/* PAGE HEADER  */}
       <div className="bg-gradient-to-r from-blue-900 to-blue-200 py-10">
+        
         <ContainerCenter className="flex md:items-center gap-10 flex-col md:flex-row">
           <div className="bg-blue-100 p-7 rounded-md">
             <img
@@ -61,7 +62,7 @@ const Agency = () => {
                 activeTab == "listings"
                   ? "border-b-blue-700 text-blue-700"
                   : "border-b-transparent text-gray-500"
-              } cursor-pointer h-full flex items-center text-xl px-2 font-semibold`}
+              } cursor-pointer h-full flex items-center text-sm sm:text-xl px-2 font-semibold`}
             >
               Active Listings
             </span>
@@ -73,9 +74,21 @@ const Agency = () => {
                 activeTab == "agents"
                   ? "border-b-blue-700 text-blue-700"
                   : "border-b-transparent text-gray-500"
-              } cursor-pointer h-full flex items-center text-xl px-2 font-semibold`}
+              } cursor-pointer h-full flex items-center text-sm sm:text-xl px-2 font-semibold`}
             >
               Agents
+            </span>
+            <span
+              onClick={() => {
+                setActiveTab("video");
+              }}
+              className={`border-b-2 ${
+                activeTab == "video"
+                  ? "border-b-blue-700 text-blue-700"
+                  : "border-b-transparent text-gray-500"
+              } cursor-pointer h-full flex items-center text-sm sm:text-xl px-2 font-semibold`}
+            >
+              Agency Video
             </span>
           </div>
           <div className="flex items-center gap-5 mb-5 lg:mb-0">
@@ -131,6 +144,13 @@ const Agency = () => {
                   {/* Your agent listing components */}
                 </div>
               )}
+
+              {activeTab === "video" && <div className="mt-5">
+                 <h2 className="text-xl font-semibold mb-4">
+                    Agency Introduction
+                  </h2>
+                 <iframe className="w-full h-[200px] sm:h-[300px] md:h-[400px] rounded-md" src="https://www.youtube.com/embed/tEjd_79C_WI" title="Beautiful 3 Bed Apartment in The Grand, Creek Harbour - Dubai" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+                </div>}
             </div>
 
             {/* RIGHT - Sidebar (1 column) */}

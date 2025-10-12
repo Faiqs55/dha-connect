@@ -17,7 +17,7 @@ const PropertiesCard = ({ data }) => {
       </div>
 
       {/* CARD CONTENT  */}
-      <div className="p-10 flex flex-col justify-between">
+      <div className="p-4 md:p-10 flex flex-col justify-between">
         <h3 className="text-2xl mb-2 font-semibold">
           <span className="text-sm">PKR </span>
           {data.price}
