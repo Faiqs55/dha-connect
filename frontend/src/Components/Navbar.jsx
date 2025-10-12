@@ -35,7 +35,7 @@ const Navbar = () => {
     <>
       <header ref={headerRef} className="fixed w-full bg-[#fff] z-50 shadow-lg">
         <TopBar />
-        <nav className="py-[25px]">
+        <nav className="py-[5px]">
           <ContainerCenter className="flex justify-between lg:justify-normal items-center lg:items-stretch xl:items-center xl:gap-10 lg:flex-col xl:flex-row">
             <div
               onClick={MenuHandler}

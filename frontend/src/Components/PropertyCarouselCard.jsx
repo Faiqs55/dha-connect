@@ -1,6 +1,5 @@
 import React from "react";
 import { LuBuilding2 } from "react-icons/lu";
-import { LuGitCompareArrows } from "react-icons/lu";
 import { IoLogoWhatsapp } from "react-icons/io5";
 
 
