@@ -1,5 +1,4 @@
 import ContainerCenter from "../Components/ContainerCenter";
-import agencies from "../Agencies";
 import {
   hotProperties,
   newProperties,
@@ -10,11 +9,11 @@ import Carousel from "../Components/Carousel/Carousel";
 import HeroSearchForm from "../Components/HeroSearchForm";
 import WidgetSearchFrom from "../Components/WidgetSearchFrom";
 import { FaRegEnvelope } from "react-icons/fa6";
-import { IoLocationSharp } from "react-icons/io5";
-import { LuBuilding2 } from "react-icons/lu";
-import { LuGitCompareArrows } from "react-icons/lu";
 import { useEffect, useState } from "react";
 import agencyService from "../services/agency.service";
+import AgencyCarouselCard from "../Components/AgencyCarouselCard";
+import PropertyCarouselCard from "../Components/PropertyCarouselCard";
+import HeroForm from "../Components/HeroForm";
 
 const Home = () => {
   const [agenciesData, setAgenciesData] = useState(null);
@@ -25,22 +24,35 @@ const Home = () => {
     }
     setAgenciesData(data.data);
   };
+
+  // Group agencies into pairs for stacked display
+  const groupedAgencies = agenciesData
+    ? agenciesData.reduce((acc, agency, index) => {
+        const groupIndex = Math.floor(index / 2);
+        if (!acc[groupIndex]) {
+          acc[groupIndex] = [];
+        }
+        acc[groupIndex].push(agency);
+        return acc;
+      }, [])
+    : null;
+
   useEffect(() => {
     getAgencies();
   }, []);
-
-  
 
   return (
     <div>
       {/* HERO  */}
       <div className="hero w-full py-16 md:py-24 lg:py-32">
         <ContainerCenter className={`flex flex-col`}>
-          <h1 className="text-white text-5xl mb-[40px]">
-            Find Properties in DHA Defence
+          <h1 className="text-white text-5xl mb-[15px] text-center">
+            Find Properties in DHA Lahore
           </h1>
-          <HeroSearchForm color="#fff" />
-          <h3 className="text-white text-3xl mt-[40px]">
+          <h3 className="text-white text-2xl text-center mb-[40px]">Real Data. Real Brokers. Real Properties.</h3>
+          <HeroForm />
+          {/* <HeroSearchForm color="#fff" /> */}
+          <h3 className="text-white text-3xl text-center mt-[40px]">
             We’ve 38705 properties for you!
           </h3>
         </ContainerCenter>
@@ -56,25 +68,15 @@ const Home = () => {
             autoPlay={true}
             autoPlayInterval={3000}
           >
-            {agenciesData && agenciesData.length > 0 && agenciesData.map((a) => (
-              <div
-                key={a.id}
-                className="w-full gap-2 flex items-center justify-center p-3 cursor-pointer rounded-md duration-200 hover:bg-gray-50"
-              >
-                <img
-                  className="w-[70px] p-3 border-[1px] rounded-md border-gray-300"
-                  src={a.agencyLogo}
-                  alt=""
-                />
-                <div className="flex flex-col gap-1">
-                  <h3 className="font-semibold">{a.agencyName}</h3>
-                  <p className="text-xs text-gray-500 flex items-center gap-2">
-                    <IoLocationSharp className="text-[#274abb]" />{" "}
-                    <span>{a.city}</span>
-                  </p>
+            {groupedAgencies &&
+              groupedAgencies.length > 0 &&
+              groupedAgencies.map((agen) => (
+                <div className="flex flex-col items-center">
+                  {agen.map((a) => (
+                    <AgencyCarouselCard key={a._id} a={a} />
+                  ))}
                 </div>
-              </div>
-            ))}
+              ))}
           </Carousel>
         </ContainerCenter>
       </section>
@@ -82,40 +84,16 @@ const Home = () => {
       {/* HOT PROPERTIES SECTION  */}
       <section className="mt-10">
         <ContainerCenter>
-          <h2 className="text-3xl mb-10">Hot Properties</h2>
           <Carousel
+            title={"Hot Properties"}
+            bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
             show={{ xl: 3, l: 3, md: 2, sm: 1 }}
             gap={20}
             autoPlay={true}
             autoPlayInterval={3000}
           >
             {hotProperties.map((p) => (
-              <div
-                key={p.id}
-                className="w-full flex flex-col gap-3 justify-center lg:bg-none bg-[#274abb10] p-6 rounded-md"
-              >
-                <img className="w-full rounded-md" src={p.img} alt="" />
-
-                <div className="flex flex-col">
-                  <h3 className="font-semibold text-base">
-                    <span className="text-xs">PKR</span> {p.price}
-                  </h3>
-                  <h3 className="font-semibold text-lg">
-                    {p.name}, {p.city}
-                  </h3>
-                  <span className="text-sm text-gray-500 my-2">
-                    {p.city}, {p.location}
-                  </span>
-                  <span className="flex items-center gap-2 text-sm mb-1">
-                    <LuBuilding2 className="text-xs text-gray-500" />{" "}
-                    {p.category}
-                  </span>
-                  <span className="flex items-center gap-2 text-sm">
-                    <LuGitCompareArrows className="text-xs text-gray-500" />{" "}
-                    {p.minArea} sqft to {p.maxArea} sqft
-                  </span>
-                </div>
-              </div>
+              <PropertyCarouselCard p={p} />
             ))}
           </Carousel>
         </ContainerCenter>
@@ -124,40 +102,16 @@ const Home = () => {
       {/* FEATURED PROPERTIES  */}
       <section className="mt-10">
         <ContainerCenter>
-          <h2 className="text-3xl mb-10">Featured Properties</h2>
           <Carousel
+            title={"Featured Properties"}
+            bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
             show={{ xl: 3, l: 3, md: 2, sm: 1 }}
             gap={20}
             autoPlay={true}
             autoPlayInterval={3000}
           >
             {featuredProperties.map((p) => (
-              <div
-                key={p.id}
-                className="w-full flex flex-col gap-3 justify-center lg:bg-none bg-[#274abb10] p-6 rounded-md"
-              >
-                <img className="w-full rounded-md" src={p.img} alt="" />
-
-                <div className="flex flex-col">
-                  <h3 className="font-semibold text-base">
-                    <span className="text-xs">PKR</span> {p.price}
-                  </h3>
-                  <h3 className="font-semibold text-lg">
-                    {p.name}, {p.city}
-                  </h3>
-                  <span className="text-sm text-gray-500 my-2">
-                    {p.city}, {p.location}
-                  </span>
-                  <span className="flex items-center gap-2 text-sm mb-1">
-                    <LuBuilding2 className="text-xs text-gray-500" />{" "}
-                    {p.category}
-                  </span>
-                  <span className="flex items-center gap-2 text-sm">
-                    <LuGitCompareArrows className="text-xs text-gray-500" />{" "}
-                    {p.minArea} sqft to {p.maxArea} sqft
-                  </span>
-                </div>
-              </div>
+              <PropertyCarouselCard p={p} />
             ))}
           </Carousel>
         </ContainerCenter>
@@ -166,40 +120,16 @@ const Home = () => {
       {/* New PROPERTIES  */}
       <section className="mt-10">
         <ContainerCenter>
-          <h2 className="text-3xl mb-10">New Properties</h2>
           <Carousel
+            title={"New Properties"}
+            bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
             show={{ xl: 3, l: 3, md: 2, sm: 1 }}
             gap={20}
             autoPlay={true}
             autoPlayInterval={3000}
           >
             {newProperties.map((p) => (
-              <div
-                key={p.id}
-                className="w-full flex flex-col gap-3 justify-center lg:bg-none bg-[#274abb10] p-6 rounded-md"
-              >
-                <img className="w-full rounded-md" src={p.img} alt="" />
-
-                <div className="flex flex-col">
-                  <h3 className="font-semibold text-base">
-                    <span className="text-xs">PKR</span> {p.price}
-                  </h3>
-                  <h3 className="font-semibold text-lg">
-                    {p.name}, {p.city}
-                  </h3>
-                  <span className="text-sm text-gray-500 my-2">
-                    {p.city}, {p.location}
-                  </span>
-                  <span className="flex items-center gap-2 text-sm mb-1">
-                    <LuBuilding2 className="text-xs text-gray-500" />{" "}
-                    {p.category}
-                  </span>
-                  <span className="flex items-center gap-2 text-sm">
-                    <LuGitCompareArrows className="text-xs text-gray-500" />{" "}
-                    {p.minArea} sqft to {p.maxArea} sqft
-                  </span>
-                </div>
-              </div>
+              <PropertyCarouselCard p={p} />
             ))}
           </Carousel>
         </ContainerCenter>

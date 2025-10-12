@@ -1,16 +1,21 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { FaChevronLeft } from "react-icons/fa6";
-import { FaChevronRight } from "react-icons/fa6";
+import { FaArrowLeftLong } from "react-icons/fa6";
+import { FaArrowRightLong } from "react-icons/fa6";
+
 import styles from './Carousel.module.css';
 
 const Carousel = ({ 
+  title,
+  bg,
   children, 
   show = { xl: 4, l: 3, md: 2, sm: 1 },
   gap = 16,
   autoPlay = false,
-  autoPlayInterval = 3000 
+  autoPlayInterval = 3000,
+  sidePadding = 10, // New prop to control side spacing
+  navButtonOffset = 0 // New prop to control how far buttons are from edges
 }) => {
-  const [currentIndex, setCurrentIndex] = useState(1); // Start at 1 because of cloned items
+  const [currentIndex, setCurrentIndex] = useState(1);
   const [cardsToShow, setCardsToShow] = useState(1);
   const [cardWidth, setCardWidth] = useState(0);
   const [isTransitionEnabled, setIsTransitionEnabled] = useState(true);
@@ -22,9 +27,9 @@ const Carousel = ({
 
   // Always use infinite loop - clone items for seamless looping
   const clonedItems = [
-    ...items.slice(-cardsToShow), // Clone last items for beginning
-    ...items,                     // Original items
-    ...items.slice(0, cardsToShow) // Clone first items for end
+    ...items.slice(-cardsToShow),
+    ...items,
+    ...items.slice(0, cardsToShow)
   ];
 
   const totalClonedItems = clonedItems.length;
@@ -38,13 +43,13 @@ const Carousel = ({
     return show.sm || 1;
   }, [show]);
 
-  // Calculate card width
+  // Calculate card width (accounting for side padding)
   const calculateCardWidth = useCallback(() => {
     if (!carouselRef.current) return 0;
-    const containerWidth = carouselRef.current.offsetWidth;
+    const containerWidth = carouselRef.current.offsetWidth - (sidePadding * 2);
     const totalGap = gap * (cardsToShow - 1);
     return (containerWidth - totalGap) / cardsToShow;
-  }, [cardsToShow, gap]);
+  }, [cardsToShow, gap, sidePadding]);
 
   // Handle responsive updates
   useEffect(() => {
@@ -81,19 +86,17 @@ const Carousel = ({
 
     let timeoutId;
 
-    // If we're at the last cloned item (which is same as first original), jump to first original
     if (currentIndex >= totalItems + cardsToShow) {
       timeoutId = setTimeout(() => {
         setIsTransitionEnabled(false);
-        setCurrentIndex(cardsToShow); // Jump to first original item
+        setCurrentIndex(cardsToShow);
         setTimeout(() => setIsTransitionEnabled(true), 50);
       }, 500);
     }
-    // If we're at the first cloned item (which is same as last original), jump to last original
     else if (currentIndex <= 0) {
       timeoutId = setTimeout(() => {
         setIsTransitionEnabled(false);
-        setCurrentIndex(totalItems + cardsToShow - 1); // Jump to last original item
+        setCurrentIndex(totalItems + cardsToShow - 1);
         setTimeout(() => setIsTransitionEnabled(true), 50);
       }, 500);
     }
@@ -146,18 +149,23 @@ const Carousel = ({
 
   if (totalItems === 0) return null;
 
-  // Calculate transform value
-  const transformValue = -currentIndex * (cardWidth + gap);
+  // Calculate transform value (accounting for side padding)
+  const transformValue = -currentIndex * (cardWidth + gap) + sidePadding;
 
   return (
     <div 
-      className={styles.carouselContainer}
+      className={`${styles.carouselContainer} ${bg}`}
       ref={carouselRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      style={{
+        paddingLeft: `${sidePadding}px`,
+        paddingRight: `${sidePadding}px`
+      }}
     >
+       {title && <h2 className='text-3xl font-semibold my-5 pl-10'>{title}</h2>}
       <div 
-        className={styles.carouselTrack}
+        className={`${styles.carouselTrack}`}
         style={{
           transform: `translateX(${transformValue}px)`,
           transition: isTransitionEnabled ? 'transform 0.5s ease-in-out' : 'none',
@@ -185,15 +193,17 @@ const Carousel = ({
             className={`${styles.navButton} ${styles.prevButton}`}
             onClick={prevSlide}
             aria-label="Previous slide"
+            style={{ left: `${navButtonOffset}px` }}
           >
-            <FaChevronLeft/>
+            <FaArrowLeftLong className='text-blue-500'/>
           </button>
           <button 
             className={`${styles.navButton} ${styles.nextButton}`}
             onClick={nextSlide}
             aria-label="Next slide"
+            style={{ right: `${navButtonOffset}px` }}
           >
-            <FaChevronRight/>
+            <FaArrowRightLong className='text-blue-500'/>
           </button>
         </>
       )}

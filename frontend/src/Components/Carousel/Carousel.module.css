@@ -3,6 +3,7 @@
   width: 100%;
   overflow: hidden;
   padding: 20px 0;
+  /* Note: Left/right padding is now controlled via props */
 }
 
 .carouselTrack {
@@ -20,12 +21,12 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
   background: rgba(255, 255, 255, 0.95);
   border: none;
   border-radius: 50%;
-  font-size: 24px;
+  font-size: 15px;
   font-weight: bold;
   cursor: pointer;
   display: flex;
@@ -47,13 +48,6 @@
   transform: translateY(-50%) scale(0.95);
 }
 
-.prevButton {
-  left: 20px;
-}
-
-.nextButton {
-  right: 20px;
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
@@ -63,12 +57,13 @@
     font-size: 15px;
   }
   
+  /* For mobile, you might want different offsets */
   .prevButton {
-    left: 10px;
+    left: 5px !important; /* Override inline style on mobile */
   }
   
   .nextButton {
-    right: 10px;
+    right: 5px !important; /* Override inline style on mobile */
   }
 }
 
