@@ -16,6 +16,7 @@ import PropertyCarouselCard from "../Components/PropertyCarouselCard";
 import HeroForm from "../Components/HeroForm";
 import ctaImage from "../../public/cta-buildings.png";
 import ctaBg from "../../public/cta-bg.png";
+import Faq from "../Components/FAQ";
 
 const Home = () => {
   const [agenciesData, setAgenciesData] = useState(null);
@@ -238,6 +239,9 @@ const Home = () => {
               </div>
             </div>
           </div>
+        </ContainerCenter>
+        <ContainerCenter>
+          <Faq/>
         </ContainerCenter>
       </div>
     </div>
