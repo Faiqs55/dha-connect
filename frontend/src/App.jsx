@@ -5,6 +5,7 @@ import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
 import AddAgencyDhaPlus from "./pages/Dashboard/AddAgency";
 import Agency from "./pages/Agency";
+import PropertyDetail from "./pages/PropertyDetail";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/agency/:id" element={<Agency/>} />
+        <Route path="/property/:id" element={<PropertyDetail/>} />
         <Route path="/dashboard">
           <Route path="/dashboard/agency">
             <Route

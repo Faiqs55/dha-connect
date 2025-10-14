@@ -14,6 +14,7 @@ import agencyService from "../services/agency.service";
 import AgencyCarouselCard from "../Components/AgencyCarouselCard";
 import PropertyCarouselCard from "../Components/PropertyCarouselCard";
 import HeroForm from "../Components/HeroForm";
+import ctaImage from "../../public/cta-buildings.png";
 
 const Home = () => {
   const [agenciesData, setAgenciesData] = useState(null);
@@ -44,17 +45,37 @@ const Home = () => {
   return (
     <div>
       {/* HERO  */}
-      <div className="hero w-full py-16 md:py-24 lg:py-32">
-        <ContainerCenter className={`flex flex-col`}>
-          <h1 className="text-white text-5xl mb-[15px] text-center">
-            Find Properties in DHA Lahore
-          </h1>
-          <h3 className="text-white text-2xl text-center mb-[40px]">Real Data. Real Brokers. Real Properties.</h3>
-          <HeroForm />
-          {/* <HeroSearchForm color="#fff" /> */}
-          <h3 className="text-white text-3xl text-center mt-[40px]">
-            We’ve 38705 properties for you!
-          </h3>
+      <div className="p-5">
+        <div className="w-full hero rounded-xl py-16 md:py-24 lg:py-28">
+          <ContainerCenter className={`flex flex-col`}>
+            <h1 className="text-white text-5xl mb-[15px] text-center">
+              Find Properties in DHA Lahore
+            </h1>
+            <h3 className="text-white text-2xl text-center mb-[40px]">
+              Real Data. Real Brokers. Real Properties.
+            </h3>
+            <HeroForm />
+            {/* <HeroSearchForm color="#fff" /> */}
+            <h3 className="text-white text-3xl text-center mt-[40px]">
+              We’ve 38705 properties for you!
+            </h3>
+          </ContainerCenter>
+        </div>
+      </div>
+
+      {/* CTA FOR PROPERTIES  */}
+      <div>
+        <ContainerCenter className="flex items-center w-full bg-gradient-to-r from-[#0c4f47] to-[#1e7066] rounded-md px-5 gap-5">
+          <div className="self-end">
+            <img src={ctaImage} alt="" />
+          </div>
+          <div className="py-10 flex-1">
+            <h3 className="text-[#caf4b7] text-2xl font-semibold">Sell or Rent Your Property with Confidence</h3>
+            <p className="text-white">Connect with a trusted agent to secure the best deal, faster.</p>
+          </div>
+          <div className="">
+            <a href="#" className="bg-white text-[#1e7066] px-3 py-2 rounded-md font-semibold">Get Started</a>
+          </div>
         </ContainerCenter>
       </div>
 
