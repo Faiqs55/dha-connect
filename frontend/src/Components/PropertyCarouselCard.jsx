@@ -1,11 +1,13 @@
 import React from "react";
 import { LuBuilding2 } from "react-icons/lu";
 import { IoLogoWhatsapp } from "react-icons/io5";
+import { Link } from "react-router";
 
 
 const PropertyCarouselCard = ({ p }) => {
   return (
-    <div
+    <Link
+    to={"/property/123"}
       key={p.id}
       className="w-full flex flex-col gap-3 justify-center p-6 rounded-md"
     >
@@ -28,10 +30,10 @@ const PropertyCarouselCard = ({ p }) => {
           <LuGitCompareArrows className="text-xs text-gray-500" /> {p.minArea}{" "}
           sqft to {p.maxArea} sqft
         </span> */}
-        <a href="#" target="_blank" className="flex items-center gap-3 text-green-700 justify-center py-2 rounded-md mt-2 bg-green-100 font-semibold"><IoLogoWhatsapp className="text-xl"/> <span>WhatApp</span></a>
+        <span className="flex items-center gap-3 text-green-700 justify-center py-2 rounded-md mt-2 bg-green-100 font-semibold"><IoLogoWhatsapp className="text-xl"/> <span>WhatApp</span></span>
 
       </div>
-    </div>
+    </Link>
   );
 };
 
