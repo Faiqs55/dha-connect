@@ -15,6 +15,7 @@ import AgencyCarouselCard from "../Components/AgencyCarouselCard";
 import PropertyCarouselCard from "../Components/PropertyCarouselCard";
 import HeroForm from "../Components/HeroForm";
 import ctaImage from "../../public/cta-buildings.png";
+import ctaBg from "../../public/cta-bg.png";
 
 const Home = () => {
   const [agenciesData, setAgenciesData] = useState(null);
@@ -64,17 +65,61 @@ const Home = () => {
       </div>
 
       {/* CTA FOR PROPERTIES  */}
-      <div>
-        <ContainerCenter className="flex items-center w-full bg-gradient-to-r from-[#0c4f47] to-[#1e7066] rounded-md px-5 gap-5">
-          <div className="self-end">
+      <div className="mx-5 md:mx-0 mb-5">
+        <ContainerCenter className="flex flex-col md:flex-row items-center w-full bg-gradient-to-r from-[#0c4f47] to-[#1e7066] rounded-md px-5 md:gap-5 py-5 md:py-0">
+          <div className="self-end hidden lg:block">
             <img src={ctaImage} alt="" />
           </div>
-          <div className="py-10 flex-1">
-            <h3 className="text-[#caf4b7] text-2xl font-semibold">Sell or Rent Your Property with Confidence</h3>
-            <p className="text-white">Connect with a trusted agent to secure the best deal, faster.</p>
+          <div className="py-10 md:flex-1">
+            <h3 className="text-[#caf4b7] text-2xl font-semibold">
+              Sell or Rent Your Property with Confidence
+            </h3>
+            <p className="text-white">
+              Connect with a trusted agent to secure the best deal, faster.
+            </p>
           </div>
           <div className="">
-            <a href="#" className="bg-white text-[#1e7066] px-3 py-2 rounded-md font-semibold">Get Started</a>
+            <a
+              href="#"
+              className="bg-white text-[#1e7066] px-4 py-2 text-xl rounded-md font-semibold"
+            >
+              Get Started
+            </a>
+          </div>
+        </ContainerCenter>
+      </div>
+
+      {/* CTA FOR BROKERS  */}
+      <div className="mx-5 md:mx-0 mb-5">
+        <ContainerCenter className="flex flex-col md:flex-row md:items-center w-full bg-gradient-to-r from-[#073530] to-[#1e7066] rounded-md px-5 gap-5 py-5">
+          <div className="flex">
+            {[
+              "https://images.bayut.com/thumbnails/770429815-240x180.webp",
+              "https://images.bayut.com/thumbnails/727791641-240x180.webp",
+              "https://images.bayut.com/thumbnails/786411891-240x180.webp",
+              "https://images.bayut.com/thumbnails/791403857-240x180.webp",
+            ].map((img, index) => {
+              return (
+                <div key={img} className={`rounded-full h-[50px] w-[50px] overflow-hidden ${index == 0 ? "" : "ml-[-10px]"} `}>
+                  <img
+                    src={img}
+                    alt=""
+                  />
+                </div>
+              );
+            })}
+          </div>
+          <div className="text-white flex-1">
+            <h3 className="font-semibold text-xl">Find a TruBroker<sup>TM</sup></h3>
+            <p>Find trusted agents awarded for their excellent performance</p>
+          </div>
+          <div className="">
+            <a
+              href="#"
+              className="bg-white text-[#1e7066] px-4 py-2 text-xl rounded-md font-semibold"
+            >
+              Get Started
+            </a>
           </div>
         </ContainerCenter>
       </div>
