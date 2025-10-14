@@ -7,6 +7,32 @@ import { MdIosShare } from "react-icons/md";
 import AgencyFilters from "../Components/AgencyFilters";
 import { hotProperties } from "../Properties";
 import PropertiesCard from "../Components/PropertiesCard";
+import { IoLogoWhatsapp } from "react-icons/io5";
+
+const agenctsData = [
+  {
+    _id: 1,
+    name: "Mohammad Azzam Almasri",
+    designation: "CEO",
+    img: "https://images.bayut.com/thumbnails/794501339-800x600.webp",
+    phone: "",
+  },
+  {
+    _id: 1,
+    name: "Mohammad Azzam Almasri",
+    designation: "CEO",
+    img: "https://images.bayut.com/thumbnails/794501339-800x600.webp",
+    phone: "",
+  },
+  {
+    _id: 1,
+    name: "Mohammad Azzam Almasri",
+    designation: "CEO",
+    img: "https://images.bayut.com/thumbnails/794501339-800x600.webp",
+    phone: "",
+  },
+];
+
 const Agency = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(
@@ -28,7 +54,6 @@ const Agency = () => {
     <div>
       {/* PAGE HEADER  */}
       <div className="bg-gradient-to-r from-blue-900 to-blue-200 py-10">
-        
         <ContainerCenter className="flex md:items-center gap-10 flex-col md:flex-row">
           <div className="bg-blue-100 p-7 rounded-md">
             <img
@@ -131,26 +156,102 @@ const Agency = () => {
                     Properties List
                   </h2>
                   <div className="flex flex-col gap-4">
-                    {hotProperties.map(p => (<PropertiesCard key={p.id} data={p} />))}
+                    {hotProperties.map((p) => (
+                      <PropertiesCard key={p.id} data={p} />
+                    ))}
                   </div>
                 </div>
               )}
 
               {/* AGENTS CONTENT */}
               {activeTab === "agents" && (
-                <div>
+                <div className="">
                   <h2 className="text-xl font-semibold mb-4">Our Agents</h2>
-                  <p>Agent list will appear here</p>
                   {/* Your agent listing components */}
+                  <div className="flex flex-col items-center gap-5">
+                    {agenctsData.map((agent) => {
+                      return (
+                        <div
+                          key={agent._id}
+                          className="flex flex-col w-fit sm:w-full sm:flex-row border border-gray-400 rounded-md overflow-hidden"
+                        >
+                          <div className="w-[200px] h-[200px] sm:border-r border-gray-400 mx-auto sm:mx-0">
+                            <img
+                              className="w-full h-full object-center object-cover"
+                              src={agent.img}
+                              alt=""
+                            />
+                          </div>
+                          <div className="p-4 flex flex-col justify-between gap-2 sm:gap-0">
+                            <h3 className="text-xl font-semibold">
+                              {agent.name}
+                            </h3>
+                            <p className="text-sm font-semibold text-gray-500">
+                              Designation:{" "}
+                              <span className="font-medium">
+                                {agent.designation}
+                              </span>
+                            </p>
+                            <div className="flex items-center gap-2">
+                              <div className="rounded-md overflow-hidden w-fit flex items-center gap-2.5">
+                                <img
+                                  className="w-[40px]"
+                                  src={
+                                    "https://assets.dhaplus.com/72/conversions/127648248_4021057344588239_3531426054170128337_n_400x400-thumb.jpg"
+                                  }
+                                  alt=""
+                                />
+                              </div>
+                              <span className="font-semibold text-xs text-gray-500">
+                                Builders Agency
+                              </span>
+                            </div>
+
+                            <div className="btns flex gap-2.5 mt-3">
+                                      <a
+                                        className="flex text-sm sm:text-base items-center gap-2 px-2 sm:px-5 py-1 sm:py-2 bg-blue-100 text-blue-700 font-semibold rounded-md"
+                                        href="#"
+                                      >
+                                        <MdEmail className="text-lg"/>
+                                        Email
+                                      </a>
+                                      <a
+                                        className="flex text-sm sm:text-base items-center gap-2 px-2 sm:px-5 py-1 sm:py-2 bg-blue-100 text-blue-700 font-semibold rounded-md"
+                                        href="#"
+                                      >
+                                        <IoMdCall className="text-lg"/>
+                                        Call
+                                      </a>
+                                      <a
+                                        className="flex text-sm sm:text-base items-center gap-2 px-2 sm:px-5 py-1 sm:py-2 bg-blue-100 text-blue-700 font-semibold rounded-md"
+                                        href="#"
+                                      ><IoLogoWhatsapp className="text-lg"/></a>
+                                    </div>
+
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
-              {activeTab === "video" && <div className="mt-5">
-                 <h2 className="text-xl font-semibold mb-4">
+              {activeTab === "video" && (
+                <div className="mt-5">
+                  <h2 className="text-xl font-semibold mb-4">
                     Agency Introduction
                   </h2>
-                 <iframe className="w-full h-[200px] sm:h-[300px] md:h-[400px] rounded-md" src="https://www.youtube.com/embed/tEjd_79C_WI" title="Beautiful 3 Bed Apartment in The Grand, Creek Harbour - Dubai" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
-                </div>}
+                  <iframe
+                    className="w-full h-[200px] sm:h-[300px] md:h-[400px] rounded-md"
+                    src="https://www.youtube.com/embed/tEjd_79C_WI"
+                    title="Beautiful 3 Bed Apartment in The Grand, Creek Harbour - Dubai"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              )}
             </div>
 
             {/* RIGHT - Sidebar (1 column) */}
