@@ -9,6 +9,7 @@ import PropertyDetail from "./pages/PropertyDetail";
 import Sale from "./pages/Sale";
 import Rent from "./pages/Rent";
 import Required from "./pages/Required";
+import Agencies from "./pages/Agencies";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/sale/:category" element={<Sale/>} />
         <Route path="/rent/:category" element={<Rent/>} />
         <Route path="/required/:category" element={<Required/>} />
+        <Route path="/agencies" element={<Agencies/>} />
         <Route path="/agency/:id" element={<Agency/>} />
         <Route path="/property/:id" element={<PropertyDetail/>} />
         <Route path="/dashboard">
