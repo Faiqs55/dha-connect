@@ -34,16 +34,56 @@ const HeroFormSelect = (props) => {
     props.onPriceChange(type, value);
   };
 
+  // For property type, handle property type change
+  const handlePropertyTypeSelect = (type) => {
+    props.onPropertyTypeChange(type);
+  };
+
+  // Handle residential type toggle
+  const handleResidentialToggle = (type) => {
+    props.onResidentialTypeToggle(type);
+  };
+
+  // Handle commercial type toggle
+  const handleCommercialToggle = (type) => {
+    props.onCommercialTypeToggle(type);
+  };
+
+  // Handle reset
+  const handleReset = () => {
+    props.onReset();
+  };
+
+  const getDisplayText = () => {
+    if (props.isPrice) {
+      return (props.minValue || props.maxValue 
+        ? `${props.minValue || "Min"} - ${props.maxValue || "Max"}` 
+        : props.label
+      );
+    } else if (props.isPropertyType) {
+      const residentialCount = props.selectedResidentialTypes.length;
+      const commercialCount = props.selectedCommercialTypes.length;
+      
+      if (residentialCount > 0 || commercialCount > 0) {
+        return `${props.propertyType} (${props.propertyType === "Residential" ? residentialCount : commercialCount} selected)`;
+      }
+      return props.label;
+    } else {
+      return props.value || props.label;
+    }
+  };
+
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Hidden input fields */}
-      {!props.isPrice ? (
+      {!props.isPrice && !props.isPropertyType && (
         <input
           type="hidden"
           name={props.name}
           value={props.value || ""}
         />
-      ) : (
+      )}
+      {props.isPrice && (
         <>
           <input type="hidden" name={`min-${props.name}`} value={props.minValue || ""} />
           <input type="hidden" name={`max-${props.name}`} value={props.maxValue || ""} />
@@ -56,12 +96,7 @@ const HeroFormSelect = (props) => {
         className="px-4 py-2 border-gray-300 border rounded-md flex items-center justify-between cursor-pointer"
       >
         <span className="text-sm font-semibold text-gray-500">
-          {props.isPrice 
-            ? (props.minValue || props.maxValue 
-                ? `${props.minValue || "Min"} - ${props.maxValue || "Max"}` 
-                : props.label)
-            : (props.value || props.label)
-          }
+          {getDisplayText()}
         </span>
         {!isOpen && <FaCaretDown />}
         {isOpen && <FaCaretUp />}
@@ -69,7 +104,7 @@ const HeroFormSelect = (props) => {
       
       {/* Dropdown options */}
       {isOpen && (
-        <div className="bg-white p-4 absolute z-10 flex flex-col border top-[40px] border-gray-300 w-full rounded-md shadow-lg">
+        <div className="bg-white p-4 absolute z-10 flex flex-col border top-[40px] border-gray-300 w-full rounded-md shadow-lg max-h-96 overflow-y-auto">
           {props.isPrice ? (
             // Price input fields
             <div className="space-y-3">
@@ -100,6 +135,89 @@ const HeroFormSelect = (props) => {
               >
                 Apply
               </button>
+            </div>
+          ) : props.isPropertyType ? (
+            // Property type with nested options
+            <div className="space-y-4">
+              {/* Property Type Selection */}
+              <div className="flex gap-2 mb-4">
+                <button
+                  type="button"
+                  onClick={() => handlePropertyTypeSelect("Residential")}
+                  className={`flex-1 py-2 text-sm font-semibold rounded-md ${
+                    props.propertyType === "Residential" 
+                      ? "bg-blue-600 text-white" 
+                      : "bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  Residential
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handlePropertyTypeSelect("Commercial")}
+                  className={`flex-1 py-2 text-sm font-semibold rounded-md ${
+                    props.propertyType === "Commercial" 
+                      ? "bg-blue-600 text-white" 
+                      : "bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  Commercial
+                </button>
+              </div>
+
+              {/* Residential Options */}
+              {props.propertyType === "Residential" && (
+                <div className="space-y-2">
+                  <h4 className="text-sm font-semibold text-gray-700">Residential Types</h4>
+                  {props.residentialTypes.map((type) => (
+                    <label key={type} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={props.selectedResidentialTypes.includes(type)}
+                        onChange={() => handleResidentialToggle(type)}
+                        className="rounded text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700">{type}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
+
+              {/* Commercial Options */}
+              {props.propertyType === "Commercial" && (
+                <div className="space-y-2">
+                  <h4 className="text-sm font-semibold text-gray-700">Commercial Types</h4>
+                  {props.commercialTypes.map((type) => (
+                    <label key={type} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={props.selectedCommercialTypes.includes(type)}
+                        onChange={() => handleCommercialToggle(type)}
+                        className="rounded text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700">{type}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex gap-2 pt-2 border-t">
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-md text-sm font-semibold hover:bg-gray-300 transition-colors"
+                >
+                  Reset
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="flex-1 bg-blue-600 text-white py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Apply
+                </button>
+              </div>
             </div>
           ) : (
             // Regular options list

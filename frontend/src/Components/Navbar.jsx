@@ -33,7 +33,7 @@ const Navbar = () => {
 
   return (
     <>
-      <header ref={headerRef} className="fixed w-full bg-[#fff] z-50">
+      <header ref={headerRef} className="fixed w-full bg-[#fff] z-50 shadow">
         <TopBar />
         <nav className="py-[5px]">
           <ContainerCenter className="flex justify-between lg:justify-normal items-center lg:items-stretch xl:items-center xl:gap-10 lg:flex-col xl:flex-row">
@@ -66,7 +66,7 @@ const Navbar = () => {
               <li>
                 <NavLink
                   className="px-4 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-transparent duration-300 text-gray-200 lg:text-gray-700 font-semibold border-b-[1px] lg:border-none block border-gray-600"
-                  to={"/sale"}
+                  to={"/sale/all"}
                 >
                   Sale
                 </NavLink>
@@ -74,7 +74,7 @@ const Navbar = () => {
               <li>
                 <NavLink
                   className="px-4 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-transparent duration-300 text-gray-200 lg:text-gray-700 font-semibold border-b-[1px] lg:border-none block border-gray-600"
-                  to={"/rent"}
+                  to={"/rent/all"}
                 >
                   Rent
                 </NavLink>
@@ -83,7 +83,7 @@ const Navbar = () => {
                 <NavLink
                   className="px-4 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-transparent duration-300 text-gray-200 lg:text-gray-700 font-semibold border-b-[1px] lg:border-none block border-gray-600"
                   
-                  to={"/required"}
+                  to={"/required/all"}
                 >
                   Required
                 </NavLink>
