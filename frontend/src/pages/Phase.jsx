@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { maps } from "../maps";
 import { Link, useParams } from "react-router";
+import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
 
 const sectors = [
   { name: "Sector A", link: "/maps/phase-1-lahore/sector-a" },
@@ -29,6 +31,8 @@ const Phase = () => {
   }
 
   return (
+    <>
+    <Navbar/>
     <section className="bg-gray-50 py-10 px-4 md:px-10">
       {/* Header & Breadcrumb */}
       <div className="max-w-6xl mx-auto mb-6">
@@ -72,6 +76,8 @@ const Phase = () => {
         </div>
       </div>
     </section>
+    <Footer/>
+    </>
   );
 };
 

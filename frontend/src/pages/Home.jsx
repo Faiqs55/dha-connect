@@ -17,6 +17,8 @@ import HeroForm from "../Components/HeroForm";
 import ctaImage from "../../public/cta-buildings.png";
 import ctaBg from "../../public/cta-bg.png";
 import Faq from "../Components/FAQ";
+import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
 
 const Home = () => {
   const [agenciesData, setAgenciesData] = useState(null);
@@ -45,7 +47,8 @@ const Home = () => {
   }, []);
 
   return (
-    <div>
+    <>
+    <Navbar/>
       {/* HERO  */}
       <div className="p-5">
         <div className="w-full hero rounded-xl py-16 md:py-24 lg:py-28">
@@ -244,7 +247,8 @@ const Home = () => {
           <Faq/>
         </ContainerCenter>
       </div>
-    </div>
+      <Footer/>
+    </>
   );
 };
 

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Play, ChevronLeft, ChevronRight } from "lucide-react";
+import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
 
 const PropertyDetail = () => {
   const images = [
@@ -25,6 +27,8 @@ const PropertyDetail = () => {
   };
 
   return (
+    <>
+    <Navbar/>
     <div className="max-w-7xl mx-auto px-3 sm:px-5 md:px-6 lg:px-8 py-8 lg:py-12 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-10">
       {/* LEFT SIDE */}
       <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-4 sm:p-6">
@@ -259,6 +263,8 @@ const PropertyDetail = () => {
         </div>
       </div>
     </div>
+    <Footer/>
+    </>
   );
 };
 

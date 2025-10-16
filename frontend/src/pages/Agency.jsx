@@ -8,6 +8,8 @@ import AgencyFilters from "../Components/AgencyFilters";
 import { hotProperties } from "../Properties";
 import PropertiesCard from "../Components/PropertiesCard";
 import { IoLogoWhatsapp } from "react-icons/io5";
+import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
 
 const agenctsData = [
   {
@@ -51,7 +53,8 @@ const Agency = () => {
   }, [activeTab, setSearchParams, searchParams]);
 
   return (
-    <div>
+    <>
+    <Navbar/>
       {/* PAGE HEADER  */}
       <div className="bg-gradient-to-r from-blue-900 to-blue-200 py-10">
         <ContainerCenter className="flex md:items-center gap-10 flex-col md:flex-row">
@@ -264,7 +267,8 @@ const Agency = () => {
           </div>
         </ContainerCenter>
       </div>
-    </div>
+      <Footer/>
+    </>
   );
 };
 

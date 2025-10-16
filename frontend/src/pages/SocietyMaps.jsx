@@ -1,8 +1,12 @@
 import React from 'react'
 import { maps } from '../maps';
 import { Link } from 'react-router';
+import Navbar from '../Components/Navbar';
+import Footer from '../Components/Footer';
 const SocietyMaps = () => {
   return (
+    <>
+    <Navbar/>
     <section className="py-12 px-4 md:px-12 bg-white">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-3xl font-semibold text-gray-800 mb-10 pl-2">
@@ -33,6 +37,8 @@ const SocietyMaps = () => {
         </div>
       </div>
     </section>
+    <Footer/>
+    </>
   );
 };
 

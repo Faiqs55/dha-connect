@@ -19,7 +19,7 @@ const TopBar = () => {
             <a href="#">info@dha-clone.com</a>
           </span>
           <Link
-            to={"/dashboard/agency/add"}
+            to={"/submit-agency"}
             className="flex items-center gap-2 bg-red-600 px-4 py-1 rounded-sm font-semibold"
           >
             <FaHouseChimney />

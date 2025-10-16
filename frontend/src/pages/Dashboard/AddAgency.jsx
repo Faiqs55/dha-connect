@@ -8,6 +8,8 @@ import { FaPlus } from "react-icons/fa";
 import AgencyFormSelect from "../../Components/AgencyForm/FormSection/AgencyFormSelect";
 import agencyService from "../../services/agency.service";
 import Toast from "../../Components/Toast";
+import Navbar from "../../Components/Navbar";
+import Footer from "../../Components/Footer";
 
 const cityOptions = [
   { val: "lahore", label: "Lahore" },
@@ -377,7 +379,8 @@ const AddAgency = () => {
   };
 
   return (
-    <div className="">
+    <>
+    <Navbar/>
       <div className="page-head bg-gray-100">
         <ContainerCenter className="py-15">
           <h1 className="text-4xl">Agency Creation Form</h1>
@@ -706,7 +709,8 @@ const AddAgency = () => {
           </button>
         </ContainerCenter>
       </form>
-    </div>
+      <Footer/>
+    </>
   );
 };
 

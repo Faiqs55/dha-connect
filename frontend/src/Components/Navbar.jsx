@@ -1,5 +1,5 @@
 import TopBar from "./TopBar";
-import logo from "../../public/c-logo.png";
+import logo from "../../public/dha-connect-logo.png";
 import ContainerCenter from "./ContainerCenter";
 import { RxCross1 } from "react-icons/rx";
 import { useState, useEffect, useRef } from "react";
@@ -43,8 +43,8 @@ const Navbar = () => {
             >
               <FaBarsStaggered className="text-2xl" />
             </div>
-            <div className="logo pb-5 self-end lg:self-start">
-              <img className="w-[150px] md:w-[200px]" src={logo} alt="" />
+            <div className="logo self-end lg:self-start">
+              <img className="w-[120px]" src={logo} alt="" />
             </div>
             <ul
               className={`${

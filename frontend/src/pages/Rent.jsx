@@ -3,10 +3,13 @@ import WidgetSearchFrom from "../Components/WidgetSearchFrom";
 import { FaRegEnvelope } from "react-icons/fa6";
 import { newProperties } from "../Properties";
 import PropertiesCard from "../Components/PropertiesCard"
+import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
 
 const Rent = () => {
   return (
-    <div>
+    <>
+    <Navbar/>
       {/* HERO  */}
       <div className="p-5">
         <div className="w-full hero rounded-xl py-16 md:py-24 lg:py-28">
@@ -58,7 +61,8 @@ const Rent = () => {
           </div>
         </ContainerCenter>
       </div>
-    </div>
+      <Footer/>
+    </>
   );
 };
 

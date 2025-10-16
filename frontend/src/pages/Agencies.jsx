@@ -5,6 +5,8 @@ import CustomSelect from "../Components/CustomSelect/CustomSelect";
 import agencyService from "../services/agency.service";
 import { MdEmail } from "react-icons/md";
 import { IoMdCall } from "react-icons/io";
+import Navbar from '../Components/Navbar';
+import Footer from "../Components/Footer"
 
 const phases = ["All Phases", "Phase 1", "Phase 2", "Phase 3", "Phase 4"];
 const cities = ["All Cities", "Lahore", "Islamabad", "Karachi", "Multan"];
@@ -86,6 +88,8 @@ const Agencies = () => {
   };
 
   return (
+    <>
+    <Navbar/>
     <div className="">
       {/* HERO  */}
       <div className="bg-[#f7f7f7] py-16">
@@ -169,6 +173,8 @@ const Agencies = () => {
         </ContainerCenter>
       </div>
     </div>
+    <Footer/>
+    </>
   );
 };
 
