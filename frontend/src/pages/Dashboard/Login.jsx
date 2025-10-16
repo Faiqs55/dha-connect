@@ -25,6 +25,7 @@ const Login = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    console.log(loginData)
     if (loginData.email == "" && loginData.password == "") {
       return alert("Please fill in all the fields");
     }
