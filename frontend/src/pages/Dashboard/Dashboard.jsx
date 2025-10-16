@@ -1,13 +1,20 @@
-import { useEffect } from "react";
-import ContainerCenter from "../../Components/ContainerCenter";
-import AdminHeader from "./AdminHeader";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
+import Sidebar from "./Sidebar";
+import { FaBarsStaggered } from "react-icons/fa6";
+
+
 
 
 const Dashboard = () => {
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem("authToken");  
+
+  const clickHandler = () => {
+    setSidebarOpen(prev => !prev)
+  }
 
   useEffect(() => {
       if(!token){
@@ -16,32 +23,18 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <>
-      <AdminHeader/>
+    <div className="flex">
+      <Sidebar open={sidebarOpen}/>
 
       {/* MAIN CONTENT  */}
-      <div>
-        <ContainerCenter className="mt-5">
-            <h1 className="text-4xl font-semibold text-center">Admin Dashboard</h1>
-            <h2 className="text-2xl font-semibold mt-5">Quick Access:</h2>
-
-            <div className="grid grid-cols-3 gap-5 mt-5">
-                <Link to={"./agencies"} className="px-10 py-4 bg-[#114085] border-2 border-[#06234e] rounded-md">
-                     <h3 className="text-white text-xl font-semibold">View Agencies</h3>
-                </Link>
-                <Link to={"./properties"} className="px-10 py-4 bg-[#114085] border-2 border-[#06234e] rounded-md">
-                     <h3 className="text-white text-xl font-semibold">View Properties</h3>
-                </Link>
-                <Link to={"./agencies/add"} className="px-10 py-4 bg-[#114085] border-2 border-[#06234e] rounded-md">
-                     <h3 className="text-white text-xl font-semibold">Add Agencies</h3>
-                </Link>
-                <Link to={"./properties/add"} className="px-10 py-4 bg-[#114085] border-2 border-[#06234e] rounded-md">
-                     <h3 className="text-white text-xl font-semibold">Add Properties</h3>
-                </Link>
+      <div className="flex-1">
+        {/* HEADER  */}
+            <div className="bg-gray-100 px-10 py-5 flex justify-between items-center">
+              <h3>Dashboard</h3>
+              <FaBarsStaggered onClick={clickHandler} className="lg:hidden" />
             </div>
-        </ContainerCenter>
       </div>
-    </>
+    </div>
   );
 };
 
