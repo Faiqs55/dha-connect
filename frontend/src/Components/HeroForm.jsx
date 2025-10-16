@@ -204,7 +204,7 @@ const HeroForm = () => {
         
         <button
           type="submit"
-          className="bg-blue-600 text-white font-semibold px-10 rounded-md cursor-pointer py-2"
+          className="bg-[#114085] text-white font-semibold px-10 rounded-md cursor-pointer py-2"
         >
           Search
         </button>

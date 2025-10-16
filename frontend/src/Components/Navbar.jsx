@@ -98,7 +98,7 @@ const Navbar = () => {
               </li>
               <Link
               to={"/maps"}
-                className="bg-[#274abb] text-white px-4 py-3 lg:py-2 lg:rounded-sm lg:self-start"
+                className="bg-[#114085] text-white px-4 py-3 lg:py-2 lg:rounded-sm lg:self-start"
               >
                 Society Maps
               </Link>

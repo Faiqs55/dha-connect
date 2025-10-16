@@ -49,7 +49,7 @@ const WidgetSearchFrom = (props) => {
       />
 
       <button
-        className="bg-[#274abb] text-white py-2.5 rounded-sm cursor-pointer"
+        className="bg-[#114085] text-white py-2.5 rounded-sm cursor-pointer"
         type="submit"
       >
         Search

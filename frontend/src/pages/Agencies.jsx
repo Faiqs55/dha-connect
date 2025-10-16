@@ -131,7 +131,7 @@ const Agencies = () => {
             />
 
             <button
-              className="bg-[#274abb] text-white py-2.5 px-10 rounded-sm cursor-pointer hover:bg-[#1d3a9b] transition-colors"
+              className="bg-[#114085] text-white py-2.5 px-10 rounded-sm cursor-pointer hover:bg-[#1d3a9b] transition-colors"
               type="submit"
             >
               Search

@@ -7,7 +7,7 @@ import {Link} from "react-router"
 
 const TopBar = () => {
   return (
-    <div className="bg-[#274abb] text-white">
+    <div className="bg-[#114085] text-white">
       <ContainerCenter className="py-2 text-sm md:text-base md:py-0 md:h-[45px] flex items-center justify-between">
         <div className="flex gap-1.5 md:gap-5 flex-wrap">
           <span className="flex items-center gap-2">

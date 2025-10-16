@@ -230,12 +230,12 @@ const Home = () => {
             <div className="contact-cta w-full">
               <h3 className="text-2xl mb-5">Got Any Questions?</h3>
               <div className="bg-[#f9fafd] px-[30px] py-[25px] rounded-sm border-t-2 border-t-[#274abb]">
-                <p className="mb-5 text-[#2828cf]">
+                <p className="mb-5 text-[#114085]">
                   If you are having any questions, please feel free to ask.
                 </p>
                 <a
                   href="/contact"
-                  className="bg-[#274abb] text-white px-[20px] py-[10px] rounded-sm flex items-center justify-center gap-3"
+                  className="bg-[#114085] text-white px-[20px] py-[10px] rounded-sm flex items-center justify-center gap-3"
                 >
                   <FaRegEnvelope /> Drop us a line
                 </a>
