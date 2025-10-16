@@ -5,7 +5,7 @@ import { FiSearch } from "react-icons/fi";
 const cities = ["Lahore", "Islamabad", "Karachi", "Multan"];
 const phases = ["Phase 1", "Phase 2", "Phase 3", "Phase 4", "Phase 5", "Phase 6", "Phase 7", "Phase 8"];
 
-const residentialTypesBuy = ["Apartments", "File", "Villa", "Flat", "House"];
+const residentialTypesBuy = ["Apartments", "File", "Villa", "Plots", "House"];
 const residentialTypesRent = ["Apartments", "Villa", "Flat", "House"];
 const commercialTypes = ["Office", "Shop", "Warehouse", "Building"];
 const paymentPlans = ["Yearly", "Monthly", "Weekly", "Daily", "Other"];
