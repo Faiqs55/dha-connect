@@ -12,12 +12,17 @@ import SocietyMaps from "./pages/SocietyMaps";
 import Phase from "./pages/Phase";
 import Login from "./pages/Dashboard/Login";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import AdminAgencies from "./pages/Dashboard/AdminAgencies";
+import AdminAgency from "./pages/Dashboard/AdminAgency";
 
 function App() {
   return (
     <>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/agencies" element={<AdminAgencies />} />
+        <Route path="/dashboard/agencies/:id" element={<AdminAgency />} />
         <Route path="/" element={<Home />} />
         <Route path="/sale/:category" element={<Sale />} />
         <Route path="/rent/:category" element={<Rent />} />
@@ -27,9 +32,7 @@ function App() {
         <Route path="/property/:id" element={<PropertyDetail />} />
         <Route path="/maps" element={<SocietyMaps />} />
         <Route path="/maps/:phase" element={<Phase />} />
-          <Route path="/submit-agency" element={<AddAgencyDhaPlus />} />
-        <Route path="/dashboard" element={<Dashboard />}>
-        </Route>
+        <Route path="/submit-agency" element={<AddAgencyDhaPlus />} />
       </Routes>
     </>
   );

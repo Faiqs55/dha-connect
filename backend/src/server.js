@@ -21,11 +21,7 @@ app.use(cors({
 // DATABASE CONNECTION
 connectDB();
 
-app.use((req, res, next) => {
-  console.log("req reached");
-  console.log(req.body)
-  next();
-})
+
 // ROUTES
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok", message: "API health is good" });

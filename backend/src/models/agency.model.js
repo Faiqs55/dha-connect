@@ -15,6 +15,31 @@ const agencySchema = new mongoose.Schema(
         message: "Agency e-mail cannot be empty",
       },
     },
+    password: {
+      type: String,
+      required: true
+    },
+    status: {
+      type: String,
+      required: true,
+      enum: ["Approved", "Pending", "Blocked", "Rejected"],
+      default: "Pending"
+    },
+    confidentialAdsAllowed: {
+        type: Number,
+        required: true,
+        default: 20
+    },
+    VideoAdsAllowed: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    FeaturedAdsAllowed: {
+        type: Number,
+        required: true,
+        default: 0
+    },
     ceoName: {
       type: String,
       required: true,

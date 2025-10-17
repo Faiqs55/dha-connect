@@ -46,6 +46,7 @@ const AddAgency = () => {
   // State for form data
   const [formData, setFormData] = useState({
     agencyName: "",
+    password: "",
     agencyEmail: "",
     ceoName: "",
     ceoPhone1: "",
@@ -280,6 +281,7 @@ const AddAgency = () => {
         const finalData = {
           // Agency Information
             agencyName: formData.agencyName,
+            password: formData.password,
             agencyEmail: formData.agencyEmail,
             ceoName: formData.ceoName,
             ceoPhone1: formData.ceoPhone1,
@@ -335,6 +337,7 @@ const AddAgency = () => {
         });
         setFormData({
           agencyName: "",
+          password: "",
           agencyEmail: "",
           ceoName: "",
           ceoPhone1: "",
@@ -456,6 +459,13 @@ const AddAgency = () => {
               placeholder={"Agency Name"}
               name={"agencyName"}
               value={formData.agencyName}
+              onChange={handleInputChange}
+            />
+            <AgencyFormInput
+              label={"Admin Password"}
+              placeholder={"Enter Password"}
+              name={"password"}
+              value={formData.password}
               onChange={handleInputChange}
             />
             <AgencyFormInput
