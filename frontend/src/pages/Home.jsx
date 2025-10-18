@@ -15,7 +15,6 @@ import AgencyCarouselCard from "../Components/AgencyCarouselCard";
 import PropertyCarouselCard from "../Components/PropertyCarouselCard";
 import HeroForm from "../Components/HeroForm";
 import ctaImage from "../../public/cta-buildings.png";
-import ctaBg from "../../public/cta-bg.png";
 import Faq from "../Components/FAQ";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
@@ -23,7 +22,8 @@ import Footer from "../Components/Footer";
 const Home = () => {
   const [agenciesData, setAgenciesData] = useState(null);
   const getAgencies = async () => {
-    const data = await agencyService.getAllAgencies();
+    const query = {status: "Approved"};
+    const data = await agencyService.getAllAgencies(query);
     if (!data.success) {
       setAgenciesData(null);
     }
@@ -151,11 +151,11 @@ const Home = () => {
         </ContainerCenter>
       </section>
 
-      {/* HOT PROPERTIES SECTION  */}
+      {/* Featured PROPERTIES SECTION  */}
       <section className="mt-10">
         <ContainerCenter>
           <Carousel
-            title={"Hot Properties"}
+            title={"Featured Properties"}
             bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
             show={{ xl: 3, l: 3, md: 2, sm: 1 }}
             gap={20}
@@ -169,11 +169,11 @@ const Home = () => {
         </ContainerCenter>
       </section>
 
-      {/* FEATURED PROPERTIES  */}
+      {/* VIDEO PROPERTIES  */}
       <section className="mt-10">
         <ContainerCenter>
           <Carousel
-            title={"Featured Properties"}
+            title={"Video Properties"}
             bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
             show={{ xl: 3, l: 3, md: 2, sm: 1 }}
             gap={20}
@@ -187,11 +187,11 @@ const Home = () => {
         </ContainerCenter>
       </section>
 
-      {/* New PROPERTIES  */}
+      {/* Classified PROPERTIES  */}
       <section className="mt-10">
         <ContainerCenter>
           <Carousel
-            title={"New Properties"}
+            title={"Classified Properties"}
             bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
             show={{ xl: 3, l: 3, md: 2, sm: 1 }}
             gap={20}

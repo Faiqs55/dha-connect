@@ -21,9 +21,16 @@ class Agency {
         }
     }
 
-    async getAllAgencies() {
+    async getAllAgencies(query) {
         try {
-            let res = await fetch(`${this.apiURL}/agency`);
+            let fetchURL = `${this.apiURL}/agency`;
+            if(query){
+                const queryKeys = Object.keys(query);
+                queryKeys.forEach(key => {
+                    fetchURL += `?${key}=${query[key]}` 
+                });
+            }            
+            let res = await fetch(fetchURL);
             return res.json();
         } catch (error) {
             console.log(error.message);
@@ -36,6 +43,23 @@ class Agency {
             return res.json();
         } catch (error) {
             console.log(error.message)
+        }
+    }
+
+    async updateAgency(id, data, token){
+        try {            
+            const res = await fetch(`${this.apiURL}/agency/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+            });
+             
+            return res.json();
+        } catch (error) {
+            console.log(error);
         }
     }
 };

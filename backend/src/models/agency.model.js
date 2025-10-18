@@ -19,37 +19,14 @@ const agencySchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    status: {
-      type: String,
-      required: true,
-      enum: ["Approved", "Pending", "Blocked", "Rejected"],
-      default: "Pending"
-    },
-    confidentialAdsAllowed: {
-        type: Number,
-        required: true,
-        default: 20
-    },
-    VideoAdsAllowed: {
-        type: Number,
-        required: true,
-        default: 0
-    },
-    FeaturedAdsAllowed: {
-        type: Number,
-        required: true,
-        default: 0
-    },
+   
     ceoName: {
       type: String,
       required: true,
     },
-    ceoPhone1: {
+    ceoPhone: {
       type: String,
       required: true,
-    },
-    ceoPhone2: {
-      type: String,
     },
     whatsapp: {
       type: String,
@@ -63,7 +40,7 @@ const agencySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    streetAddress: {
+    address: {
       type: String,
       required: true,
     },
@@ -84,23 +61,38 @@ const agencySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    staff: [
-      {
-        staffName: {
-          type: String,
-          required: true,
-        },
-        staffDesignation: {
-          type: String,
-        },
-        staffPhone: {
-          type: String,
-        },
-        staffImageUrl: {
-          type: String,
-        },
-      },
-    ],
+    agencyVideo: {
+      type: String,
+    },
+    about: {
+      type: String
+    },
+    website: {
+      type: String
+    },
+
+    // ADMIN FIELDS 
+     status: {
+      type: String,
+      required: true,
+      enum: ["Approved", "Pending", "Blocked", "Rejected"],
+      default: "Pending"
+    },
+    classifiedAds: {
+        type: Number,
+        required: true,
+        default: 20
+    },
+    videoAds: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    featuredAds: {
+        type: Number,
+        required: true,
+        default: 0
+    },
   },
   { timestamps: true }
 );

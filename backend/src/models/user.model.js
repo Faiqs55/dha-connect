@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["admin", "agency"],
     },
+    agency: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Agency"
+    }
   },
   { timestamps: true }
 );

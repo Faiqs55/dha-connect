@@ -3,18 +3,20 @@ import Sidebar from "./Sidebar";
 import ContainerCenter from "../../Components/ContainerCenter";
 import { FaBarsStaggered } from "react-icons/fa6";
 import agencyService from "../../services/agency.service";
-import { Link, useParams } from "react-router"; // Fixed import
+import { Link, useNavigate, useParams } from "react-router"; // Fixed import
 
 const AdminAgency = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [agency, setAgency] = useState(null);
   const [formData, setFormData] = useState({
-    featuredAdsAllowed: "",
-    videoAdsAllowed: "",
-    confidentialAdsAllowed: "",
+    featuredAds: "",
+    videoAds: "",
+    classifiedAds: "",
     status: "",
   });
   const id = useParams().id;
+
+  const navigate = useNavigate();
   
   const clickHandler = () => {
     setSidebarOpen((prev) => !prev);
@@ -30,9 +32,9 @@ const AdminAgency = () => {
 
       setAgency(res.data);
       setFormData({
-        featuredAdsAllowed: res.data.FeaturedAdsAllowed || "", // Use res.data directly
-        videoAdsAllowed: res.data.VideoAdsAllowed || "",
-        confidentialAdsAllowed: res.data.confidentialAdsAllowed || "",
+        featuredAds: res.data.featuredAds || "", // Use res.data directly
+        videoAds: res.data.videoAds || "",
+        classifiedAds: res.data.classifiedAds || "",
         status: res.data.status || "",
       });
     } catch (error) {
@@ -43,39 +45,37 @@ const AdminAgency = () => {
   useEffect(() => {
     getAgency();
   }, [id]); // Added id as dependency
+  
 
   const inputChangeHandler = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Prepare the data to be submitted
     const submitData = {
-      id: agency._id, // Include agency ID
-      featuredAdsAllowed: parseInt(formData.featuredAdsAllowed) || 0,
-      videoAdsAllowed: parseInt(formData.videoAdsAllowed) || 0,
-      confidentialAdsAllowed: parseInt(formData.confidentialAdsAllowed) || 0,
+      featuredAds: parseInt(formData.featuredAds) || 0,
+      videoAds: parseInt(formData.videoAds) || 0,
+      classifiedAds: parseInt(formData.classifiedAds) || 0,
       status: formData.status,
-      // You can include other fields that might be updated
     };
 
-    // Log the data as requested
-    console.log("Form Data to be submitted:", submitData);
+    const token = localStorage.getItem("authToken");
+
+    try {
+      const res = await agencyService.updateAgency(id, submitData, token);
+      if(!res.success){
+        alert(res.message);
+      }      
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+      
+    }
     
-    // Here you would typically make an API call to update the agency
-    // For example:
-    // agencyService.updateAgency(id, submitData)
-    //   .then(response => {
-    //     console.log("Update successful:", response);
-    //     alert("Agency updated successfully!");
-    //   })
-    //   .catch(error => {
-    //     console.error("Update failed:", error);
-    //     alert("Failed to update agency");
-    //   });
   };
 
 
@@ -89,7 +89,7 @@ const AdminAgency = () => {
         {/* HEADER  */}
         <div className="bg-gray-100 px-10 py-5 flex justify-between items-center mb-10">
           <h3 className="text-xl font-semibold">Dashboard</h3>
-          <FaBarsStaggered onClick={clickHandler} className="lg:hidden" />
+          <FaBarsStaggered onClick={clickHandler} className="lg:hidden text-2xl" />
         </div>
 
         {/* CONTENT  */}
@@ -98,8 +98,8 @@ const AdminAgency = () => {
             <h1 className="text-3xl font-semibold mb-5">
               {agency.agencyName}: {agency.status}
             </h1>
-            <div className="grid grid-cols-3 gap-5">
-              <div className="p-5 bg-gray-200 rounded-md col-span-3 flex justify-center">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="p-5 bg-gray-200 rounded-md sm:col-span-2 lg:col-span-3 flex justify-center">
                 <img className="w-[100px]" src={agency.agencyLogo} alt="" />
               </div>
               <div className="p-5 bg-gray-200 rounded-md">
@@ -109,7 +109,7 @@ const AdminAgency = () => {
               </div>
               <div className="p-5 bg-gray-200 rounded-md">
                 <p>
-                  CEO's Phone: <span>{agency.ceoPhone1}</span>
+                  CEO's Phone: <span>{agency.ceoPhone}</span>
                 </p>
               </div>
               <div className="p-5 bg-gray-200 rounded-md">
@@ -129,23 +129,23 @@ const AdminAgency = () => {
               </div>
               <div className="p-5 bg-gray-200 rounded-md">
                 <p>
-                  Agency Address: <span>{agency.streetAddress}</span>
+                  Agency Address: <span>{agency.address}</span>
                 </p>
               </div>
             </div>
 
             <form onSubmit={handleSubmit} className="mt-5">
-              <div className="grid grid-cols-4 gap-5">
+              <div className="grid  sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 <div className="flex flex-col">
                   <label htmlFor="confidentialAdsAllowed" className="text-sm font-semibold text-gray-500 mb-1.5">
-                    Confidential Ads Allowed:
+                    Classified Ads Allowed:
                   </label>
                   <input
-                    value={formData.confidentialAdsAllowed}
+                    value={formData.classifiedAds}
                     type="number"
                     className="border border-gray-300 outline-none px-4 py-1.5 rounded-md"
                     placeholder="Enter Value"
-                    name="confidentialAdsAllowed"
+                    name="classifiedAds"
                     onChange={inputChangeHandler}
                   />
                 </div>
@@ -154,11 +154,11 @@ const AdminAgency = () => {
                     Video Ads Allowed:
                   </label>
                   <input
-                    value={formData.videoAdsAllowed}
+                    value={formData.videoAds}
                     type="number"
                     className="border border-gray-300 outline-none px-4 py-1.5 rounded-md"
                     placeholder="Enter Value"
-                    name="videoAdsAllowed"
+                    name="videoAds"
                     onChange={inputChangeHandler}
                   />
                 </div>
@@ -167,11 +167,11 @@ const AdminAgency = () => {
                     Feature Ads Allowed:
                   </label>
                   <input
-                    value={formData.featuredAdsAllowed}
+                    value={formData.featuredAds}
                     type="number"
                     className="border border-gray-300 outline-none px-4 py-1.5 rounded-md"
                     placeholder="Enter Value"
-                    name="featuredAdsAllowed"
+                    name="featuredAds"
                     onChange={inputChangeHandler}
                   />
                 </div>

@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import axios from "axios";
 import AgencyFormInput from "../../Components/AgencyForm/FormSection/AgencyFormInput";
-import { FaPlus } from "react-icons/fa";
 import AgencyFormSelect from "../../Components/AgencyForm/FormSection/AgencyFormSelect";
 import agencyService from "../../services/agency.service";
 import Toast from "../../Components/Toast";
@@ -31,30 +30,18 @@ const AddAgency = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState(null);
 
-  // State for multiple agency members - now includes staff image
-  const [agencyMembers, setAgencyMembers] = useState([
-    {
-      staffName: "",
-      staffDesignation: "",
-      staffPhone: "",
-      staffImage: null,
-      staffImagePreview: null,
-      staffImageUrl: null,
-    },
-  ]);
-
   // State for form data
   const [formData, setFormData] = useState({
     agencyName: "",
+    agencyVideo: "",
     password: "",
     agencyEmail: "",
     ceoName: "",
-    ceoPhone1: "",
-    ceoPhone2: "",
+    ceoPhone: "",
     whatsapp: "",
-    city: "",
-    phase: "",
-    streetAddress: "",
+    city: cityOptions[0].val,
+    phase: phaseOptions[0].val,
+    address: "",
     facebook: "",
     youtube: "",
     twitter: "",
@@ -62,9 +49,6 @@ const AddAgency = () => {
     about: "",
     website: "",
   });
-
-  // Refs for staff image inputs
-  const staffImageRefs = useRef([]);
 
   const cloudName = "dhdgrfseu";
   const uploadPreset = "dha-agency-logo";
@@ -85,93 +69,6 @@ const AddAgency = () => {
       ...prev,
       [name]: value,
     }));
-  };
-
-  // Add new agency member section
-  const addAgencyMember = () => {
-    setAgencyMembers([
-      ...agencyMembers,
-      {
-        staffName: "",
-        staffDesignation: "",
-        staffPhone: "",
-        staffImage: null,
-        staffImagePreview: null,
-        staffImageUrl: null,
-      },
-    ]);
-  };
-
-  // Remove specific agency member section
-  const removeAgencyMember = (index) => {
-    if (agencyMembers.length > 1) {
-      const updatedMembers = [...agencyMembers];
-      updatedMembers.splice(index, 1);
-      setAgencyMembers(updatedMembers);
-    }
-  };
-
-  // Handle input change for agency members
-  const handleMemberChange = (index, field, value) => {
-    const updatedMembers = [...agencyMembers];
-    updatedMembers[index][field] = value;
-    setAgencyMembers(updatedMembers);
-  };
-
-  // Handle staff image upload
-  const handleStaffImageUpload = (event, index) => {
-    const file = event.target.files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert("File size must be less than 5MB");
-        return;
-      }
-      if (!file.type.startsWith("image/")) {
-        alert("Please select an image file");
-        return;
-      }
-
-      const updatedMembers = [...agencyMembers];
-      updatedMembers[index].staffImage = file;
-      updatedMembers[index].staffImageUrl = null;
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const newUpdatedMembers = [...agencyMembers];
-        newUpdatedMembers[index].staffImagePreview = e.target.result;
-        setAgencyMembers(newUpdatedMembers);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Handle drag and drop for staff images
-  const handleStaffDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleStaffDrop = (e, index) => {
-    e.preventDefault();
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      const file = files[0];
-      if (file.type.startsWith("image/")) {
-        handleStaffImageUpload({ target: { files: [file] } }, index);
-      }
-    }
-  };
-
-  // Handle delete staff image
-  const handleDeleteStaffImage = (index) => {
-    const updatedMembers = [...agencyMembers];
-    updatedMembers[index].staffImage = null;
-    updatedMembers[index].staffImagePreview = null;
-    updatedMembers[index].staffImageUrl = null;
-    setAgencyMembers(updatedMembers);
-
-    if (staffImageRefs.current[index]) {
-      staffImageRefs.current[index].value = "";
-    }
   };
 
   const handleLogoUpload = (event) => {
@@ -261,67 +158,37 @@ const AddAgency = () => {
       const logoUrl = await uploadImageToCloudinary(agencyLogo);
 
       if (logoUrl) {
-        // Upload all staff images
-        const staffWithImages = await Promise.all(
-          agencyMembers.map(async (member) => {
-            let staffImageUrl = null;
-            if (member.staffImage) {
-              staffImageUrl = await uploadImageToCloudinary(member.staffImage);
-            }
-            return {
-              staffName: member.staffName,
-              staffDesignation: member.staffDesignation,
-              staffPhone: member.staffPhone,
-              staffImageUrl: staffImageUrl,
-            };
-          })
-        );
-
         // Prepare the final data object
         const finalData = {
           // Agency Information
-            agencyName: formData.agencyName,
-            password: formData.password,
-            agencyEmail: formData.agencyEmail,
-            ceoName: formData.ceoName,
-            ceoPhone1: formData.ceoPhone1,
-            ceoPhone2: formData.ceoPhone2,
-            whatsapp: formData.whatsapp,
+          agencyName: formData.agencyName,
+          password: formData.password,
+          agencyEmail: formData.agencyEmail,
+          ceoName: formData.ceoName,
+          ceoPhone: formData.ceoPhone,
+          whatsapp: formData.whatsapp,
+          agencyVideo: formData.agencyVideo,
 
           // Location
-            city: formData.city,
-            phase: formData.phase,
-            streetAddress: formData.streetAddress,
-
+          city: formData.city,
+          phase: formData.phase,
+          address: formData.address,
 
           // Social Media
-            facebook: formData.facebook,
-            youtube: formData.youtube,
-            twitter: formData.twitter,
-            instagram: formData.instagram,
+          facebook: formData.facebook,
+          youtube: formData.youtube,
+          twitter: formData.twitter,
+          instagram: formData.instagram,
 
           // About
-            about: formData.about,
-            website: formData.website,
+          about: formData.about,
+          website: formData.website,
 
           // Images
-            agencyLogo: logoUrl,
-            
-          // Staff Members
-          staff: staffWithImages.filter(
-            (member) =>
-              member.staffName ||
-              member.staffDesignation ||
-              member.staffPhone ||
-              member.staffImageUrl
-          ),
+          agencyLogo: logoUrl,
         };
 
         let res = await agencyService.addAgency(finalData);
-        console.log(JSON.stringify(finalData));
-        
-         console.log(res);
-         
         if (!res.success) {
           setResult({
             result: `Error! Something Went Wrong.`,
@@ -343,9 +210,9 @@ const AddAgency = () => {
           ceoPhone1: "",
           ceoPhone2: "",
           whatsapp: "",
-          city: "",
-          phase: "",
-          streetAddress: "",
+          city: cityOptions[0].val,
+          phase: phaseOptions[0].val,
+          address: "",
           facebook: "",
           youtube: "",
           twitter: "",
@@ -353,16 +220,6 @@ const AddAgency = () => {
           about: "",
           website: "",
         });
-        setAgencyMembers([
-          {
-            staffName: "",
-            staffDesignation: "",
-            staffPhone: "",
-            staffImage: null,
-            staffImagePreview: null,
-            staffImageUrl: null,
-          },
-        ]);
       } else {
         setResult({
           result: `Error! Something Went Wrong.`,
@@ -383,7 +240,7 @@ const AddAgency = () => {
 
   return (
     <>
-    <Navbar/>
+      <Navbar />
       <div className="page-head bg-gray-100">
         <ContainerCenter className="py-15">
           <h1 className="text-4xl">Agency Creation Form</h1>
@@ -462,6 +319,13 @@ const AddAgency = () => {
               onChange={handleInputChange}
             />
             <AgencyFormInput
+              label={"Agency Video URL"}
+              placeholder={"Enter youtube video Link"}
+              name={"agencyVideo"}
+              value={formData.agencyVideo}
+              onChange={handleInputChange}
+            />
+            <AgencyFormInput
               label={"Admin Password"}
               placeholder={"Enter Password"}
               name={"password"}
@@ -483,17 +347,10 @@ const AddAgency = () => {
               onChange={handleInputChange}
             />
             <AgencyFormInput
-              label={"Ceo Phone 1"}
-              placeholder={"Ceo Phone 1"}
-              name={"ceoPhone1"}
-              value={formData.ceoPhone1}
-              onChange={handleInputChange}
-            />
-            <AgencyFormInput
-              label={"Ceo Phone 2"}
-              placeholder={"Ceo Phone 2"}
-              name={"ceoPhone2"}
-              value={formData.ceoPhone2}
+              label={"Ceo Phone"}
+              placeholder={"Ceo Phone"}
+              name={"ceoPhone"}
+              value={formData.ceoPhone}
               onChange={handleInputChange}
             />
             <AgencyFormInput
@@ -526,9 +383,9 @@ const AddAgency = () => {
             />
             <AgencyFormInput
               label={"Street Address"}
-              name={"streetAddress"}
+              name={"address"}
               placeholder={"Street Address"}
-              value={formData.streetAddress}
+              value={formData.address}
               onChange={handleInputChange}
             />
           </AgencyFormSection>
@@ -589,116 +446,6 @@ const AddAgency = () => {
             />
           </AgencyFormSection>
 
-          {/* AGENCY MEMBERS SECTION */}
-          <AgencyFormSection title={"Agency Members"} innerStyle={""}>
-            {agencyMembers.map((member, index) => (
-              <div
-                key={index}
-                className="relative border border-gray-300 p-6 rounded-md mb-6"
-              >
-                {/* Remove button - only show if more than one member exists */}
-                {agencyMembers.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeAgencyMember(index)}
-                    className="absolute top-4 right-4 bg-red-500 text-white p-2 rounded-sm cursor-pointer hover:bg-red-600 transition-colors"
-                  >
-                    <FaRegTrashAlt />
-                  </button>
-                )}
-
-                <h3 className="text-lg font-semibold mb-4 text-gray-700">
-                  Member {index + 1}
-                </h3>
-
-                <div className="grid md:grid-cols-3 gap-5 mb-6">
-                  <AgencyFormInput
-                    name={`staffName-${index}`}
-                    placeholder={"Name"}
-                    label={"Name"}
-                    value={member.staffName}
-                    onChange={(e) =>
-                      handleMemberChange(index, "staffName", e.target.value)
-                    }
-                  />
-                  <AgencyFormInput
-                    name={`staffDesignation-${index}`}
-                    placeholder={"Designation"}
-                    label={"Designation"}
-                    value={member.staffDesignation}
-                    onChange={(e) =>
-                      handleMemberChange(
-                        index,
-                        "staffDesignation",
-                        e.target.value
-                      )
-                    }
-                  />
-                  <AgencyFormInput
-                    name={`staffPhone-${index}`}
-                    placeholder={"Phone"}
-                    label={"Phone"}
-                    value={member.staffPhone}
-                    onChange={(e) =>
-                      handleMemberChange(index, "staffPhone", e.target.value)
-                    }
-                  />
-                </div>
-
-                {/* Staff Image Upload Section */}
-                <div className="mt-4">
-                  <h4 className="text-md font-medium mb-3">Staff Image</h4>
-                  <input
-                    type="file"
-                    className="hidden"
-                    ref={(el) => (staffImageRefs.current[index] = el)}
-                    onChange={(e) => handleStaffImageUpload(e, index)}
-                    accept="image/*"
-                  />
-
-                  {!member.staffImagePreview ? (
-                    <div
-                      onDragOver={handleStaffDragOver}
-                      onDrop={(e) => handleStaffDrop(e, index)}
-                      onClick={() => staffImageRefs.current[index].click()}
-                      className="file-input bg-gray-200 text-gray-600 text-center py-4 rounded-md cursor-pointer hover:bg-gray-300 transition-colors"
-                    >
-                      <p>
-                        Drag & Drop staff image or{" "}
-                        <span className="underline">Browse</span>
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="relative w-full bg-gray-200 py-4 flex items-center justify-center">
-                      <img
-                        src={member.staffImagePreview}
-                        alt={`Staff ${index + 1} preview`}
-                        className="max-h-32"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteStaffImage(index)}
-                        className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-sm cursor-pointer"
-                      >
-                        <FaRegTrashAlt />
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-
-            {/* Add More Members Button */}
-            <button
-              type="button"
-              onClick={addAgencyMember}
-              className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
-            >
-              <FaPlus />
-              Add Another Member
-            </button>
-          </AgencyFormSection>
-
           {result && (
             <div className={`mt-10`}>
               <Toast
@@ -719,7 +466,7 @@ const AddAgency = () => {
           </button>
         </ContainerCenter>
       </form>
-      <Footer/>
+      <Footer />
     </>
   );
 };
