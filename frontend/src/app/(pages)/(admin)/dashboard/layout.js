@@ -1,6 +1,6 @@
 "use client";
-import ContainerCenter from '@/components/ContainerCenter';
-import Sidebar from '@/components/Sidebar';
+import ContainerCenter from '@/Components/ContainerCenter';
+import Sidebar from '@/Components/Sidebar';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useRouter } from 'next/navigation';
 import {useEffect, useState} from 'react'

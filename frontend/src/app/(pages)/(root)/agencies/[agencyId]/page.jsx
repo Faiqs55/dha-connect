@@ -1,14 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import ContainerCenter from "@/components/ContainerCenter";
+import ContainerCenter from "@/Components/ContainerCenter";
 import { useSearchParams, useRouter } from "next/navigation";
 import { MdEmail } from "react-icons/md";
 import { IoMdCall } from "react-icons/io";
 import { MdIosShare } from "react-icons/md";
 import { IoLogoWhatsapp } from "react-icons/io5";
 import { hotProperties } from "@/static-data/propertiesData";
-import PropertiesCard from "@/components/PropertiesCard";
-import AgencyFilters from "@/components/AgencyFilters";
+import PropertiesCard from "@/Components/PropertiesCard";
+import AgencyFilters from "@/Components/AgencyFilters";
 
 const agenctsData = [
   {

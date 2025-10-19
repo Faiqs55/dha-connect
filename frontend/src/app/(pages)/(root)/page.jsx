@@ -1,17 +1,17 @@
 "use client";
 import {useState, useEffect} from 'react'
-import ContainerCenter from '@/components/ContainerCenter'
-import HeroForm from '@/components/HeroForm'
+import ContainerCenter from '@/Components/ContainerCenter'
+import HeroForm from '@/Components/HeroForm'
 import ctaImage from "@/assets/cta-buildings.png"
 import Image from 'next/image';
 import agencyService from '@/services/agency.service';
-import Carousel from '@/components/Carousel/Carousel';
-import AgencyCarouselCard from '@/components/AgencyCarouselCard';
-import PropertyCarouselCard from '@/components/PropertyCarouselCard';
+import Carousel from '@/Components/Carousel/Carousel';
+import AgencyCarouselCard from '@/Components/AgencyCarouselCard';
+import PropertyCarouselCard from '@/Components/PropertyCarouselCard';
 import { hotProperties, newProperties, featuredProperties } from '@/static-data/propertiesData';
-import PropertiesCard from '@/components/PropertiesCard';
-import WidgetSearchFrom from "@/components/WidgetSearchFrom";
-import FAQ from '@/components/FAQ';
+import PropertiesCard from '@/Components/PropertiesCard';
+import WidgetSearchFrom from "@/Components/WidgetSearchFrom";
+import FAQ from '@/Components/FAQ';
 import { FaRegEnvelope } from 'react-icons/fa6';
 
 const page = () => {

@@ -1,13 +1,13 @@
 "use client";
-import ContainerCenter from "@/components/ContainerCenter";
-import AgencyFormSection from "@/components/AgencyFormSection";
+import ContainerCenter from "@/Components/ContainerCenter";
+import AgencyFormSection from "@/Components/AgencyFormSection";
 import { useRef, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import axios from "axios";
-import AgencyFormInput from "@/components/AgencyFormInput";
-import AgencyFormSelect from "@/components/AgencyFormSelect";
+import AgencyFormInput from "@/Components/AgencyFormInput";
+import AgencyFormSelect from "@/Components/AgencyFormSelect";
 import agencyService from "@/services/agency.service";
-import Toast from "@/components/Toast";
+import Toast from "@/Components/Toast";
 
 
 const cityOptions = [

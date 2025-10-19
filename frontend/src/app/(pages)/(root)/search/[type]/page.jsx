@@ -1,10 +1,10 @@
 "use client";
 import React from "react";
-import ContainerCenter from "@/components/ContainerCenter";
-import WidgetSearchFrom from "@/components/WidgetSearchFrom";
+import ContainerCenter from "@/Components/ContainerCenter";
+import WidgetSearchFrom from "@/Components/WidgetSearchFrom";
 import { FaRegEnvelope } from "react-icons/fa6";
 import { hotProperties } from "@/static-data/propertiesData";
-import PropertiesCard from "@/components/PropertiesCard";
+import PropertiesCard from "@/Components/PropertiesCard";
 
 
 const page = () => {

@@ -1,8 +1,8 @@
 "use client";
 import {useState, useEffect} from 'react'
 import { useRouter } from 'next/navigation';
-import ContainerCenter from '@/components/ContainerCenter';
-import CustomSelect from '@/components/CustomSelect/CustomSelect';
+import ContainerCenter from '@/Components/ContainerCenter';
+import CustomSelect from '@/Components/CustomSelect/CustomSelect';
 import agencyService from '@/services/agency.service';
 import { MdEmail } from "react-icons/md";
 import { IoMdCall } from "react-icons/io";
