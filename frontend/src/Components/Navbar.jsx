@@ -1,5 +1,5 @@
 "use client";
-import Topbar from "./Topbar";
+import TopBar from "./TopBar";
 import ContainerCenter from "./ContainerCenter";
 import logo from "@/assets/dha-connect-logo.png";
 import Image from "next/image";
