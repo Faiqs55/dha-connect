@@ -16,7 +16,7 @@ const sectors = [
   { name: "Sector J", link: "/maps/phase-1-lahore/sector-j" },
 ];
 
-const phase = () => {
+const page = () => {
   const [phase, setPhase] = useState(null);
   const phaseName = useParams().phase;
 
@@ -74,4 +74,4 @@ const phase = () => {
   );
 };
 
-export default phase;
+export default page;

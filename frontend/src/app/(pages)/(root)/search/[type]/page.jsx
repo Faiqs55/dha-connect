@@ -7,7 +7,7 @@ import { hotProperties } from "@/static-data/propertiesData";
 import PropertiesCard from "@/components/PropertiesCard";
 
 
-const properties = () => {
+const page = () => {
   return (
     <>
 
@@ -67,4 +67,4 @@ const properties = () => {
   )
 }
 
-export default properties
+export default page

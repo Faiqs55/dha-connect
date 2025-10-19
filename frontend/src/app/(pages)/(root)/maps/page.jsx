@@ -3,7 +3,7 @@ import { maps } from "@/static-data/mapsData"
 import Link from "next/link";
 
 
-const map = () => {
+const page = () => {
   return (
     <section className="py-12 px-4 md:px-12 bg-white">
       <div className="max-w-6xl mx-auto">
@@ -38,4 +38,4 @@ const map = () => {
   )
 }
 
-export default map
+export default page

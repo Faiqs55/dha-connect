@@ -34,7 +34,7 @@ const agenctsData = [
   },
 ];
 
-const singleAgency = () => {
+const page = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(
@@ -275,4 +275,4 @@ const singleAgency = () => {
   );
 };
 
-export default singleAgency;
+export default page;

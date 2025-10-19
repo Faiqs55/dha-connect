@@ -2,7 +2,7 @@
 import React from "react";
 import Link from "next/link";
 
-const adminDashboard = () => {
+const page = () => {
   return (
     <>
       <h1 className="text-3xl font-semibold mb-5">Quick Links</h1>
@@ -48,4 +48,4 @@ const adminDashboard = () => {
   );
 };
 
-export default adminDashboard;
+export default page;

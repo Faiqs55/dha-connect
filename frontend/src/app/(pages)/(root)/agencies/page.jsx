@@ -10,7 +10,7 @@ import { IoMdCall } from "react-icons/io";
 const phases = ["All Phases", "Phase 1", "Phase 2", "Phase 3", "Phase 4"];
 const cities = ["All Cities", "Lahore", "Islamabad", "Karachi", "Multan"];
 
-const agencies = () => {
+const page = () => {
     const [agencies, setAgencies] = useState(null);
     const [formData, setFormData] = useState({
     city: "",
@@ -173,4 +173,4 @@ const agencies = () => {
   )
 }
 
-export default agencies
+export default page

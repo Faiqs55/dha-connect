@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import agencyService from "@/services/agency.service";
 
-const adminAgencies = () => {
+const page = () => {
   const [agencies, setAgencies] = useState(null);
 
   const getAllAgencies = async () => {
@@ -71,4 +71,4 @@ const adminAgencies = () => {
   );
 };
 
-export default adminAgencies;
+export default page;

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import {useEffect, useState} from 'react'
 import { FaBarsStaggered } from 'react-icons/fa6'
 
-const adminDashboardLayout = ({children}) => {
+const DashboardLayout = ({children}) => {
     const router = useRouter()
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const {value: token, isLoaded} = useLocalStorage("authToken", null);
@@ -44,4 +44,4 @@ const adminDashboardLayout = ({children}) => {
   )
 }
 
-export default adminDashboardLayout
+export default DashboardLayout

@@ -7,7 +7,7 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import Image from "next/image";
 
 
-const adminLogin = () => {
+const page = () => {
   const {value: token, setValue: setToken, isLoaded} = useLocalStorage("authToken", null)
   const router = useRouter();
 
@@ -97,4 +97,4 @@ const adminLogin = () => {
   );
 };
 
-export default adminLogin;
+export default page;

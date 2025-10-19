@@ -22,7 +22,7 @@ const phaseOptions = [
 ];
 
 
-const submitAgency = () => {
+const page = () => {
 
   const agencyLogoRef = useRef(null);
   const [agencyLogo, setAgencyLogo] = useState(null);
@@ -470,4 +470,4 @@ const submitAgency = () => {
   )
 }
 
-export default submitAgency
+export default page

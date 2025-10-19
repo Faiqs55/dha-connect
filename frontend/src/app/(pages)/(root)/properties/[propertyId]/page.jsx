@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Play, ChevronLeft, ChevronRight } from "lucide-react";
 
-const singleProperty = () => {
+const page = () => {
   const images = [
     "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
     "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg",
@@ -269,4 +269,4 @@ const singleProperty = () => {
   );
 };
 
-export default singleProperty;
+export default page;

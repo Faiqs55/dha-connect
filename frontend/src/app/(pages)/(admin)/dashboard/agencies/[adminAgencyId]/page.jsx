@@ -4,7 +4,7 @@ import agencyService from "@/services/agency.service";
 import { useParams } from "next/navigation";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
-const singleAdminAgency = () => {
+const page = () => {
   const id = useParams().adminAgencyId;
   const { value: token } = useLocalStorage("authToken");
   const [agency, setAgency] = useState(null);
@@ -202,4 +202,4 @@ const singleAdminAgency = () => {
   );
 };
 
-export default singleAdminAgency;
+export default page;

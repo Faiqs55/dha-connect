@@ -14,7 +14,7 @@ import WidgetSearchFrom from "@/components/WidgetSearchFrom";
 import FAQ from '@/components/FAQ';
 import { FaRegEnvelope } from 'react-icons/fa6';
 
-const home = () => {
+const page = () => {
 
   const [agenciesData, setAgenciesData] = useState(null);
   const getAgencies = async () => {
@@ -250,4 +250,4 @@ const home = () => {
   )
 }
 
-export default home
+export default page
