@@ -1,9 +1,13 @@
+'use client'; // Add this since we're using client-side hooks
+
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router";
+import { useSearchParams, useRouter } from "next/navigation"; // Changed import
 import HeroFormSelect from "./HeroFormSelect";
 
 const AgencyFilters = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParams = useSearchParams(); // No setSearchParams in Next.js
+  const router = useRouter();
+  
   const [filters, setFilters] = useState({
     city: searchParams.get("city") || "",
     phase: searchParams.get("phase") || "",
@@ -22,8 +26,10 @@ const AgencyFilters = () => {
       }
     });
 
-    setSearchParams(params);
-  }, [filters, setSearchParams]);
+    // Use router to update URL instead of setSearchParams
+    const newUrl = `?${params.toString()}`;
+    router.push(newUrl, { scroll: false }); // scroll: false prevents scrolling to top
+  }, [filters, router]);
 
   const handleSelectChange = (name, value) => {
     setFilters((prev) => ({
@@ -47,7 +53,8 @@ const AgencyFilters = () => {
       minPrice: "",
       maxPrice: "",
     });
-    setSearchParams({});
+    // Use router to clear URL parameters
+    router.push('?', { scroll: false });
   };
 
   // Filter options

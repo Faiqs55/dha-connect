@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+
+.hero{
+    background-image: linear-gradient(rgba(0, 0, 0, 0.173), rgba(0, 0, 0, 0.173)), url(../assets/dha-raya.jpg);
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+a.active{
+    border: 1px solid #274abb;
+    border-radius: 3px;
+    color: #274abb;
+}

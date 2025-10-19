@@ -1,13 +1,13 @@
 import React from "react";
 import { LuBuilding2 } from "react-icons/lu";
 import { IoLogoWhatsapp } from "react-icons/io5";
-import { Link } from "react-router";
+import Link from "next/link";
 
 
 const PropertyCarouselCard = ({ p }) => {
   return (
     <Link
-    to={"/property/123"}
+    href={"/properties/123"}
       key={p.id}
       className="w-full flex flex-col gap-3 justify-center p-6 rounded-md"
     >

@@ -1,7 +1,7 @@
 class Auth {
     apiURL;
     constructor(parameters) {
-        this.apiURL = import.meta.env.VITE_API_URI;
+        this.apiURL = process.env.NEXT_PUBLIC_API_URL;
     }
 
     async loginUser (email, password){

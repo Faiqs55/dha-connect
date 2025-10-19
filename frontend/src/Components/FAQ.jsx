@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
 
-const Faq = () => {
+const FAQ = () => {
   const faqData = [
     {
       question: "Why should I choose DHA Plus?",
@@ -92,4 +92,4 @@ const Faq = () => {
   );
 };
 
-export default Faq;
+export default FAQ;

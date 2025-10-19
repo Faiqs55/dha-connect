@@ -1,7 +1,7 @@
 class Agency {
     apiURL;
     constructor() {
-        this.apiURL = import.meta.env.VITE_API_URI
+        this.apiURL = process.env.NEXT_PUBLIC_API_URL
     }
 
     async addAgency(agencyData) {

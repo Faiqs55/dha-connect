@@ -3,7 +3,7 @@ import { FaPhoneAlt } from "react-icons/fa";
 import { IoMail } from "react-icons/io5";
 import { FaHouseChimney } from "react-icons/fa6";
 import { FaFacebookF } from "react-icons/fa";
-import {Link} from "react-router"
+import Link from "next/link";
 
 const TopBar = () => {
   return (
@@ -19,7 +19,7 @@ const TopBar = () => {
             <a href="#">info@dha-clone.com</a>
           </span>
           <Link
-            to={"/submit-agency"}
+            href={"/submit-agency"}
             className="flex items-center gap-2 bg-red-600 px-4 py-1 rounded-sm font-semibold"
           >
             <FaHouseChimney />

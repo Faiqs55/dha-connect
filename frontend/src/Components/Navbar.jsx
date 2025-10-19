@@ -1,14 +1,26 @@
-import TopBar from "./TopBar";
-import logo from "../../public/dha-connect-logo.png";
+"use client";
+import TopBar from "./Topbar";
 import ContainerCenter from "./ContainerCenter";
+import logo from "@/assets/dha-connect-logo.png";
+import Image from "next/image";
 import { RxCross1 } from "react-icons/rx";
 import { useState, useEffect, useRef } from "react";
 import { FaBarsStaggered } from "react-icons/fa6";
-import { Link, NavLink } from "react-router";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/properties/sale", label: "Sale" },
+  { href: "/properties/rent", label: "Rent" },
+  { href: "/properties/required", label: "Required" },
+  { href: "/agencies", label: "Agencies" },
+];
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const headerRef = useRef(null);
+  const pathname = usePathname();
   const [navbarHeight, setNavbarHeight] = useState(0);
   const MenuHandler = () => {
     setMenuOpen((prev) => !prev);
@@ -44,7 +56,7 @@ const Navbar = () => {
               <FaBarsStaggered className="text-2xl" />
             </div>
             <div className="logo self-end lg:self-start">
-              <img className="w-[120px]" src={logo} alt="" />
+              <Image src={logo} width={100} height={50} alt="Company Logo" />
             </div>
             <ul
               className={`${
@@ -55,53 +67,29 @@ const Navbar = () => {
                 <h4 className="">MENU</h4>
                 <RxCross1 onClick={MenuHandler} className="cursor-pointer" />
               </div>
-              <li>
-                <NavLink
-                  className="px-4 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-transparent duration-300 text-gray-200 lg:text-gray-700 font-semibold border-b-[1px] lg:border-none block border-gray-600"
-                  to={"/"}
-                >
-                  Home
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  className="px-4 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-transparent duration-300 text-gray-200 lg:text-gray-700 font-semibold border-b-[1px] lg:border-none block border-gray-600"
-                  to={"/sale/all"}
-                >
-                  Sale
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  className="px-4 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-transparent duration-300 text-gray-200 lg:text-gray-700 font-semibold border-b-[1px] lg:border-none block border-gray-600"
-                  to={"/rent/all"}
-                >
-                  Rent
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  className="px-4 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-transparent duration-300 text-gray-200 lg:text-gray-700 font-semibold border-b-[1px] lg:border-none block border-gray-600"
-                  
-                  to={"/required/all"}
-                >
-                  Required
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                to={"/agencies"}
-                  className="px-4 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-transparent duration-300 text-gray-200 lg:text-gray-700 font-semibold border-b-[1px] lg:border-none block border-gray-600"
-                >
-                  Agencies
-                </NavLink>
-              </li>
+              {navLinks.map((link) => {
+                const active = pathname === link.href;
+                return (
+                  <Link
+                  key={link.href}
+                    href={link.href}
+                    className={`px-4 ${
+                      active && "active"
+                    } lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-transparent duration-300 text-gray-200 lg:text-gray-700 font-semibold border-b-[1px] lg:border-none block border-gray-600`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
               <Link
-              to={"/maps"}
+                href={"/maps"}
                 className="bg-[#114085] text-white px-4 py-3 lg:py-2 lg:rounded-sm lg:self-start"
               >
                 Society Maps
               </Link>
+              <div className="border-[#114085] border-2 rounded-md px-3.5 py-1.5 text-[#114085] font-semibold hover:text-white hover:border-transparent hover:bg-[#114085] duration-300">
+                <Link href={"/login"}>Login</Link>
+              </div>
             </ul>
           </ContainerCenter>
         </nav>

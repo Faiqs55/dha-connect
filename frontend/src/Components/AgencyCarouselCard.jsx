@@ -1,10 +1,10 @@
 import { IoLocationSharp } from "react-icons/io5";
-import { Link } from "react-router";
+import Link from "next/link";
 
 const AgencyCarouselCard = ({ a }) => {
   return (
     <Link
-      to={`/agency/${a._id}`}
+      href={`/agencies/${a._id}`}
       key={a.id}
       className="group w-full gap-2 flex items-center p-3 cursor-pointer rounded-md duration-200 border-transparent border hover:border-blue-500"
     >
