@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && npm run fix-paths",
+    "fix-paths": "find out -name '*.js' -exec sed -i 's|@/components/|../../components/|g' {} \\;",
     "start": "next start",
     "lint": "eslint"
   },
