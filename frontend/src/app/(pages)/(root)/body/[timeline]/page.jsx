@@ -1,0 +1,66 @@
+"use client"
+import Carousel from "@/Components/Carousel/Carousel";
+import ContainerCenter from "@/Components/ContainerCenter";
+import { body } from "@/static-data/electedBody";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import logo from "@/assets/dha-connect-logo.png";
+import { useParams } from "next/navigation";
+
+const page = () => {
+  const timeline = useParams().timeline;
+    const [bodyData, setBodyData] = useState(null);
+    
+    useEffect(() => {
+        const currBody = body.find(b => b.timeline === timeline);
+        setBodyData(currBody);
+    }, [])
+  return (
+    <>
+      <ContainerCenter>
+        {/* PAGE HEADER  */}
+        <div className="py-12">
+          <h1 className="text-center text-4xl font-semibold">Elected Body</h1>
+        </div>
+
+        {/* CURRENT BODY  */}
+        <div className="">
+           <h2 className="font-semibold text-xl capitalize">{timeline} Elected Body</h2>
+           {bodyData && <Carousel
+           autoPlay={true}
+        //    bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
+           autoPlayInterval={3000}
+           sidePadding={0}
+           gap={20}
+           navButtonOffset={0}
+           >
+               {bodyData.people.map(p => (
+                <div key={p.name} className=" p-5 shadow bg-gradient-to-t from-blue-50 to-[#114085] rounded-lg">
+                    <div className="shadow overflow-hidden rounded-md w-full h-[250px] sm:h-[350px] md:h-[200px]">
+                        <img className="object-center object-cover w-full" src={p.img} alt={p.name} />
+                    </div>
+                    <div className="mt-5">
+                        <h3 className="text-lg font-semibold">{p.designation}</h3>
+                        <p className="text-sm text-gray-600">{p.name}</p>
+                    </div>
+                </div>
+               ))}
+           </Carousel>}
+        </div>
+
+        {/* PREVIOUS  */}
+        <div className="mt-10">
+            {body.map(b => (
+                <div key={b.timeline} className="flex items-center justify-between py-10 border-b border-gray-500">
+                    <Link className="font-semibold text-2xl underline" href={`/body/${b.timeline}`}>{b.timeline}</Link>
+                    <Image src={logo} alt="company logo" width={100} height={100}  />
+                </div>
+            ))}
+        </div>
+      </ContainerCenter>
+    </>
+  );
+};
+
+export default page;

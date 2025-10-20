@@ -9,6 +9,7 @@ import { FaBarsStaggered, FaChevronDown } from "react-icons/fa6";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import useAuthStore, { useUserIsLoggedIn } from "@/store/auth.store";
+import { body } from "@/static-data/electedBody";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -16,16 +17,50 @@ const navLinks = [
   { href: "/properties/rent", label: "Rent" },
   { href: "/properties/required", label: "Required" },
   { href: "/agencies", label: "Agencies" },
+  // Removed the standalone body link since it's now a dropdown
+];
+
+// Forms dropdown data
+const formsLinks = [
+  {
+    href: "/forms?form=building-control-forms",
+    label: "building control forms",
+  },
+  { href: "/forms?form=finance-forms",
+     label: "Finance Forms"
+     },
+  { href: "/forms?form=transfer-forms",
+     label: "Transfer Forms"
+     },
+  { href: "/forms?form=land-forms",
+     label: "Land Forms"
+     },
+  { href: "/forms?form=maintenance-forms",
+     label: "Maintenance Forms"
+     },
+  { href: "/forms?form=miscellaneous-forms",
+     label: "Miscellaneous Forms"
+     },
+  { href: "/forms?form=security-forms",
+     label: "Security Forms"
+     },
+  { href: "/forms?form=sports-forms",
+     label: "Sports Forms"
+     },
 ];
 
 const Navbar = () => {
-  const isLoading = useAuthStore(state => state.isLoading);
+  const isLoading = useAuthStore((state) => state.isLoading);
   const isLoggedIn = useUserIsLoggedIn();
-  const logout = useAuthStore(state => state.logout);
+  const logout = useAuthStore((state) => state.logout);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [bodyDropdownOpen, setBodyDropdownOpen] = useState(false);
+  const [formsDropdownOpen, setFormsDropdownOpen] = useState(false);
   const headerRef = useRef(null);
   const dropdownRef = useRef(null);
+  const bodyDropdownRef = useRef(null);
+  const formsDropdownRef = useRef(null);
   const pathname = usePathname();
   const router = useRouter();
   const [navbarHeight, setNavbarHeight] = useState(0);
@@ -38,18 +73,40 @@ const Navbar = () => {
     setProfileDropdownOpen((prev) => !prev);
   };
 
+  const toggleBodyDropdown = () => {
+    setBodyDropdownOpen((prev) => !prev);
+  };
+
+  const toggleFormsDropdown = () => {
+    setFormsDropdownOpen((prev) => !prev);
+  };
+
   const handleLogout = () => {
     logout();
     setProfileDropdownOpen(false);
+    setBodyDropdownOpen(false);
+    setFormsDropdownOpen(false);
     setMenuOpen(false);
     router.push("/");
   };
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setProfileDropdownOpen(false);
+      }
+      if (
+        bodyDropdownRef.current &&
+        !bodyDropdownRef.current.contains(event.target)
+      ) {
+        setBodyDropdownOpen(false);
+      }
+      if (
+        formsDropdownRef.current &&
+        !formsDropdownRef.current.contains(event.target)
+      ) {
+        setFormsDropdownOpen(false);
       }
     };
 
@@ -75,6 +132,10 @@ const Navbar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Check if dropdowns should be active
+  const isBodyActive = pathname.startsWith("/body");
+  const isFormsActive = pathname.startsWith("/forms");
+
   return (
     <>
       <header ref={headerRef} className="fixed w-full bg-[#fff] z-50 shadow">
@@ -93,7 +154,7 @@ const Navbar = () => {
             <ul
               className={`${
                 !menuOpen ? "left-[-800px]" : "left-0"
-              } lg:left-0 flex lg:items-center lg:gap-5 lg:border-t-2 xl:border-none border-gray-300 lg:pt-3 pb-5 absolute lg:relative flex-col lg:flex-row bg-gray-800 lg:bg-transparent w-[80%] md:w-[50%] lg:w-auto h-[100vh] lg:h-auto top-0 duration-300`}
+              } lg:left-0 flex lg:items-center flex-wrap lg:gap-3 lg:border-t-2 xl:border-none border-gray-300 lg:pt-3 pb-5 absolute lg:relative flex-col lg:flex-row bg-gray-800 lg:bg-transparent w-[80%] md:w-[50%] lg:w-auto h-[100vh] lg:h-auto top-0 duration-300`}
             >
               <div className="menu-control lg:hidden px-4 py-3 border-b-[1px] border-gray-400 flex items-center justify-between text-gray-200">
                 <h4 className="">MENU</h4>
@@ -114,20 +175,105 @@ const Navbar = () => {
                   </Link>
                 );
               })}
-              
+
+              {/* Body Dropdown */}
+              <div ref={bodyDropdownRef} className="relative">
+                <button
+                  onClick={toggleBodyDropdown}
+                  className={`px-4 cursor-pointer flex items-center gap-1.5 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-[#114085] duration-300 text-gray-200 lg:text-gray-700 lg:hover:text-white font-semibold border-b-[1px] lg:border-none border-gray-600 w-full text-left ${
+                    isBodyActive ? "active" : ""
+                  }`}
+                >
+                  <span className="">Body</span>
+                  <FaChevronDown
+                    className={`text-xs text-gray-500 transition-transform duration-200 ${
+                      bodyDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {/* Body Dropdown Menu */}
+                {bodyDropdownOpen && (
+                  <div className="absolute left-4 lg:left-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                    {body.map((period) => (
+                      <Link
+                        key={period.timeline}
+                        href={`/body/${period.timeline}`}
+                        onClick={() => {
+                          setBodyDropdownOpen(false);
+                          setMenuOpen(false);
+                        }}
+                        className={`block px-4 py-2 text-sm hover:bg-gray-100 duration-200 ${
+                          pathname === `/body/${period.timeline}`
+                            ? "text-[#114085] font-semibold bg-blue-50"
+                            : "text-gray-700"
+                        }`}
+                      >
+                        {period.timeline.charAt(0).toUpperCase() +
+                          period.timeline.slice(1)}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Forms Dropdown */}
+              <div ref={formsDropdownRef} className="relative">
+                <button
+                  onClick={toggleFormsDropdown}
+                  className={`px-4 cursor-pointer flex items-center gap-1.5 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-[#114085] duration-300 text-gray-200 lg:text-gray-700 lg:hover:text-white font-semibold border-b-[1px] lg:border-none border-gray-600 w-full text-left border-t-[1px] ${
+                    isFormsActive ? "active" : ""
+                  }`}
+                >
+                  <span className="">Forms</span>
+                  <FaChevronDown
+                    className={`text-xs text-gray-500 transition-transform duration-200 ${
+                      formsDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {/* Forms Dropdown Menu */}
+                {formsDropdownOpen && (
+                  <div className="absolute left-4 lg:left-0 mt-1 w-56 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                    {formsLinks.map((form) => (
+                      <Link
+                        key={form.href}
+                        href={form.href}
+                        onClick={() => {
+                          setFormsDropdownOpen(false);
+                          setMenuOpen(false);
+                        }}
+                        className={`block px-4 py-2 text-sm hover:bg-gray-100 duration-200 ${
+                          pathname === form.href
+                            ? "text-[#114085] font-semibold bg-blue-50"
+                            : "text-gray-700"
+                        }`}
+                      >
+                        {form.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* Profile Dropdown */}
-              <div 
+              <div
                 ref={dropdownRef}
-                className={`${!isLoggedIn && "hidden"} relative px-4 lg:px-0`}
+                className={`${!isLoggedIn && "hidden"} relative`}
               >
                 <button
                   onClick={toggleProfileDropdown}
-                  className="px-4 cursor-pointer flex items-center gap-1.5 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-[#114085] duration-300 text-gray-200 lg:text-gray-700 lg:hover:text-white font-semibold border-b-[1px] lg:border-none border-gray-600"
+                  className="px-4 cursor-pointer flex items-center gap-1.5 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-[#114085] duration-300 text-gray-200 lg:text-gray-700 lg:hover:text-white font-semibold "
                 >
                   <span>Profile</span>
-                  <FaChevronDown className={`text-xs text-gray-500 transition-transform duration-200 ${profileDropdownOpen ? 'rotate-180' : ''}`} />
+                  <FaChevronDown
+                    className={`text-xs text-gray-500 transition-transform duration-200 ${
+                      profileDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
-                
+
                 {/* Dropdown Menu */}
                 {profileDropdownOpen && (
                   <div className="absolute left-4 lg:left-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">

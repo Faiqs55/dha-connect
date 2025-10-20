@@ -159,7 +159,7 @@ const HeroForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full md:w-[80%] mx-auto bg-white p-5 rounded-md flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="w-full xl:w-[85%] mx-auto bg-white p-5 rounded-md flex flex-col gap-4">
       {/* Hidden input for transaction type */}
       <input type="hidden" name="transactionType" value={type} />
       

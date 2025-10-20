@@ -13,6 +13,9 @@ import PropertiesCard from '@/Components/PropertiesCard';
 import WidgetSearchFrom from "@/Components/WidgetSearchFrom";
 import FAQ from '@/Components/FAQ';
 import { FaRegEnvelope } from 'react-icons/fa6';
+import { body } from '@/static-data/electedBody';
+
+const bodyData = body.find(b => b.timeline === "current");
 
 const page = () => {
 
@@ -125,7 +128,7 @@ const page = () => {
 
 
       {/* FEATURED AGENCIES SECTION  */}
-      <section className="mt-10">
+      <section className="pt-10">
         <ContainerCenter>
           <h2 className="text-3xl mb-10">Featured Agencies</h2>
           <Carousel
@@ -146,6 +149,32 @@ const page = () => {
           </Carousel>
         </ContainerCenter>
       </section>
+
+      {/* ELECTED BODIES  */}
+      <ContainerCenter className="py-20">
+
+           <h2 className="mb-10 text-3xl capitalize">Current Elected Body</h2>
+           {bodyData && <Carousel
+           autoPlay={true}
+        //    bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
+           autoPlayInterval={3000}
+           sidePadding={0}
+           gap={20}
+           navButtonOffset={0}
+           >
+               {bodyData.people.map(p => (
+                <div key={p.name} className=" p-5 shadow bg-gradient-to-t from-blue-50 to-[#114085] rounded-lg">
+                    <div className="shadow overflow-hidden rounded-md w-full h-[300px] sm:h-[350px] md:h-[200px]">
+                        <img className="object-center object-cover w-full" src={p.img} alt={p.name} />
+                    </div>
+                    <div className="mt-5">
+                        <h3 className="text-lg font-semibold">{p.designation}</h3>
+                        <p className="text-sm text-gray-600">{p.name}</p>
+                    </div>
+                </div>
+               ))}
+           </Carousel>}
+      </ContainerCenter>
 
  
       {/* FEATURED PROPERTIES  */}
@@ -185,7 +214,7 @@ const page = () => {
         </ContainerCenter>
       </section>
 
-            {/* Classified PROPERTIES  */}
+       {/* Classified PROPERTIES  */}
       <section className="mt-10">
         <ContainerCenter>
           <Carousel

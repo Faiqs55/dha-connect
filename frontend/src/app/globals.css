@@ -9,8 +9,19 @@
     background-repeat: no-repeat;
 }
 
-a.active{
+.active{
     border: 1px solid #274abb;
     border-radius: 3px;
     color: #274abb;
+}
+
+@media (max-width: 1024px) {
+    .active{
+        border: none;
+        color: white;
+    }
+}
+.active:hover{
+    background: white;
+    border: 1px solid #274abb;
 }

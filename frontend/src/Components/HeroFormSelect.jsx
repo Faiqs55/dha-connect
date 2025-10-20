@@ -104,7 +104,7 @@ const HeroFormSelect = (props) => {
       
       {/* Dropdown options */}
       {isOpen && (
-        <div className="bg-white p-4 absolute z-10 flex flex-col border top-[40px] border-gray-300 w-full rounded-md shadow-lg max-h-96 overflow-y-auto">
+        <div className="bg-white p-4 absolute z-10 flex flex-col border top-[40px] border-gray-300 w-fit min-w-full rounded-md shadow-lg max-h-96 overflow-y-auto">
           {props.isPrice ? (
             // Price input fields
             <div className="space-y-3">
@@ -144,7 +144,7 @@ const HeroFormSelect = (props) => {
                 <button
                   type="button"
                   onClick={() => handlePropertyTypeSelect("Residential")}
-                  className={`flex-1 py-2 text-sm font-semibold rounded-md ${
+                  className={`flex-1 py-2 px-2 text-sm font-semibold rounded-md ${
                     props.propertyType === "Residential" 
                       ? "bg-blue-600 text-white" 
                       : "bg-gray-100 text-gray-700"
@@ -155,7 +155,7 @@ const HeroFormSelect = (props) => {
                 <button
                   type="button"
                   onClick={() => handlePropertyTypeSelect("Commercial")}
-                  className={`flex-1 py-2 text-sm font-semibold rounded-md ${
+                  className={`flex-1 py-2 px-2 text-sm font-semibold rounded-md ${
                     props.propertyType === "Commercial" 
                       ? "bg-blue-600 text-white" 
                       : "bg-gray-100 text-gray-700"
