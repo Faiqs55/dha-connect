@@ -3,7 +3,7 @@ import useAuthStore from '@/store/auth.store'
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation';
 
-const layout = ({children}) => {
+const Layout = ({children}) => {
 
     const userToken = useAuthStore(state => state.token);
     const [loading, setLoading] = useState(true);
@@ -29,4 +29,4 @@ const layout = ({children}) => {
   )
 }
 
-export default layout
+export default Layout
