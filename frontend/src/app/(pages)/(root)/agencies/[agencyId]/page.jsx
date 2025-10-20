@@ -134,6 +134,13 @@ const page = () => {
               className="bg-blue-50 text-blue-800 font-semibold px-2.5 md:px-5 py-1.5 rounded-md flex items-center gap-1 md:gap-2 text-xs md:text-base"
               href="#"
             >
+              <IoLogoWhatsapp/>
+              WhatsApp
+            </a>
+            <a
+              className="bg-blue-50 text-blue-800 font-semibold px-2.5 md:px-5 py-1.5 rounded-md flex items-center gap-1 md:gap-2 text-xs md:text-base"
+              href="#"
+            >
               <IoMdCall />
               Call
             </a>

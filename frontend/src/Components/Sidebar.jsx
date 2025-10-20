@@ -19,7 +19,7 @@ const Sidebar = ({ open }) => {
         open ? "left-0" : "left-[-500px] "
       } lg:static px-5 py-2.5 w-[280px] sm:w-[250px] md:w-[300px] border-r border-gray-300 duration-500`}
     >
-      <div className="flex justify-end border-b border-gray-300">
+      <div className="flex border-b border-gray-300">
         <Image src={logo} alt="company Logo" width={100}/>
       </div>
       <div className="flex flex-col gap-2.5 mt-5 h-full">

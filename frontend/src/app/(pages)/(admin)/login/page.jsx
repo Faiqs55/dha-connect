@@ -51,7 +51,7 @@ const page = () => {
   return (
     <div className="w-full h-[100vh] bg-gray-100 flex items-center justify-center">
       <div className="bg-white shadow rounded-md px-5 py-10 w-[90%] mx-auto md:mx-0 md:w-[500px] flex flex-col gap-5">
-        <div className="w-full flex justify-center">
+        <div className="w-full flex">
           <Image src={logo} width={100} height={"auto"} alt="company logo" />
         </div>
         <h1 className="text-2xl font-semibold text-gray-700">

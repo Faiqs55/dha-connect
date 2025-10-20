@@ -2,6 +2,7 @@
 import useAuthStore from '@/store/auth.store'
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation';
+import Spinner from '@/Components/Spinner';
 
 const Layout = ({children}) => {
 
@@ -19,7 +20,7 @@ const Layout = ({children}) => {
 
 
     if (loading) {
-    return <div className="text-4xl text-center">Loading...</div>;
+    return <Spinner/>;
   }
 
   return (

@@ -22,7 +22,7 @@ const page = () => {
                 <img
                   src={map.img}
                   alt={map.title}
-                  className="w-full h-48 object-cover  transition-transform duration-500"
+                  className=" object-cover  transition-transform duration-500"
                 />
               </div>
               <div className="bg-white p-3">

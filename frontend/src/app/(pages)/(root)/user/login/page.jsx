@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import authService from "@/services/auth.service";
 import useAuthStore from "@/store/auth.store";
+import Spinner from "@/Components/Spinner";
 
 const page = () => {
   const userToken = useAuthStore((state) => state.token);
@@ -50,7 +51,7 @@ const page = () => {
   };
 
   if (loading) {
-    return <div className="text-4xl text-center">Loading...</div>;
+    return <Spinner/>;
   }
   return (
     <div className="w-full bg-gray-100 flex items-center justify-center py-10">

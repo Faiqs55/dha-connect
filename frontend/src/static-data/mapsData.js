@@ -1,6 +1,6 @@
 export const maps = [
   {
-    img: "https://assets.dhaplus.com/map_imgs/wgPBrr00yZuAwcLtUWzYy4QTHPwQI1RuFfUCz4SF.jpg",
+    img: "/p1.jpg",
     title: "Phase 1 Lahore",
     phase: "phase-1",
     mapLink: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13610.38460054771!2d74.3837625546744!3d31.480293687713694!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391905fd556dd06b%3A0xd3d9770b88f0c919!2sDha%20Phase%201%2C%20Lahore%2C%20Pakistan!5e0!3m2!1sen!2s!4v1760518441098!5m2!1sen!2s",
@@ -33,7 +33,7 @@ export const maps = [
     ],
   },
   {
-    img: "https://assets.dhaplus.com/map_imgs/wgPBrr00yZuAwcLtUWzYy4QTHPwQI1RuFfUCz4SF.jpg",
+    img: "/p2.jpg",
     title: "Phase 2 Lahore",
     phase: "phase-2",
     mapLink: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13610.38460054771!2d74.3837625546744!3d31.480293687713694!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391905fd556dd06b%3A0xd3d9770b88f0c919!2sDha%20Phase%201%2C%20Lahore%2C%20Pakistan!5e0!3m2!1sen!2s!4v1760518441098!5m2!1sen!2s",
@@ -47,7 +47,7 @@ export const maps = [
     ],
   },
   {
-    img: "https://assets.dhaplus.com/map_imgs/wgPBrr00yZuAwcLtUWzYy4QTHPwQI1RuFfUCz4SF.jpg",
+    img: "/p3.jpg",
     title: "Phase 3 Lahore",
     phase: "phase-3",
     mapLink: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13610.38460054771!2d74.3837625546744!3d31.480293687713694!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391905fd556dd06b%3A0xd3d9770b88f0c919!2sDha%20Phase%201%2C%20Lahore%2C%20Pakistan!5e0!3m2!1sen!2s!4v1760518441098!5m2!1sen!2s",
@@ -61,7 +61,7 @@ export const maps = [
     ],
   },
   {
-    img: "https://assets.dhaplus.com/map_imgs/wgPBrr00yZuAwcLtUWzYy4QTHPwQI1RuFfUCz4SF.jpg",
+    img: "/p4.jpg",
     title: "Phase 4 Lahore",
     phase: "phase-4",
     mapLink: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13610.38460054771!2d74.3837625546744!3d31.480293687713694!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391905fd556dd06b%3A0xd3d9770b88f0c919!2sDha%20Phase%201%2C%20Lahore%2C%20Pakistan!5e0!3m2!1sen!2s!4v1760518441098!5m2!1sen!2s",
@@ -75,7 +75,7 @@ export const maps = [
     ],
   },
   {
-    img: "https://assets.dhaplus.com/map_imgs/wgPBrr00yZuAwcLtUWzYy4QTHPwQI1RuFfUCz4SF.jpg",
+    img: "/p5.jpg",
     title: "Phase 5 Lahore",
     phase: "phase-5",
     mapLink: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13610.38460054771!2d74.3837625546744!3d31.480293687713694!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391905fd556dd06b%3A0xd3d9770b88f0c919!2sDha%20Phase%201%2C%20Lahore%2C%20Pakistan!5e0!3m2!1sen!2s!4v1760518441098!5m2!1sen!2s",
@@ -89,7 +89,7 @@ export const maps = [
     ],
   },
   {
-    img: "https://assets.dhaplus.com/map_imgs/wgPBrr00yZuAwcLtUWzYy4QTHPwQI1RuFfUCz4SF.jpg",
+    img: "/p6.jpg",
     title: "Phase 6 Lahore",
     phase: "phase-6",
     mapLink: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13610.38460054771!2d74.3837625546744!3d31.480293687713694!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391905fd556dd06b%3A0xd3d9770b88f0c919!2sDha%20Phase%201%2C%20Lahore%2C%20Pakistan!5e0!3m2!1sen!2s!4v1760518441098!5m2!1sen!2s",
@@ -103,7 +103,7 @@ export const maps = [
     ],
   },
   {
-    img: "https://assets.dhaplus.com/map_imgs/wgPBrr00yZuAwcLtUWzYy4QTHPwQI1RuFfUCz4SF.jpg",
+    img: "/p7.jpg",
     title: "Phase 7 Lahore",
     phase: "phase-7",
     mapLink: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13610.38460054771!2d74.3837625546744!3d31.480293687713694!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391905fd556dd06b%3A0xd3d9770b88f0c919!2sDha%20Phase%201%2C%20Lahore%2C%20Pakistan!5e0!3m2!1sen!2s!4v1760518441098!5m2!1sen!2s",
@@ -117,7 +117,7 @@ export const maps = [
     ],
   },
   {
-    img: "https://assets.dhaplus.com/map_imgs/wgPBrr00yZuAwcLtUWzYy4QTHPwQI1RuFfUCz4SF.jpg",
+    img: "/p8.jpg",
     title: "Phase 8 Lahore",
     phase: "phase-8",
     id: 1,
@@ -131,7 +131,21 @@ export const maps = [
     ],
   },
   {
-    img: "https://assets.dhaplus.com/map_imgs/wgPBrr00yZuAwcLtUWzYy4QTHPwQI1RuFfUCz4SF.jpg",
+    img: "/p10.jpg",
+    title: "Phase 10 Town Lahore",
+    phase: "phase-10",
+    id: 1,
+    mapLink: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13610.38460054771!2d74.3837625546744!3d31.480293687713694!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391905fd556dd06b%3A0xd3d9770b88f0c919!2sDha%20Phase%201%2C%20Lahore%2C%20Pakistan!5e0!3m2!1sen!2s!4v1760518441098!5m2!1sen!2s",
+    sectors: [
+      {
+        id: 1,
+        title: "Sector A",
+        sector: "sector-a"
+      },
+    ],
+  },
+  {
+    img: "/p9.jpg",
     title: "Phase 9 Town Lahore",
     phase: "phase-9",
     id: 1,

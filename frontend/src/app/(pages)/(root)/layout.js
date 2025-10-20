@@ -1,6 +1,7 @@
 "use client";
 import Footer from "@/Components/Footer";
 import Navbar from "@/Components/Navbar";
+import Spinner from "@/Components/Spinner";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import useAuthStore, { useAuthIsLoading } from "@/store/auth.store";
 import React, { useEffect, useState } from "react";
@@ -23,7 +24,7 @@ useEffect(() => {
   
 
   if (isLoading) {
-    return <div className="text-4xl text-center">Loading</div>;
+    return <Spinner/>;
   }
 
   return (
