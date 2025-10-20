@@ -4,7 +4,7 @@ const cors = require("cors");
 const { connectDB } = require("./config/db.config");
 const { agencyRouter } = require("./routes/agency.routes");
 const { userRouter } = require("./routes/user.routes");
-const { staffRouter } = require("./routes/staff.routes");
+const { agentRouter } = require("./routes/agent.routes");
 
 dotenv.config();
 const app = express();
@@ -30,6 +30,6 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/agency", agencyRouter);
 app.use("/api/user", userRouter);
-app.use("/api/staff", staffRouter);
+app.use("/api/agent", agentRouter);
 
 app.listen(port, () => console.log(`Server is running on PORT: ${port}`));

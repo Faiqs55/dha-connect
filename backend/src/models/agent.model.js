@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const staffSchema = new mongoose.Schema({
+const agentSchema = new mongoose.Schema({
   agency: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Agency",
@@ -25,9 +25,9 @@ const staffSchema = new mongoose.Schema({
   }
 }, {timestamps: true});
 
-const Staff = mongoose.model("Staff", staffSchema);
+const Agent = mongoose.model("Agent", agentSchema);
 module.exports = {
-    Staff
+    Agent
 }
 
 
