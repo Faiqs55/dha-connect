@@ -52,7 +52,7 @@ const formsLinks = [
 const Navbar = () => {
   const isLoading = useAuthStore((state) => state.isLoading);
   const isLoggedIn = useUserIsLoggedIn();
-  const logout = useAuthStore((state) => state.logout);
+  const logout = useAuthStore((state) => state.logoutUserAuth);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [bodyDropdownOpen, setBodyDropdownOpen] = useState(false);
