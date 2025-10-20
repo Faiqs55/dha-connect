@@ -1,4 +1,3 @@
-// hooks/useLocalStorage.js
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,6 +7,7 @@ export function useLocalStorage(key, initialValue) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    setIsLoaded(false);
     try {
       const item = window.localStorage.getItem(key);
       if (item) {

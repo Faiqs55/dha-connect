@@ -1,3 +1,4 @@
+const { Agency } = require("../models/agency.model");
 const { User } = require("../models/user.model");
 const { generateToken } = require("../utils/generateToken");
 
@@ -40,7 +41,23 @@ const userLoginController = async (req, res) => {
 
     res
       .status(200)
-      .json({ success: true, message: "Authentication Complete", data: {token: generateToken(user._id)} });
+      .json({
+        success: true,
+        message: "Authentication Complete",
+        data: { token: generateToken(user._id) },
+      });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const getUser = async (req, res) => {
+  try {
+    const user = req.user;
+    res.status(200).json({ success: true, data: user });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -51,5 +68,6 @@ const userLoginController = async (req, res) => {
 
 module.exports = {
   createUserController,
-  userLoginController
+  userLoginController,
+  getUser
 };

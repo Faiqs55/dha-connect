@@ -4,6 +4,7 @@ const {User} = require("../models/user.model")
 
 const protect = async (req, res, next) => {
     let token;
+    
     if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")){
 
         try {
@@ -14,8 +15,8 @@ const protect = async (req, res, next) => {
             if(!user){
                 return res.status(404).json({success: false, message: "Authentication Failed"});
             }
-            req.user = user;
-            next();
+            req.user = user;            
+           return next();
         } catch (error) {
             return res.status(401).json({success: false, message: "Token Failed. Login Again"});
         }

@@ -1,5 +1,6 @@
 const { Agency } = require("../models/agency.model");
 const { User } = require("../models/user.model");
+const mongoose = require("mongoose")
 
 // ADD NEW AGENCY
 const addAgencyController = async (req, res) => {
@@ -47,6 +48,7 @@ const getAgenciesController = async (req, res) => {
 
 // GET SINGLE AGENCY BY ID
 const getSingleAgency = async (req, res) => {
+  
   try {
     const id = req.params.id;
     const agency = await Agency.findById(id).select("-password");
@@ -64,12 +66,33 @@ const getSingleAgency = async (req, res) => {
   }
 };
 
+
+// GET AGENCY OF A USER 
+const getUserAgency = async (req, res) => {
+  
+  try {
+    
+    const user = req.user;
+    const agency = await Agency.findById(user.agency).select("-password");
+
+    if(!agency){
+      res.status(404).json({success: false, message: "No Agency Assigned to User."})
+    }
+    res.status(200).json({success: true, message: "User Found", data: agency});
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
 // UPDATE AGENCY
 const updateAgency = async (req, res) => {
   try {
     const id = req.params.id;
     const data = req.body;
-    const user = req.user;
+    const user = req.user;    
 
     // CHECK IF THE USER IS NOT ADMIN TRYING TO PERFORM ADMIN ACTION
     if (
@@ -153,4 +176,5 @@ module.exports = {
   getAgenciesController,
   getSingleAgency,
   updateAgency,
+  getUserAgency
 };

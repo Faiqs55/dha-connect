@@ -20,6 +20,22 @@ class Auth {
             console.log(error.message)
           }
     }
+
+    async checkUserLogin(token){
+      try {
+        const res = await fetch(`${this.apiURL}/user`, {
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        
+        return res.json();
+      } catch (error) {
+        console.log(error);
+      }
+    }
 };
 
 const authService = new Auth();
