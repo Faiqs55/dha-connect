@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import authService from "@/services/auth.service";
 import useAuthStore from "@/store/auth.store";
 import Spinner from "@/Components/Spinner";
+import Link from "next/link";
 
 const page = () => {
   const userToken = useAuthStore((state) => state.token);
@@ -87,12 +88,12 @@ const page = () => {
           <button className="submit bg-[#114085] text-white py-2 rounded-md cursor-pointer">
             Login
           </button>
-          <a
-            href="#"
+          <Link
+            href="/forgot-password"
             className="underline text-sm text-[#114085] font-semibold self-end"
           >
             Forget Password?
-          </a>
+          </Link>
         </form>
       </div>
     </div>

@@ -28,6 +28,7 @@ const useAuthStore = create((set) => ({
   },
   setAuthLoading: (loading) => set({ isLoading: loading }), // Add this method
   logoutUserAuth: () => {
+    localStorage.removeItem("userToken");
     set({ token: null, user: null, isLoading: false });
   },
 }));

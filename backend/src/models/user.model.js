@@ -23,7 +23,9 @@ const userSchema = new mongoose.Schema(
     agency: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Agency"
-    }
+    },
+    resetToken: String,
+    resetTokenExpiry: Date
   },
   { timestamps: true }
 );
