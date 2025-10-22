@@ -1,3 +1,4 @@
+const { Agency } = require("../models/agency.model");
 const { Agent } = require("../models/agent.model");
 
 // ADD NEW STAFF MEMBER
@@ -49,6 +50,20 @@ const getSingleAgentController = async (req, res) => {
   }
 };
 
+const getMyAgentsController = async (req, res) => {
+  try {
+    const agencyID = req.user.agency;
+    const agencies = await Agent.find({ agency: agencyID });
+
+    res.status(200).json({ success: true, data: agencies });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 // GET ALL Agent MEMBERS OF AN AGENCY
 const getAllAgentController = async (req, res) => {
   try {
@@ -77,12 +92,10 @@ const updateAgentController = async (req, res) => {
     const id = req.params.id;
     const data = req.body;
     if (!(user.role === "agency")) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Only Agencies can update Agent members",
-        });
+      return res.status(401).json({
+        success: false,
+        message: "Only Agencies can update Agent members",
+      });
     }
 
     const agent = await Agent.findById(id);
@@ -94,25 +107,21 @@ const updateAgentController = async (req, res) => {
     }
 
     if (agent.agency !== user.agency) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "You can only update your own Agent member",
-        });
-      }
-      const updatedAgent = await agent.updateOne(data);
+      return res.status(401).json({
+        success: false,
+        message: "You can only update your own Agent member",
+      });
+    }
+    const updatedAgent = await agent.updateOne(data);
 
-      if(!updatedAgent){
-        return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Agent member was not updated",
-        });
-      }
+    if (!updatedAgent) {
+      return res.status(400).json({
+        success: false,
+        message: "Agent member was not updated",
+      });
+    }
 
-      res.status(200).json({success: true, data: updatedAgent})
+    res.status(200).json({ success: true, data: updatedAgent });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -125,5 +134,6 @@ module.exports = {
   addAgentController,
   getAllAgentController,
   getSingleAgentController,
-  updateAgentController
+  updateAgentController,
+  getMyAgentsController
 };

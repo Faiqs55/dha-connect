@@ -1,248 +1,125 @@
 "use client";
-import ContainerCenter from "@/Components/ContainerCenter";
-import AgencyFormSection from "@/Components/AgencyFormSection";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import agencyService from "@/services/agency.service";
+import ContainerCenter from "@/Components/ContainerCenter";
+import AgencyFormSection from "@/Components/AgencyFormSection";
 import AgencyFormInput from "@/Components/AgencyFormInput";
 import AgencyFormSelect from "@/Components/AgencyFormSelect";
-import agencyService from "@/services/agency.service";
-import Toast from "@/Components/Toast";
+import AlertResult from "@/Components/AlertResult";
 
-
-const cityOptions = [
+/* ---------- static data ---------- */
+const cityOpts = [
   { val: "lahore", label: "Lahore" },
   { val: "karachi", label: "Karachi" },
   { val: "multan", label: "Multan" },
 ];
-const phaseOptions = [
+const phaseOpts = [
   { val: "phase1", label: "Phase 1" },
   { val: "phase2", label: "Phase 2" },
   { val: "phase3", label: "Phase 3" },
 ];
 
-
-const page = () => {
-
-  const agencyLogoRef = useRef(null);
-  const [agencyLogo, setAgencyLogo] = useState(null);
-  const [agencyLogoPreview, setAgencyLogoPreview] = useState(null);
-  const [uploadImageUrl, setUploadImageUrl] = useState(null);
-  const [cloudinaryError, setCloudinaryError] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [result, setResult] = useState(null);
-
-  // State for form data
-  const [formData, setFormData] = useState({
-    agencyName: "",
-    agencyVideo: "",
-    password: "",
-    agencyEmail: "",
-    ceoName: "",
-    ceoPhone: "",
-    whatsapp: "",
-    city: cityOptions[0].val,
-    phase: phaseOptions[0].val,
-    address: "",
-    facebook: "",
-    youtube: "",
-    twitter: "",
-    instagram: "",
-    about: "",
-    website: "",
-  });
-
-  const cloudName = "dhdgrfseu";
-  const uploadPreset = "dha-agency-logo";
-
-  // Handle form input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Handle select changes
-  const handleSelectChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleLogoUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setCloudinaryError("File size must be less than 5MB");
-        return;
-      }
-      if (!file.type.startsWith("image/")) {
-        setCloudinaryError("Please select an image file");
-        return;
-      }
-      setAgencyLogo(file);
-      setUploadImageUrl(null);
-      setCloudinaryError(null);
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setAgencyLogoPreview(e.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      const file = files[0];
-      if (file.type.startsWith("image/")) {
-        handleLogoUpload({ target: { files: [file] } });
-      }
-    }
-  };
-
-  const handleDeleteLogo = () => {
-    setAgencyLogo(null);
-    setAgencyLogoPreview(null);
-    setUploadImageUrl(null);
-    setCloudinaryError(null);
-
-    if (agencyLogoRef.current) {
-      agencyLogoRef.current.value = "";
-    }
-  };
-
-  // Generic function to upload any image to Cloudinary
-  const uploadImageToCloudinary = async (imageFile) => {
-    if (!imageFile) {
-      return null;
-    }
-
-    const formData = new FormData();
-    formData.append("file", imageFile);
-    formData.append("upload_preset", uploadPreset);
-
-    try {
-      const res = await axios.post(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      return res.data.secure_url;
-    } catch (error) {
-      console.error("Cloudinary upload error:", error);
-      const errMessage =
-        error.response?.data?.error?.message || "Failed To upload Image";
-      return null;
-    }
-  };
-
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  setResult(null);
-  try {
-    // Upload agency logo
-    const logoUrl = await uploadImageToCloudinary(agencyLogo);
-
-    if (logoUrl) {
-      // Prepare the final data object
-      const finalData = {
-        // Agency Information
-        agencyName: formData.agencyName,
-        password: formData.password,
-        agencyEmail: formData.agencyEmail,
-        ceoName: formData.ceoName,
-        ceoPhone: formData.ceoPhone,
-        whatsapp: formData.whatsapp,
-        agencyVideo: formData.agencyVideo,
-
-        // Location
-        city: formData.city,
-        phase: formData.phase,
-        address: formData.address,
-
-        // Social Media
-        facebook: formData.facebook,
-        youtube: formData.youtube,
-        twitter: formData.twitter,
-        instagram: formData.instagram,
-
-        // About
-        about: formData.about,
-        website: formData.website,
-
-        // Images
-        agencyLogo: logoUrl,
-      };
-
-      let res = await agencyService.addAgency(finalData);
-      if (!res.success) {
-        setResult({
-          result: `Error! Something Went Wrong.`,
-          message: `${res.message}`,
-          color: "red",
-        });
-      } else {
-        setResult({
-          result: `The Agency "${res.data.agencyName} has been Added."`,
-          message: "Your Agency has been added. You can now add another one.",
-          color: "green",
-        });
-        setFormData({
-          agencyName: "",
-          password: "",
-          agencyEmail: "",
-          agencyVideo: "",
-          ceoName: "",
-          ceoPhone: "",
-          whatsapp: "",
-          city: cityOptions[0].val,
-          phase: phaseOptions[0].val,
-          address: "",
-          facebook: "",
-          youtube: "",
-          twitter: "",
-          instagram: "",
-          about: "",
-          website: "",
-        });
-        // Reset the logo after successful submission
-        handleDeleteLogo();
-      }
-    } else {
-      setResult({
-        result: `Error! Something Went Wrong.`,
-        message: `Could not upload the Agency Logo`,
-        color: "red",
-      });
-    }
-  } catch (error) {
-    setResult({
-      result: `Error! Something Went Wrong.`,
-      message: `${error.message}`,
-      color: "red",
-    });
-  } finally {
-    setIsSubmitting(false);
-  }
+const emptyForm = {
+  agencyName: "",
+  agencyVideo: "",
+  password: "",
+  agencyEmail: "",
+  ceoName: "",
+  ceoPhone: "",
+  whatsapp: "",
+  city: cityOpts[0].val,
+  phase: phaseOpts[0].val,
+  address: "",
+  facebook: "",
+  youtube: "",
+  twitter: "",
+  instagram: "",
+  about: "",
+  website: "",
 };
+
+export default function CreateAgencyPage() {
+  const router = useRouter();
+
+  /* ---------- single state object ---------- */
+  const [form, setForm] = useState(emptyForm);
+  const [logoFile, setLogoFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [toast, setToast] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  /* ---------- generic field handler ---------- */
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((f) => ({ ...f, [name]: value }));
+  };
+
+  /* ---------- logo handlers ---------- */
+  const handleLogo = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024)
+      return setToast({ success: false, message: "Max 5 MB" });
+    setLogoFile(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
+  const removeLogo = () => {
+    setLogoFile(null);
+    setPreview(null);
+  };
+
+  /* ---------- submit ---------- */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!logoFile)
+      return setToast({ success: false, message: "Agency logo is required" });
+
+    setSubmitting(true);
+    setToast(null);
+
+    /* 1. upload logo */
+    const fd = new FormData();
+    fd.append("file", logoFile);
+    fd.append("upload_preset", "dha-agency-logo");
+    let logoUrl;
+    try {
+      const { data } = await axios.post(
+        `https://api.cloudinary.com/v1_1/dhdgrfseu/image/upload`,
+        fd
+      );
+      logoUrl = data.secure_url;
+    } catch {
+      setToast({ success: false, message: "Logo upload failed" });
+      setSubmitting(false);
+      return;
+    }
+
+    /* 2. save agency */
+    const payload = { ...form, agencyLogo: logoUrl };
+    const res = await agencyService.addAgency(payload);
+
+    setToast({
+      success: res.success,
+      message: res.message || (res.success ? "Agency created" : "Failed"),
+    });
+    if (res.success) {
+      setForm(emptyForm);
+      setLogoFile(null);
+      setPreview(null);
+      setTimeout(() => window.location.reload(), 1500);
+    }
+    setSubmitting(false);
+  };
+
+  /* ---------- render ---------- */
   return (
     <>
+      <AlertResult data={toast} onClose={() => setToast(null)} />
+
       <div className="page-head bg-gray-100">
         <ContainerCenter className="py-15">
           <h1 className="text-4xl">Agency Creation Form</h1>
@@ -250,228 +127,171 @@ const page = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="py-10">
-        <ContainerCenter>
-          {result && (
-            <div className={`mt-10`}>
-              <Toast
-                color={result?.color}
-                result={result?.result}
-                message={result?.message}
-              />
-            </div>
-          )}
-          {/* AGENCY LOGO SECTION */}
-          <AgencyFormSection title={"Agency Logo"}>
+        <ContainerCenter className="space-y-10">
+          {/* ------- logo ------- */}
+          <AgencyFormSection title="Agency Logo">
             <input
               type="file"
-              className="hidden"
-              ref={agencyLogoRef}
-              onChange={handleLogoUpload}
+              hidden
+              onChange={handleLogo}
               accept="image/*"
             />
-
-            {!agencyLogoPreview ? (
+            {!preview ? (
               <div
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-                onClick={() => {
-                  agencyLogoRef.current.click();
+                onClick={(e) => e.currentTarget.querySelector("input")?.click()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const file = e.dataTransfer.files[0];
+                  if (file) handleLogo({ target: { files: [file] } });
                 }}
-                className="file-input bg-gray-200 text-gray-600 text-center py-6 rounded-md cursor-pointer hover:bg-gray-300 transition-colors"
+                onDragOver={(e) => e.preventDefault()}
+                className="bg-gray-200 py-6 rounded text-center cursor-pointer hover:bg-gray-300"
               >
-                <p>
-                  Drag & Drop your files or{" "}
-                  <span className="underline">Browse</span>
-                </p>
+                Drag & Drop or <span className="underline">Browse</span>
+                <input type="file" hidden accept="image/*" onChange={handleLogo} />
               </div>
             ) : (
-              <div className="relative w-full bg-gray-200 py-6 flex items-center justify-center">
-                <img
-                  src={agencyLogoPreview}
-                  alt="Agency logo preview"
-                  className="max-h-40"
-                />
+              <div className="relative bg-gray-200 py-6 flex justify-center">
+                <img src={preview} alt="logo" className="max-h-40" />
                 <button
                   type="button"
-                  onClick={handleDeleteLogo}
-                  className="absolute top-5 right-5 bg-red-500 text-white p-3 rounded-sm cursor-pointer"
+                  onClick={removeLogo}
+                  className="absolute top-4 right-4 bg-rose-500 text-white p-2 rounded"
                 >
                   <FaRegTrashAlt />
                 </button>
               </div>
             )}
-
-            {cloudinaryError && (
-              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-sm text-red-800">{cloudinaryError}</p>
-              </div>
-            )}
           </AgencyFormSection>
 
-          {/* AGENCY INFORMATION  */}
+          {/* ------- agency info ------- */}
           <AgencyFormSection
-            title={"Agency Information"}
+            title="Agency Information"
             innerStyle="grid md:grid-cols-2 gap-4"
           >
             <AgencyFormInput
-              label={"Agency Name"}
-              placeholder={"Agency Name"}
-              name={"agencyName"}
-              value={formData.agencyName}
-              onChange={handleInputChange}
+              label="Agency Name"
+              name="agencyName"
+              value={form.agencyName}
+              onChange={handleChange}
+              required
             />
             <AgencyFormInput
-              label={"Agency Video URL (Optional)"}
-              placeholder={"Enter youtube video Link"}
-              name={"agencyVideo"}
-              value={formData.agencyVideo}
-              onChange={handleInputChange}
-            />
-            
-            <AgencyFormInput
-              label={"Agency Email"}
-              placeholder={"Agency Email"}
-              name={"agencyEmail"}
-              value={formData.agencyEmail}
-              onChange={handleInputChange}
+              label="Agency Video URL (Optional)"
+              name="agencyVideo"
+              value={form.agencyVideo}
+              onChange={handleChange}
             />
             <AgencyFormInput
+              label="Agency Email"
+              type="email"
+              name="agencyEmail"
+              value={form.agencyEmail}
+              onChange={handleChange}
+              required
+            />
+            <AgencyFormInput
+              label="Admin Password"
               type="password"
-              label={"Admin Password"}
-              placeholder={"Enter Password"}
-              name={"password"}
-              value={formData.password}
-              onChange={handleInputChange}
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              required
             />
             <AgencyFormInput
-              label={"Ceo Name"}
-              placeholder={"Ceo Name"}
-              name={"ceoName"}
-              value={formData.ceoName}
-              onChange={handleInputChange}
+              label="CEO Name"
+              name="ceoName"
+              value={form.ceoName}
+              onChange={handleChange}
+              required
             />
             <AgencyFormInput
-              label={"Ceo Phone"}
-              placeholder={"Ceo Phone"}
-              name={"ceoPhone"}
-              value={formData.ceoPhone}
-              onChange={handleInputChange}
+              label="CEO Phone"
+              name="ceoPhone"
+              value={form.ceoPhone}
+              onChange={handleChange}
+              required
             />
             <AgencyFormInput
-              label={"Whatsapp (Optional)"}
-              placeholder={"Whatsapp"}
-              name={"whatsapp"}
-              value={formData.whatsapp}
-              onChange={handleInputChange}
+              label="WhatsApp (Optional)"
+              name="whatsapp"
+              value={form.whatsapp}
+              onChange={handleChange}
             />
           </AgencyFormSection>
 
-          {/* AGENCY LOCATION  */}
+          {/* ------- location ------- */}
           <AgencyFormSection
-            title={"Location"}
-            innerStyle={"grid md:grid-cols-2 gap-4"}
+            title="Location"
+            innerStyle="grid md:grid-cols-2 gap-4"
           >
             <AgencyFormSelect
-              label={"City"}
-              options={cityOptions}
-              name={"city"}
-              value={formData.city}
-              onChange={handleSelectChange}
+              label="City"
+              name="city"
+              value={form.city}
+              onChange={handleChange}
+              options={cityOpts}
             />
             <AgencyFormSelect
-              label={"Phase"}
-              options={phaseOptions}
-              name={"phase"}
-              value={formData.phase}
-              onChange={handleSelectChange}
+              label="Phase"
+              name="phase"
+              value={form.phase}
+              onChange={handleChange}
+              options={phaseOpts}
             />
             <AgencyFormInput
-              label={"Street Address"}
-              name={"address"}
-              placeholder={"Street Address"}
-              value={formData.address}
-              onChange={handleInputChange}
+              label="Street Address"
+              name="address"
+              value={form.address}
+              onChange={handleChange}
             />
           </AgencyFormSection>
 
-          {/* AGENCY SOCIALS  */}
+          {/* ------- socials ------- */}
           <AgencyFormSection
-            title={"Socials"}
-            innerStyle={"grid md:grid-cols-2 gap-4"}
+            title="Social Media"
+            innerStyle="grid md:grid-cols-2 gap-4"
           >
-            <AgencyFormInput
-              label={"Facebook (Optional)"}
-              placeholder={"Facebook"}
-              name={"facebook"}
-              value={formData.facebook}
-              onChange={handleInputChange}
-            />
-            <AgencyFormInput
-              label={"Youtube (Optional)"}
-              placeholder={"Youtube"}
-              name={"youtube"}
-              value={formData.youtube}
-              onChange={handleInputChange}
-            />
-            <AgencyFormInput
-              label={"Twitter (Optional)"}
-              placeholder={"Twitter"}
-              name={"twitter"}
-              value={formData.twitter}
-              onChange={handleInputChange}
-            />
-            <AgencyFormInput
-              label={"Instagram (Optional)"}
-              placeholder={"Instagram"}
-              name={"instagram"}
-              value={formData.instagram}
-              onChange={handleInputChange}
-            />
-          </AgencyFormSection>
-
-          {/* ABOUT AGENCY  */}
-          <AgencyFormSection
-            title={"About"}
-            innerStyle={"grid md:grid-cols-2 gap-4"}
-          >
-            <AgencyFormInput
-              label={"About (Optional)"}
-              placeholder={"About"}
-              name={"about"}
-              value={formData.about}
-              onChange={handleInputChange}
-            />
-            <AgencyFormInput
-              label={"Website (Optional)"}
-              placeholder={"Website"}
-              name={"website"}
-              value={formData.website}
-              onChange={handleInputChange}
-            />
-          </AgencyFormSection>
-
-          {result && (
-            <div className={`mt-10`}>
-              <Toast
-                color={result?.color}
-                result={result?.result}
-                message={result?.message}
+            {["facebook", "youtube", "twitter", "instagram"].map((s) => (
+              <AgencyFormInput
+                key={s}
+                label={`${s.charAt(0).toUpperCase() + s.slice(1)} (Optional)`}
+                name={s}
+                value={form[s]}
+                onChange={handleChange}
               />
-            </div>
-          )}
+            ))}
+          </AgencyFormSection>
 
-          {/* Submit Button */}
+          {/* ------- about ------- */}
+          <AgencyFormSection
+            title="About"
+            innerStyle="grid md:grid-cols-2 gap-4"
+          >
+            <AgencyFormInput
+              label="About (Optional)"
+              name="about"
+              value={form.about}
+              onChange={handleChange}
+            />
+            <AgencyFormInput
+              label="Website (Optional)"
+              name="website"
+              value={form.website}
+              onChange={handleChange}
+            />
+          </AgencyFormSection>
+
+          {/* ------- submit ------- */}
           <button
             type="submit"
-            disabled={isSubmitting || !agencyLogo}
-            className="bg-blue-600 mt-10 w-full text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+            disabled={submitting}
+            className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
           >
-            {isSubmitting ? "Submitting..." : "Create Agency"}
+            {submitting ? "Creating..." : "Create Agency"}
           </button>
         </ContainerCenter>
       </form>
     </>
-  )
+  );
 }
-
-export default page

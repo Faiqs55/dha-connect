@@ -94,6 +94,9 @@ const updateAgency = async (req, res) => {
     const data = req.body;
     const user = req.user;    
 
+    console.log(data);
+    
+
     // CHECK IF THE USER IS NOT ADMIN TRYING TO PERFORM ADMIN ACTION
     if (
       "status" in data ||

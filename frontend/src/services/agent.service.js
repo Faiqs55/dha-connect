@@ -20,6 +20,23 @@ class Agent {
             console.log(error);
         }
   }
+
+  async getMyAgents(token){
+    try {
+        const res = await fetch(`${this.apiURL}/agent/my`, {
+            method: "get",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+        });
+
+        return res.json()
+    } catch (error) {
+        console.log(error);
+        
+    }
+  }
 }
 
 

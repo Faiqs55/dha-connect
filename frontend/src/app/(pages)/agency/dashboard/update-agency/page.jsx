@@ -47,13 +47,14 @@ export default function UpdateAgencyPage() {
   const { value: token } = useLocalStorage("userToken", null);
 
   /* ---------- local state ---------- */
-  const [form, setForm]   = useState(empty);
-  const [logoFile, setLogoFile] = useState(null);          // new file
-  const [preview, setPreview]   = useState(null);          // preview url
-  const [originalLogo, setOriginalLogo] = useState(null);  // url from db
-  const [toast, setToast] = useState(null);                // AlertResult
+  const [form, setForm] = useState(empty);
+  const [logoFile, setLogoFile] = useState(null); // new file
+  const [preview, setPreview] = useState(null); // preview url
+  const [originalLogo, setOriginalLogo] = useState(null); // url from db
+  const [toast, setToast] = useState(null); // AlertResult
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [oldLogoToDelete, setOldLogoToDelete] = useState(null); // public_id or full URL
 
   const fileRef = useRef(null);
 
@@ -82,17 +83,20 @@ export default function UpdateAgencyPage() {
     setForm((f) => ({ ...f, [name]: value }));
   };
 
-  /* ---------- logo helpers ---------- */
+  // LOGO HELPERS
   const handleLogo = (e) => {
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) return fireToast(false, "Max 5 MB");
     setLogoFile(file);
     setPreview(URL.createObjectURL(file));
+    // ⭐ mark old logo for deletion (we'll do it only if upload succeeds)
+    if (originalLogo) setOldLogoToDelete(originalLogo);
   };
+
   const removeLogo = () => {
     setLogoFile(null);
-    setPreview(originalLogo); // restore db image
+    setPreview(""); // show empty box
     if (fileRef.current) fileRef.current.value = "";
   };
 
@@ -105,7 +109,9 @@ export default function UpdateAgencyPage() {
     if (!token) return fireToast(false, "Not authenticated");
     setSubmitting(true);
 
-    let logoUrl = originalLogo;
+    let logoUrl = originalLogo; // default: keep old
+
+    /* ---------- 1.  upload new logo ---------- */
     if (logoFile) {
       const fd = new FormData();
       fd.append("file", logoFile);
@@ -121,16 +127,46 @@ export default function UpdateAgencyPage() {
         setSubmitting(false);
         return;
       }
+
+      /* ---------- 2.  delete previous logo from Cloudinary ---------- */
+      if (oldLogoToDelete) {
+        // extract public_id from URL  (works for https://res.cloudinary.com/.../v123/public_id.ext)
+        const parts = oldLogoToDelete.split("/");
+        const public_id = parts[parts.length - 1].split(".")[0];
+        try {
+          await axios.post("/api/delete-logo", { public_id }); // ← your new endpoint
+        } catch (e) {
+          console.warn("Could not delete old logo:", e);
+        }
+      }
     }
 
-    const payload = { ...form, agencyLogo: logoUrl };
+    const payload = {
+      agencyLogo: logoUrl,
+      agencyName: form.agencyName,
+      agencyVideo: form.agencyVideo,
+      agencyEmail: form.agencyEmail,
+      ceoName: form.ceoName,
+      ceoPhone: form.ceoPhone,
+      whatsapp: form.whatsapp,
+      city: form.city,
+      phase: form.phase,
+      address: form.address,
+      facebook: form.facebook,
+      youtube: form.youtube,
+      twitter: form.twitter,
+      instagram: form.instagram,
+      about: form.about,
+      website: form.website,
+    };
     const res = await agencyService.updateAgency(form._id, payload, token);
 
     fireToast(res.success, res.message || (res.success ? "Updated" : "Failed"));
     if (res.success) {
       setOriginalLogo(logoUrl);
       setLogoFile(null);
-      setTimeout(() => router.push("/agencies"), 1500);
+      setOldLogoToDelete(null);
+      setTimeout(() => window.location.reload(), 1500);
     }
     setSubmitting(false);
   };
@@ -161,7 +197,8 @@ export default function UpdateAgencyPage() {
             {!preview ? (
               <div
                 onClick={() => fileRef.current?.click()}
-                className="bg-gray-200 py-6 rounded text-center cursor-pointer hover:bg-gray-300">
+                className="bg-gray-200 py-6 rounded text-center cursor-pointer hover:bg-gray-300"
+              >
                 Drag & Drop or <span className="underline">Browse</span>
               </div>
             ) : (
@@ -170,7 +207,8 @@ export default function UpdateAgencyPage() {
                 <button
                   type="button"
                   onClick={removeLogo}
-                  className="absolute top-4 right-4 bg-rose-500 text-white p-2 rounded">
+                  className="absolute cursor-pointer top-4 right-4 bg-rose-500 text-white p-2 rounded"
+                >
                   <FaRegTrashAlt />
                 </button>
               </div>
@@ -180,7 +218,8 @@ export default function UpdateAgencyPage() {
           {/* ------- agency info ------- */}
           <AgencyFormSection
             title="Agency Information"
-            innerStyle="grid md:grid-cols-2 gap-4">
+            innerStyle="grid md:grid-cols-2 gap-4"
+          >
             <AgencyFormInput
               label="Agency Name"
               name="agencyName"
@@ -227,7 +266,8 @@ export default function UpdateAgencyPage() {
           {/* ------- location ------- */}
           <AgencyFormSection
             title="Location"
-            innerStyle="grid md:grid-cols-2 gap-4">
+            innerStyle="grid md:grid-cols-2 gap-4"
+          >
             <AgencyFormSelect
               label="City"
               name="city"
@@ -253,7 +293,8 @@ export default function UpdateAgencyPage() {
           {/* ------- socials ------- */}
           <AgencyFormSection
             title="Social Media"
-            innerStyle="grid md:grid-cols-2 gap-4">
+            innerStyle="grid md:grid-cols-2 gap-4"
+          >
             {["facebook", "youtube", "twitter", "instagram"].map((s) => (
               <AgencyFormInput
                 key={s}
@@ -268,7 +309,8 @@ export default function UpdateAgencyPage() {
           {/* ------- about ------- */}
           <AgencyFormSection
             title="About"
-            innerStyle="grid md:grid-cols-2 gap-4">
+            innerStyle="grid md:grid-cols-2 gap-4"
+          >
             <AgencyFormInput
               label="About"
               name="about"
@@ -286,7 +328,8 @@ export default function UpdateAgencyPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 disabled:bg-gray-400">
+            className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+          >
             {submitting ? "Updating…" : "Update Agency"}
           </button>
         </form>

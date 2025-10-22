@@ -8,7 +8,7 @@ const AgencyFormInput = ({ name, label, placeholder, value, onChange, type="text
         className={`p-2.5 rounded-sm bg-gray-100 w-full outline-none border-[1px] border-gray-300`} 
         id={name} 
         name={name} 
-        placeholder={placeholder} 
+        placeholder={label} 
         value={value} 
         onChange={onChange}
         type={type} 

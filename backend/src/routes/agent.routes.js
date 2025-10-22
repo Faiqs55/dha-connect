@@ -1,10 +1,11 @@
 const express = require("express");
 const { protect } = require("../middlewares/authMiddleware");
-const { addAgentController, getAllAgentController, getSingleAgentController, updateAgentController } = require("../controllers/agent.controller");
+const { addAgentController, getAllAgentController, getSingleAgentController, updateAgentController, getMyAgentsController } = require("../controllers/agent.controller");
 const agentRouter = express.Router();
 
 agentRouter.post("/", protect, addAgentController);
 agentRouter.get("/all/:agencyId", getAllAgentController);
+agentRouter.get("/my", protect, getMyAgentsController)
 agentRouter.get("/:id", getSingleAgentController);
 agentRouter.put("/:id", protect, updateAgentController);
 
