@@ -167,102 +167,96 @@ const page = () => {
 
   return (
     <>
-      <div className="page-head bg-gray-100">
-        <ContainerCenter className="py-15">
-          <h1 className="text-4xl">Update Agency</h1>
-        </ContainerCenter>
-      </div>
+      <h1 className="text-4xl font-semibold underline">Add new Agent</h1>
 
-      <form className="py-10" onSubmit={handleSubmit}>
-        <ContainerCenter>
-          {/* IMAGE UPLOAD SECTION */}
-          <AgencyFormSection title={"Agent Image"}>
-            <input
-              type="file"
-              className="hidden"
-              ref={imageRef}
-              onChange={handleImageUpload}
-              accept="image/*"
-            />
+      <form className="mb-10 mt-5" onSubmit={handleSubmit}>
+        {/* IMAGE UPLOAD SECTION */}
+        <AgencyFormSection title={"Agent Image"}>
+          <input
+            type="file"
+            className="hidden"
+            ref={imageRef}
+            onChange={handleImageUpload}
+            accept="image/*"
+          />
 
-            {!imagePreview ? (
-              <div
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-                onClick={() => {
-                  imageRef.current.click();
-                }}
-                className="file-input bg-gray-200 text-gray-600 text-center py-6 rounded-md cursor-pointer hover:bg-gray-300 transition-colors"
-              >
-                <p>
-                  Drag & Drop your files or{" "}
-                  <span className="underline">Browse</span>
-                </p>
-              </div>
-            ) : (
-              <div className="relative w-full bg-gray-200 py-6 flex items-center justify-center">
-                <img
-                  src={imagePreview}
-                  alt="Agent image preview"
-                  className="max-h-40"
-                />
-                <button
-                  type="button"
-                  onClick={handleDeleteImage}
-                  className="absolute top-5 right-5 bg-red-500 text-white p-3 rounded-sm cursor-pointer"
-                >
-                  <FaRegTrashAlt />
-                </button>
-              </div>
-            )}
-
-            {cloudinaryError && (
-              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-sm text-red-800">{cloudinaryError}</p>
-              </div>
-            )}
-          </AgencyFormSection>
-
-          {/* AGENT INFORMATION SECTION */}
-          <AgencyFormSection
-            title={"Add New Agent"}
-            innerStyle={"grid grid-cols-3 gap-5"}
-          >
-            <AgencyFormInput
-              label={"Agent Name"}
-              placeholder={"Agent Name"}
-              name={"name"}
-              value={formData.name}
-              onChange={handleInputChange}
-              required
-            />
-            <AgencyFormInput
-              label={"Agent Designation"}
-              placeholder={"Enter Designation"}
-              name={"designation"}
-              value={formData.designation}
-              onChange={handleInputChange}
-            />
-            <AgencyFormInput
-              label={"Agent Phone"}
-              placeholder={"Enter Phone Number"}
-              name={"phone"}
-              value={formData.phone}
-              onChange={handleInputChange}
-            />
-          </AgencyFormSection>
-
-          {/* Submit Button */}
-          <div className="mt-10">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+          {!imagePreview ? (
+            <div
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              onClick={() => {
+                imageRef.current.click();
+              }}
+              className="file-input bg-gray-200 text-gray-600 text-center py-6 rounded-md cursor-pointer hover:bg-gray-300 transition-colors"
             >
-              {isSubmitting ? "Submitting..." : "Add Agent"}
-            </button>
-          </div>
-        </ContainerCenter>
+              <p>
+                Drag & Drop your files or{" "}
+                <span className="underline">Browse</span>
+              </p>
+            </div>
+          ) : (
+            <div className="relative w-full bg-gray-200 py-6 flex items-center justify-center">
+              <img
+                src={imagePreview}
+                alt="Agent image preview"
+                className="max-h-40"
+              />
+              <button
+                type="button"
+                onClick={handleDeleteImage}
+                className="absolute top-5 right-5 bg-red-500 text-white p-3 rounded-sm cursor-pointer"
+              >
+                <FaRegTrashAlt />
+              </button>
+            </div>
+          )}
+
+          {cloudinaryError && (
+            <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-sm text-red-800">{cloudinaryError}</p>
+            </div>
+          )}
+        </AgencyFormSection>
+
+        {/* AGENT INFORMATION SECTION */}
+        <AgencyFormSection
+          title={"Add New Agent"}
+          innerStyle={"grid grid-cols-3 gap-5"}
+        >
+          <AgencyFormInput
+            label={"Agent Name"}
+            placeholder={"Agent Name"}
+            name={"name"}
+            value={formData.name}
+            onChange={handleInputChange}
+            required
+          />
+          <AgencyFormInput
+            label={"Agent Designation"}
+            placeholder={"Enter Designation"}
+            name={"designation"}
+            value={formData.designation}
+            onChange={handleInputChange}
+          />
+          <AgencyFormInput
+            label={"Agent Phone"}
+            placeholder={"Enter Phone Number"}
+            name={"phone"}
+            value={formData.phone}
+            onChange={handleInputChange}
+          />
+        </AgencyFormSection>
+
+        {/* Submit Button */}
+        <div className="mt-10">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? "Submitting..." : "Add Agent"}
+          </button>
+        </div>
       </form>
     </>
   );

@@ -5,7 +5,7 @@ import { FaHouseChimney } from "react-icons/fa6";
 import { FaFacebookF } from "react-icons/fa";
 import Link from "next/link";
 
-const TopBar = ({ isLoggedIn }) => {
+const TopBar = () => {
   return (
     <div className="bg-[#114085] text-white">
       <ContainerCenter className="py-2 text-sm md:text-base md:py-0 md:h-[45px] sm:flex-row flex-col flex items-center justify-between">
@@ -34,10 +34,10 @@ const TopBar = ({ isLoggedIn }) => {
           >
             <FaFacebookF />
           </a>
-          <div className={`${isLoggedIn && "hidden"} `}>
+          <div className={``}>
             <Link
               className="bg-white duration-200 text-blue-800 px-3 py-1 text-sm font-semibold hover:bg-gray-100 rounded-md"
-              href={"/user/login"}
+              href={"/agency/login"}
             >
               Login
             </Link>

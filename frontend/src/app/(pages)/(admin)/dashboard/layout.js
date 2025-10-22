@@ -1,6 +1,7 @@
 "use client";
 import ContainerCenter from '@/Components/ContainerCenter';
 import Sidebar from '@/Components/Sidebar';
+import Spinner from '@/Components/Spinner';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useRouter } from 'next/navigation';
 import {useEffect, useState} from 'react'
@@ -22,7 +23,7 @@ const DashboardLayout = ({children}) => {
   }
 
   if(!isLoaded){
-    return <div className='text-center text-4xl'>Loading</div>
+    return <Spinner/>
   }
 
   return (
@@ -43,5 +44,6 @@ const DashboardLayout = ({children}) => {
     </div>
   )
 }
+
 
 export default DashboardLayout

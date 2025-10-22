@@ -5,28 +5,32 @@ import authService from "@/services/auth.service";
 import { useRouter } from "next/navigation";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import Image from "next/image";
-
+import Spinner from "@/Components/Spinner";
 
 const page = () => {
-  const {value: token, setValue: setToken, isLoaded} = useLocalStorage("authToken", null)
+  const {
+    value: token,
+    setValue: setToken,
+    isLoaded,
+  } = useLocalStorage("authToken", null);
   const router = useRouter();
-  
+
   const [submiting, setSubmiting] = useState(false);
   const [disable, setDisable] = useState(true);
+  const [data, setData] = useState(null);
   const [loginData, setLoginData] = useState({
     email: null,
     password: null,
   });
 
-
   useEffect(() => {
     setDisable(true);
-    if(loginData.email && loginData.password){
-      setDisable(false)
-    }else{
+    if (loginData.email && loginData.password) {
+      setDisable(false);
+    } else {
       setDisable(true);
     }
-  }, [loginData])
+  }, [loginData]);
 
   useEffect(() => {
     if (isLoaded && token) {
@@ -41,7 +45,8 @@ const page = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    setSubmiting(true)
+    setData(null);
+    setSubmiting(true);
     if (loginData.email == "" && loginData.password == "") {
       return alert("Please fill in all the fields");
     }
@@ -49,24 +54,27 @@ const page = () => {
       loginData.email,
       loginData.password
     );
+    
     if (!res.success) {
-      console.log(res.message);
+      setSubmiting(false)
+      setData(res);
       return;
     }
 
-    console.log(res.data);
+    setData(res)
+
     setLoginData({
       email: null,
-      password: null
-    })
+      password: null,
+    });
 
     setToken(res.data.token);
-    setSubmiting(false)
+    setSubmiting(false);
     router.push("/dashboard");
   };
 
-  if(!isLoaded){
-    return <div className='text-center text-4xl'>Loading</div>
+  if (!isLoaded) {
+    return <Spinner/>;
   }
   return (
     <div className="w-full h-[100vh] bg-gray-100 flex items-center justify-center">
@@ -77,6 +85,11 @@ const page = () => {
         <h1 className="text-2xl font-semibold text-gray-700">
           Login to Dashboard
         </h1>
+        {data && (
+          <div className="my-5">
+            <p className={`${data.success ? "text-green-700" : "text-red-700"}`}>{data.message}</p>
+          </div>
+        )}
         <form
           action=""
           onSubmit={(e) => {
@@ -102,8 +115,11 @@ const page = () => {
             }}
             name="password"
           />
-          <button disabled={disable} className="submit disabled:cursor-not-allowed disabled:text-gray-300 disabled:bg-gray-500 bg-[#114085] text-white py-2 rounded-md cursor-pointer">
-            Login
+          <button
+            disabled={disable || submiting}
+            className="submit disabled:cursor-not-allowed disabled:text-gray-300 disabled:bg-gray-500 bg-[#114085] text-white py-2 rounded-md cursor-pointer"
+          >
+            {!submiting ? "Login" : "Logging In..."}
           </button>
           <a
             href="#"

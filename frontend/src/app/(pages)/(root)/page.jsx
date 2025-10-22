@@ -156,10 +156,9 @@ const page = () => {
            <h2 className="mb-10 text-3xl capitalize">Current Elected Body</h2>
            {bodyData && <Carousel
            autoPlay={true}
-        //    bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
            autoPlayInterval={3000}
            sidePadding={0}
-           gap={0}
+           gap={20}
            navButtonOffset={0}
            >
                {bodyData.people.map(p => (

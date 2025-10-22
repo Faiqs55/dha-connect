@@ -14,7 +14,9 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/search/sale", label: "Sale" },
   { href: "/search/rent", label: "Rent" },
-  { href: "/search/required", label: "Required" },
+  { href: "/search/project", label: "Project" },
+  { href: "/file-rates", label: "File Rates" },
+  { href: "/forms", label: "Forms" },
   { href: "/agencies", label: "Agencies" },
   { href: "/transfer-expense", label: "Transfer Expense" },
   { href: "/elected-bodies", label: "Elected Bodies" },
@@ -50,8 +52,6 @@ const formsLinks = [
 ];
 
 const Navbar = () => {
-  const isLoggedIn = useUserIsLoggedIn();
-  const logout = useAuthStore((state) => state.logoutUserAuth);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [bodyDropdownOpen, setBodyDropdownOpen] = useState(false);
@@ -138,9 +138,9 @@ const Navbar = () => {
   return (
     <>
       <header ref={headerRef} className="fixed w-full bg-[#fff] z-50 shadow">
-        <TopBar isLoggedIn={isLoggedIn} />
+        <TopBar />
         <nav className="py-[5px]">
-          <ContainerCenter className="flex justify-between lg:justify-normal items-center lg:items-stretch xl:items-center xl:gap-10 lg:flex-col xl:flex-row">
+          <ContainerCenter className="sm:w-[90%] flex justify-between lg:justify-normal items-center lg:items-stretch xl:items-center xl:gap-10 lg:flex-col xl:flex-row">
             <div
               onClick={MenuHandler}
               className="menu-open-btn bg-gray-300 lg:hidden px-3 py-2 cursor-pointer rounded-sm"
@@ -153,7 +153,7 @@ const Navbar = () => {
             <ul
               className={`${
                 !menuOpen ? "left-[-800px]" : "left-0"
-              } lg:left-0 flex lg:items-center flex-wrap lg:gap-3 lg:border-t-2 xl:border-none border-gray-300 lg:pt-3 pb-5 absolute lg:relative flex-col lg:flex-row bg-gray-800 lg:bg-transparent w-[80%] md:w-[50%] lg:w-auto h-[100vh] lg:h-auto top-0 duration-300`}
+              } lg:left-0 flex lg:items-center flex-wrap lg:gap-2 lg:border-t-2 xl:border-none border-gray-300 lg:pt-3 pb-5 absolute lg:relative flex-col lg:flex-row bg-gray-800 lg:bg-transparent w-[80%] md:w-[50%] lg:w-auto h-[100vh] lg:h-auto top-0 duration-300`}
             >
               <div className="menu-control lg:hidden px-4 py-3 border-b-[1px] border-gray-400 flex items-center justify-between text-gray-200">
                 <h4 className="">MENU</h4>
@@ -168,79 +168,17 @@ const Navbar = () => {
                     onClick={() => setMenuOpen(false)}
                     className={`px-4 ${
                       active && "active"
-                    } lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-[#114085] duration-300 text-gray-200 lg:text-gray-700 lg:hover:text-white font-semibold border-b-[1px] lg:border-none block border-gray-600`}
+                    } lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-[#114085] text-sm duration-300 text-gray-200 lg:text-gray-700 lg:hover:text-white font-semibold border-b-[1px] lg:border-none block border-gray-600`}
                   >
                     {link.label}
                   </Link>
                 );
               })}
-              
-
-              {/* Profile Dropdown */}
-              <div
-                ref={dropdownRef}
-                className={`${!isLoggedIn && "hidden"} relative`}
-              >
-                <button
-                  onClick={toggleProfileDropdown}
-                  className="px-4 cursor-pointer flex items-center gap-1.5 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-[#114085] duration-300 text-gray-200 lg:text-gray-700 lg:hover:text-white font-semibold "
-                >
-                  <span>Profile</span>
-                  <FaChevronDown
-                    className={`text-xs text-gray-500 transition-transform duration-200 ${
-                      profileDropdownOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-
-                {/* Dropdown Menu */}
-                {profileDropdownOpen && (
-                  <div className="absolute left-4 lg:left-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
-                    <Link
-                      href="/user/profile/update-agency"
-                      onClick={() => {
-                        setProfileDropdownOpen(false);
-                        setMenuOpen(false);
-                      }}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 duration-200"
-                    >
-                      Update Agency
-                    </Link>
-                    <Link
-                      href="/user/profile/agents/add"
-                      onClick={() => {
-                        setProfileDropdownOpen(false);
-                        setMenuOpen(false);
-                      }}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 duration-200"
-                    >
-                      My Agents
-                    </Link>
-                    <Link
-                      href="/properties/my-properties"
-                      onClick={() => {
-                        setProfileDropdownOpen(false);
-                        setMenuOpen(false);
-                      }}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 duration-200"
-                    >
-                      My Properties
-                    </Link>
-                    <div className="border-t border-gray-100 my-1"></div>
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 duration-200"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
 
               <Link
                 href={"/maps"}
                 onClick={() => setMenuOpen(false)}
-                className="bg-[#114085] text-white px-4 py-3 lg:py-2 lg:rounded-sm lg:self-start"
+                className="bg-[#114085] text-sm text-white px-4 py-3 lg:py-2 lg:rounded-sm lg:self-start"
               >
                 Society Maps
               </Link>
