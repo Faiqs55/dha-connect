@@ -32,6 +32,7 @@ const Footer = () => {
                 <QuickLink>Privacy Policy</QuickLink>
                 <QuickLink>Terms & Conditions</QuickLink>
                 <QuickLink>FAQs</QuickLink>
+                <QuickLink url="/forms">Forms</QuickLink>
               </ul>
               <ul className="flex flex-col gap-2">
                 <QuickLink>Contact</QuickLink>

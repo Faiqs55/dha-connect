@@ -9,15 +9,15 @@ import { FaBarsStaggered, FaChevronDown } from "react-icons/fa6";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import useAuthStore, { useUserIsLoggedIn } from "@/store/auth.store";
-import { body } from "@/static-data/electedBody";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/properties/sale", label: "Sale" },
-  { href: "/properties/rent", label: "Rent" },
-  { href: "/properties/required", label: "Required" },
+  { href: "/search/sale", label: "Sale" },
+  { href: "/search/rent", label: "Rent" },
+  { href: "/search/required", label: "Required" },
   { href: "/agencies", label: "Agencies" },
-  // Removed the standalone body link since it's now a dropdown
+  { href: "/transfer-expense", label: "Transfer Expense" },
+  { href: "/elected-bodies", label: "Elected Bodies" },
 ];
 
 // Forms dropdown data
@@ -50,7 +50,6 @@ const formsLinks = [
 ];
 
 const Navbar = () => {
-  const isLoading = useAuthStore((state) => state.isLoading);
   const isLoggedIn = useUserIsLoggedIn();
   const logout = useAuthStore((state) => state.logoutUserAuth);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -139,7 +138,7 @@ const Navbar = () => {
   return (
     <>
       <header ref={headerRef} className="fixed w-full bg-[#fff] z-50 shadow">
-        <TopBar />
+        <TopBar isLoggedIn={isLoggedIn} />
         <nav className="py-[5px]">
           <ContainerCenter className="flex justify-between lg:justify-normal items-center lg:items-stretch xl:items-center xl:gap-10 lg:flex-col xl:flex-row">
             <div
@@ -175,87 +174,7 @@ const Navbar = () => {
                   </Link>
                 );
               })}
-
-              {/* Body Dropdown */}
-              <div ref={bodyDropdownRef} className="relative">
-                <button
-                  onClick={toggleBodyDropdown}
-                  className={`px-4 cursor-pointer flex items-center gap-1.5 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-[#114085] duration-300 text-gray-200 lg:text-gray-700 lg:hover:text-white font-semibold border-b-[1px] lg:border-none border-gray-600 w-full text-left ${
-                    isBodyActive ? "active" : ""
-                  }`}
-                >
-                  <span className="">Body</span>
-                  <FaChevronDown
-                    className={`text-xs text-gray-500 transition-transform duration-200 ${
-                      bodyDropdownOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-
-                {/* Body Dropdown Menu */}
-                {bodyDropdownOpen && (
-                  <div className="absolute left-4 lg:left-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
-                    {body.map((period) => (
-                      <Link
-                        key={period.timeline}
-                        href={`/body/${period.timeline}`}
-                        onClick={() => {
-                          setBodyDropdownOpen(false);
-                          setMenuOpen(false);
-                        }}
-                        className={`block px-4 py-2 text-sm hover:bg-gray-100 duration-200 ${
-                          pathname === `/body/${period.timeline}`
-                            ? "text-[#114085] font-semibold bg-blue-50"
-                            : "text-gray-700"
-                        }`}
-                      >
-                        {period.timeline.charAt(0).toUpperCase() +
-                          period.timeline.slice(1)}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Forms Dropdown */}
-              <div ref={formsDropdownRef} className="relative">
-                <button
-                  onClick={toggleFormsDropdown}
-                  className={`px-4 cursor-pointer flex items-center gap-1.5 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-[#114085] duration-300 text-gray-200 lg:text-gray-700 lg:hover:text-white font-semibold border-b-[1px] lg:border-none border-gray-600 w-full text-left border-t-[1px] ${
-                    isFormsActive ? "active" : ""
-                  }`}
-                >
-                  <span className="">Forms</span>
-                  <FaChevronDown
-                    className={`text-xs text-gray-500 transition-transform duration-200 ${
-                      formsDropdownOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-
-                {/* Forms Dropdown Menu */}
-                {formsDropdownOpen && (
-                  <div className="absolute left-4 lg:left-0 mt-1 w-56 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
-                    {formsLinks.map((form) => (
-                      <Link
-                        key={form.href}
-                        href={form.href}
-                        onClick={() => {
-                          setFormsDropdownOpen(false);
-                          setMenuOpen(false);
-                        }}
-                        className={`block px-4 py-2 text-sm hover:bg-gray-100 duration-200 ${
-                          pathname === form.href
-                            ? "text-[#114085] font-semibold bg-blue-50"
-                            : "text-gray-700"
-                        }`}
-                      >
-                        {form.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
+              
 
               {/* Profile Dropdown */}
               <div
@@ -325,13 +244,6 @@ const Navbar = () => {
               >
                 Society Maps
               </Link>
-              <div
-                className={`${
-                  isLoggedIn && "hidden"
-                } border-[#114085] border-2 rounded-md px-3.5 py-1.5 text-[#114085] font-semibold hover:text-white hover:border-transparent hover:bg-[#114085] duration-300`}
-              >
-                <Link href={"/user/login"}>Login</Link>
-              </div>
             </ul>
           </ContainerCenter>
         </nav>

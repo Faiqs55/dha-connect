@@ -152,53 +152,52 @@ const page = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setResult(null);
-    try {
-      // Upload agency logo
-      const logoUrl = await uploadImageToCloudinary(agencyLogo);
+  e.preventDefault();
+  setIsSubmitting(true);
+  setResult(null);
+  try {
+    // Upload agency logo
+    const logoUrl = await uploadImageToCloudinary(agencyLogo);
 
-      if (logoUrl) {
-        // Prepare the final data object
-        const finalData = {
-          // Agency Information
-          agencyName: formData.agencyName,
-          password: formData.password,
-          agencyEmail: formData.agencyEmail,
-          ceoName: formData.ceoName,
-          ceoPhone: formData.ceoPhone,
-          whatsapp: formData.whatsapp,
-          agencyVideo: formData.agencyVideo,
+    if (logoUrl) {
+      // Prepare the final data object
+      const finalData = {
+        // Agency Information
+        agencyName: formData.agencyName,
+        password: formData.password,
+        agencyEmail: formData.agencyEmail,
+        ceoName: formData.ceoName,
+        ceoPhone: formData.ceoPhone,
+        whatsapp: formData.whatsapp,
+        agencyVideo: formData.agencyVideo,
 
-          // Location
-          city: formData.city,
-          phase: formData.phase,
-          address: formData.address,
+        // Location
+        city: formData.city,
+        phase: formData.phase,
+        address: formData.address,
 
-          // Social Media
-          facebook: formData.facebook,
-          youtube: formData.youtube,
-          twitter: formData.twitter,
-          instagram: formData.instagram,
+        // Social Media
+        facebook: formData.facebook,
+        youtube: formData.youtube,
+        twitter: formData.twitter,
+        instagram: formData.instagram,
 
-          // About
-          about: formData.about,
-          website: formData.website,
+        // About
+        about: formData.about,
+        website: formData.website,
 
-          // Images
-          agencyLogo: logoUrl,
-        };
+        // Images
+        agencyLogo: logoUrl,
+      };
 
-        let res = await agencyService.addAgency(finalData);
-        if (!res.success) {
-          setResult({
-            result: `Error! Something Went Wrong.`,
-            message: `${res.message}`,
-            color: "red",
-          });
-        }
-
+      let res = await agencyService.addAgency(finalData);
+      if (!res.success) {
+        setResult({
+          result: `Error! Something Went Wrong.`,
+          message: `${res.message}`,
+          color: "red",
+        });
+      } else {
         setResult({
           result: `The Agency "${res.data.agencyName} has been Added."`,
           message: "Your Agency has been added. You can now add another one.",
@@ -208,9 +207,9 @@ const page = () => {
           agencyName: "",
           password: "",
           agencyEmail: "",
+          agencyVideo: "",
           ceoName: "",
-          ceoPhone1: "",
-          ceoPhone2: "",
+          ceoPhone: "",
           whatsapp: "",
           city: cityOptions[0].val,
           phase: phaseOptions[0].val,
@@ -222,23 +221,26 @@ const page = () => {
           about: "",
           website: "",
         });
-      } else {
-        setResult({
-          result: `Error! Something Went Wrong.`,
-          message: `Could not upload the Agency Logo`,
-          color: "red",
-        });
+        // Reset the logo after successful submission
+        handleDeleteLogo();
       }
-    } catch (error) {
+    } else {
       setResult({
         result: `Error! Something Went Wrong.`,
-        message: `${error.message}`,
+        message: `Could not upload the Agency Logo`,
         color: "red",
       });
-    } finally {
-      setIsSubmitting(false);
     }
-  };
+  } catch (error) {
+    setResult({
+      result: `Error! Something Went Wrong.`,
+      message: `${error.message}`,
+      color: "red",
+    });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
   return (
     <>
       <div className="page-head bg-gray-100">
@@ -319,24 +321,26 @@ const page = () => {
               onChange={handleInputChange}
             />
             <AgencyFormInput
-              label={"Agency Video URL"}
+              label={"Agency Video URL (Optional)"}
               placeholder={"Enter youtube video Link"}
               name={"agencyVideo"}
               value={formData.agencyVideo}
               onChange={handleInputChange}
             />
-            <AgencyFormInput
-              label={"Admin Password"}
-              placeholder={"Enter Password"}
-              name={"password"}
-              value={formData.password}
-              onChange={handleInputChange}
-            />
+            
             <AgencyFormInput
               label={"Agency Email"}
               placeholder={"Agency Email"}
               name={"agencyEmail"}
               value={formData.agencyEmail}
+              onChange={handleInputChange}
+            />
+            <AgencyFormInput
+              type="password"
+              label={"Admin Password"}
+              placeholder={"Enter Password"}
+              name={"password"}
+              value={formData.password}
               onChange={handleInputChange}
             />
             <AgencyFormInput
@@ -354,7 +358,7 @@ const page = () => {
               onChange={handleInputChange}
             />
             <AgencyFormInput
-              label={"Whatsapp"}
+              label={"Whatsapp (Optional)"}
               placeholder={"Whatsapp"}
               name={"whatsapp"}
               value={formData.whatsapp}
@@ -396,28 +400,28 @@ const page = () => {
             innerStyle={"grid md:grid-cols-2 gap-4"}
           >
             <AgencyFormInput
-              label={"Facebook"}
+              label={"Facebook (Optional)"}
               placeholder={"Facebook"}
               name={"facebook"}
               value={formData.facebook}
               onChange={handleInputChange}
             />
             <AgencyFormInput
-              label={"Youtube"}
+              label={"Youtube (Optional)"}
               placeholder={"Youtube"}
               name={"youtube"}
               value={formData.youtube}
               onChange={handleInputChange}
             />
             <AgencyFormInput
-              label={"Twitter"}
+              label={"Twitter (Optional)"}
               placeholder={"Twitter"}
               name={"twitter"}
               value={formData.twitter}
               onChange={handleInputChange}
             />
             <AgencyFormInput
-              label={"Instagram"}
+              label={"Instagram (Optional)"}
               placeholder={"Instagram"}
               name={"instagram"}
               value={formData.instagram}
@@ -431,14 +435,14 @@ const page = () => {
             innerStyle={"grid md:grid-cols-2 gap-4"}
           >
             <AgencyFormInput
-              label={"About"}
+              label={"About (Optional)"}
               placeholder={"About"}
               name={"about"}
               value={formData.about}
               onChange={handleInputChange}
             />
             <AgencyFormInput
-              label={"Website"}
+              label={"Website (Optional)"}
               placeholder={"Website"}
               name={"website"}
               value={formData.website}

@@ -10,11 +10,14 @@ import Image from "next/image";
 const page = () => {
   const {value: token, setValue: setToken, isLoaded} = useLocalStorage("authToken", null)
   const router = useRouter();
+  
 
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
+
+  
 
   useEffect(() => {
     if (isLoaded && token) {
@@ -41,8 +44,11 @@ const page = () => {
       return;
     }
 
-    setToken(res.data.token);
-    router.push("/dashboard");
+    console.log(res.data);
+    
+
+    // setToken(res.data.token);
+    // router.push("/dashboard");
   };
 
   if(!isLoaded){

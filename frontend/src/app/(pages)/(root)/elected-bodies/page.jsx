@@ -6,16 +6,22 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/dha-connect-logo.png";
-import { useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 const page = () => {
-  const timeline = useParams().timeline;
-    const [bodyData, setBodyData] = useState(null);
+  const timeline = useSearchParams().get("timeline");
+  const [bodyData, setBodyData] = useState(null);
     
     useEffect(() => {
+      if(!timeline){
+        const currBody = body.find(b => b.timeline === "current");
+        setBodyData(currBody);
+      }else{
+
         const currBody = body.find(b => b.timeline === timeline);
         setBodyData(currBody);
-    }, [])
+      }
+    }, [timeline])
   return (
     <>
       <ContainerCenter>
@@ -36,7 +42,7 @@ const page = () => {
            navButtonOffset={0}
            >
                {bodyData.people.map(p => (
-                <div key={p.name} className=" p-5 shadow bg-gradient-to-t from-blue-50 to-[#114085] rounded-lg">
+                <div key={p.id} className=" p-5 shadow bg-gradient-to-t from-blue-50 to-[#114085] rounded-lg">
                     <div className="shadow overflow-hidden rounded-md w-full h-[250px] sm:h-[350px] md:h-[200px]">
                         <img className="object-center object-cover w-full" src={p.img} alt={p.name} />
                     </div>
@@ -53,7 +59,7 @@ const page = () => {
         <div className="mt-10">
             {body.map(b => (
                 <div key={b.timeline} className="flex items-center justify-between py-10 border-b border-gray-500">
-                    <Link className="font-semibold text-2xl underline" href={`/body/${b.timeline}`}>{b.timeline}</Link>
+                    <Link className="font-semibold text-2xl underline" href={`/elected-bodies?timeline=${b.timeline}`}>{b.timeline}</Link>
                     <Image src={logo} alt="company logo" width={100} height={100}  />
                 </div>
             ))}

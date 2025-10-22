@@ -23,10 +23,10 @@ const Sidebar = ({ open }) => {
         <Image src={logo} alt="company Logo" width={100}/>
       </div>
       <div className="flex flex-col gap-2.5 mt-5 h-full">
-        <Link className={`bg-gray-200 py-2 px-2 rounded-md`} href={"/"}>
+        <Link className={`bg-gray-200 py-2 px-2 rounded-md`} href={"/dashboard"}>
           Dashboard
         </Link>
-        <Link className={`bg-gray-200 py-2 px-2 rounded-md`} href={"/"}>
+        <Link className={`bg-gray-200 py-2 px-2 rounded-md`} href={"/dashboard/agencies"}>
           Agencies
         </Link>
         <button

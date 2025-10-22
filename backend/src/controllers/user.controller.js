@@ -34,7 +34,11 @@ const userLoginController = async (req, res) => {
         .json({ success: false, message: "Invalid Email Address" });
     }
 
-    if (!(password && user.matchPassword(password))) {
+
+    const passwordIsCorrect = await user.matchPassword(password)
+    
+
+    if (!passwordIsCorrect) {
       return res
         .status(403)
         .json({ success: false, message: "Incorrect Password." });

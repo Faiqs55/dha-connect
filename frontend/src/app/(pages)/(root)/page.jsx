@@ -159,11 +159,11 @@ const page = () => {
         //    bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
            autoPlayInterval={3000}
            sidePadding={0}
-           gap={20}
+           gap={0}
            navButtonOffset={0}
            >
                {bodyData.people.map(p => (
-                <div key={p.name} className=" p-5 shadow bg-gradient-to-t from-blue-50 to-[#114085] rounded-lg">
+                <div key={p.id} className=" p-5 shadow bg-gradient-to-t from-blue-50 to-[#114085] rounded-lg">
                     <div className="shadow overflow-hidden rounded-md w-full h-[300px] sm:h-[350px] md:h-[200px]">
                         <img className="object-center object-cover w-full" src={p.img} alt={p.name} />
                     </div>

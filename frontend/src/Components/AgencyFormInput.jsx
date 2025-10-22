@@ -1,6 +1,6 @@
 import React from 'react'
 
-const AgencyFormInput = ({ name, label, placeholder, value, onChange }) => {
+const AgencyFormInput = ({ name, label, placeholder, value, onChange, type="text" }) => {
   return (
     <div className='flex flex-col gap-2.5'>
       <label htmlFor={name}>{label}</label>
@@ -11,7 +11,7 @@ const AgencyFormInput = ({ name, label, placeholder, value, onChange }) => {
         placeholder={placeholder} 
         value={value} 
         onChange={onChange}
-        type="text" 
+        type={type} 
       />
     </div>
   )
