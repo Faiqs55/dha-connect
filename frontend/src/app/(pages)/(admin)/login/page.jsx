@@ -14,11 +14,19 @@ const page = () => {
   const [submiting, setSubmiting] = useState(false);
   const [disable, setDisable] = useState(true);
   const [loginData, setLoginData] = useState({
-    email: "",
-    password: "",
+    email: null,
+    password: null,
   });
 
 
+  useEffect(() => {
+    setDisable(true);
+    if(loginData.email && loginData.password){
+      setDisable(false)
+    }else{
+      setDisable(true);
+    }
+  }, [loginData])
 
   useEffect(() => {
     if (isLoaded && token) {
@@ -33,6 +41,7 @@ const page = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    setSubmiting(true)
     if (loginData.email == "" && loginData.password == "") {
       return alert("Please fill in all the fields");
     }
@@ -46,10 +55,14 @@ const page = () => {
     }
 
     console.log(res.data);
-    
+    setLoginData({
+      email: null,
+      password: null
+    })
 
-    // setToken(res.data.token);
-    // router.push("/dashboard");
+    setToken(res.data.token);
+    setSubmiting(false)
+    router.push("/dashboard");
   };
 
   if(!isLoaded){
@@ -89,7 +102,7 @@ const page = () => {
             }}
             name="password"
           />
-          <button disabled={disable} className="submit disabled:bg-gray-600 bg-[#114085] text-white py-2 rounded-md cursor-pointer">
+          <button disabled={disable} className="submit disabled:cursor-not-allowed disabled:text-gray-300 disabled:bg-gray-500 bg-[#114085] text-white py-2 rounded-md cursor-pointer">
             Login
           </button>
           <a
