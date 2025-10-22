@@ -11,13 +11,14 @@ const page = () => {
   const {value: token, setValue: setToken, isLoaded} = useLocalStorage("authToken", null)
   const router = useRouter();
   
-
+  const [submiting, setSubmiting] = useState(false);
+  const [disable, setDisable] = useState(true);
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
 
-  
+
 
   useEffect(() => {
     if (isLoaded && token) {
@@ -88,7 +89,7 @@ const page = () => {
             }}
             name="password"
           />
-          <button className="submit bg-[#114085] text-white py-2 rounded-md cursor-pointer">
+          <button disabled={disable} className="submit disabled:bg-gray-600 bg-[#114085] text-white py-2 rounded-md cursor-pointer">
             Login
           </button>
           <a
