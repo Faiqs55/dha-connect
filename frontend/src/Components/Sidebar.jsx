@@ -1,43 +1,129 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import logo from "@/assets/dha-connect-logo.png";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import Image from "next/image";
 
-const Sidebar = ({ open }) => {
-  const { removeValue: removeToken } = useLocalStorage("authToken", null);
+/* ---------- tiny icons ---------- */
+const IconDashboard = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2l-7 7-7-7m16 11V10a1 1 0 00-1-1h-3" />
+  </svg>
+);
+const IconChevron = ({ open }) => (
+  <svg
+    className={`w-4 h-4 ml-auto transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+  </svg>
+);
+
+export default function Sidebar({ open }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const { removeValue: removeToken } = useLocalStorage("authToken", null);
+
+  /* ---------- dropdown toggles ---------- */
+  const [agenciesOpen, setAgenciesOpen] = useState(false);
+
   const logoutHandler = () => {
     removeToken();
     router.push("/login");
   };
 
+  /* ---------- reusable link styles ---------- */
+  const baseLink =
+    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition";
+  const inactiveLink = "text-slate-700 hover:bg-slate-200";
+  const activeLink = "bg-indigo-50 text-indigo-700";
+
+  const isActive = (route) => pathname.startsWith(route);
+
+  /* ---------- agency sub-links ---------- */
+  const agencyLinks = [
+    { label: "All Agencies", href: "/dashboard/agencies" },
+    { label: "Approved", href: "/dashboard/agencies?status=approved" },
+    { label: "Pending", href: "/dashboard/agencies?status=pending" },
+    { label: "Rejected", href: "/dashboard/agencies?status=rejected" },
+    { label: "Blocked", href: "/dashboard/agencies?status=blocked" },
+  ];
+
   return (
-    <div
-      className={`bg-gray-100 flex flex-col h-[100vh] fixed top-0 ${
-        open ? "left-0" : "left-[-500px] "
-      } lg:static px-5 py-2.5 w-[280px] sm:w-[250px] md:w-[300px] border-r border-gray-300 duration-500`}
+    <aside
+      className={`fixed top-0 left-0 h-screen bg-white border-r border-slate-200 flex flex-col z-40
+        ${open ? "translate-x-0" : "-translate-x-full"}
+        lg:translate-x-0 w-64 duration-300`}
     >
-      <div className="flex border-b border-gray-300">
-        <Image src={logo} alt="company Logo" width={100}/>
+      {/* ---- Logo ---- */}
+      <div className="flex items-center border-b border-slate-100 py-4 px-4">
+        <Image src={logo} alt="DHA Connect" priority width={80} />
       </div>
-      <div className="flex flex-col gap-2.5 mt-5 h-full">
-        <Link className={`bg-gray-200 py-2 px-2 rounded-md`} href={"/dashboard"}>
-          Dashboard
+
+      {/* ---- Navigation ---- */}
+      <nav className="flex-1 px-4 py-6 space-y-1.5 text-slate-700">
+        {/* Dashboard */}
+        <Link
+          href="/dashboard"
+          className={`${baseLink} ${isActive("/dashboard") ? activeLink : inactiveLink}`}
+        >
+          <IconDashboard />
+          <span>Dashboard</span>
         </Link>
-        <Link className={`bg-gray-200 py-2 px-2 rounded-md`} href={"/dashboard/agencies"}>
-          Agencies
+
+        {/* Agencies (dropdown) */}
+        <div>
+          <button
+            onClick={() => setAgenciesOpen((s) => !s)}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
+              ${agenciesOpen ? "bg-slate-100" : "hover:bg-slate-100"}`}
+          >
+            <span>Agencies</span>
+            <IconChevron open={agenciesOpen} />
+          </button>
+
+          {agenciesOpen && (
+            <div className="pl-6 mt-1 space-y-1">
+              {agencyLinks.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className={`${baseLink} ${isActive(l.href) ? activeLink : inactiveLink}`}
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Properties */}
+        <Link
+          href="/dashboard/properties"
+          className={`${baseLink} ${isActive("/dashboard/properties") ? activeLink : inactiveLink}`}
+        >
+          <IconDashboard />
+          <span>Properties</span>
         </Link>
+      </nav>
+
+      {/* ---- Logout ---- */}
+      <div className="p-4 border-t border-slate-100">
         <button
           onClick={logoutHandler}
-          className="mt-auto bg-[#114085] text-white py-2 rounded-md cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 transition text-sm font-semibold"
         >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
           Logout
         </button>
       </div>
-    </div>
+    </aside>
   );
-};
-
-export default Sidebar;
+}
