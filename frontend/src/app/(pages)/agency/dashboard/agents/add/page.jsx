@@ -8,6 +8,8 @@ import AgencyFormSection from "@/Components/AgencyFormSection";
 import AgencyFormInput from "@/Components/AgencyFormInput";
 import AlertResult from "@/Components/AlertResult";
 
+import Link from "next/link";
+
 const cloudName = "dhdgrfseu";
 const uploadPreset = "dha-agency-logo";
 
@@ -51,7 +53,8 @@ export default function AddAgentPage() {
   /* ---------- submit ---------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file) return setToast({ success: false, message: "Agent image is required" });
+    if (!file)
+      return setToast({ success: false, message: "Agent image is required" });
 
     setSubmitting(true);
     setToast(null);
@@ -93,6 +96,20 @@ export default function AddAgentPage() {
     <>
       <AlertResult data={toast} onClose={() => setToast(null)} />
 
+      <div className="mb-10 flex gap-2.5">
+        <Link
+          className="text-gray-500 font-bold text-sm underline"
+          href={"/agency/dashboard"}
+        >
+          {"<< Dashboard"}
+        </Link>
+        <Link
+          className="text-gray-500 font-bold text-sm underline"
+          href={"/agency/dashboard/agents"}
+        >
+          {"<< My Agents"}
+        </Link>
+      </div>
       <h1 className="text-4xl font-semibold underline mb-6">Add New Agent</h1>
 
       <form onSubmit={handleSubmit} className="mb-10 mt-5 space-y-8">
@@ -111,7 +128,12 @@ export default function AddAgentPage() {
               className="bg-gray-200 py-6 rounded text-center cursor-pointer hover:bg-gray-300"
             >
               Drag & Drop or <span className="underline">Browse</span>
-              <input type="file" hidden accept="image/*" onChange={handleLogo} />
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleLogo}
+              />
             </div>
           ) : (
             <div className="relative bg-gray-200 py-6 flex justify-center">
@@ -128,7 +150,10 @@ export default function AddAgentPage() {
         </AgencyFormSection>
 
         {/* ------- fields ------- */}
-        <AgencyFormSection title="Agent Information" innerStyle="grid grid-cols-2 gap-5">
+        <AgencyFormSection
+          title="Agent Information"
+          innerStyle="grid grid-cols-2 gap-5"
+        >
           <AgencyFormInput
             label="Agent Name"
             name="name"

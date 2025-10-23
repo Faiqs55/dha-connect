@@ -52,10 +52,14 @@ const getSingleAgentController = async (req, res) => {
 
 const getMyAgentsController = async (req, res) => {
   try {
+    const query = req.query || {};
+    if (query.name) {
+      query.name = { $regex: query.name, $options: "i" };
+    }
     const agencyID = req.user.agency;
-    const agencies = await Agent.find({ agency: agencyID });
+    const agents = await Agent.find({ ...query, agency: agencyID });
 
-    res.status(200).json({ success: true, data: agencies });
+    res.status(200).json({ success: true, data: agents });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -135,5 +139,5 @@ module.exports = {
   getAllAgentController,
   getSingleAgentController,
   updateAgentController,
-  getMyAgentsController
+  getMyAgentsController,
 };

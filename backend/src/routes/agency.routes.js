@@ -18,16 +18,4 @@ module.exports = {
   agencyRouter,
 };
 
-// const some = {
-//   "agencyName": "DsDen",
-//   "agencyEmail": "dsden@gmail.com",
-//   "ceoName": "Faiq Sindhu",
-//   "ceoPhone": "12345678910",
-//   "agencyLogo": "Some Logo URL",
-//   "agencyVideo": "Some Video URL",
-//   "city": "lahore",
-//   "phase": "phase 1",
-//   "address": "Some agency Address",
-//   "whatsapp": "+92 1234567890",
-//   "password": "admin123",
-// };
+

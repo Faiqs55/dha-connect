@@ -5,10 +5,19 @@ import agencyService from "@/services/agency.service";
 
 const page = () => {
   const [agencies, setAgencies] = useState(null);
+  const [searchQuery, setSearchQuery] = useState({
+    status: "all",
+    agencyName: "",
+  });
 
-  const getAllAgencies = async () => {
+  const inputChangeHandler = (e) => {
+    const { name, value } = e.target;
+    setSearchQuery((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const getAllAgencies = async (q) => {
     try {
-      const res = await agencyService.getAllAgencies();
+      const res = await agencyService.getAllAgencies(q);
 
       if (!res.success) {
         alert(res.message);
@@ -22,9 +31,64 @@ const page = () => {
   useEffect(() => {
     getAllAgencies();
   }, []);
+
+  const submitHanlder = (e) => {
+    e.preventDefault();
+    if (searchQuery.status !== "all" || searchQuery.agencyName !== "") {
+      getAllAgencies(searchQuery);
+    }
+  };
+
   return (
     <>
-      <h1 className="text-3xl font-semibold mb-5">Current Agencies</h1>
+      <div className="mb-10">
+        <Link
+          className="text-gray-500 font-bold text-sm underline"
+          href={"/dashboard"}
+        >
+          {"<< Dashboard"}
+        </Link>
+      </div>
+
+      <h1 className="text-3xl font-semibold mb-5">
+        DHA Connects Agencies ({agencies && agencies.length})
+      </h1>
+
+      <form
+        action=""
+        onSubmit={(e) => submitHanlder(e)}
+        className="flex gap-4 my-12"
+      >
+        <select
+          onChange={(e) => inputChangeHandler(e)}
+          className="outline-none border border-gray-300 rounded-md px-4 py-2"
+          defaultValue={"all"}
+          name="status"
+        >
+          <option value="all" disabled>
+            Filter by Status
+          </option>
+          <option value="Approved">Approved</option>
+          <option value="Pending">Pending</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Blocked">Blocked</option>
+        </select>
+
+        <input
+          onChange={(e) => inputChangeHandler(e)}
+          className="flex-1 outline-none border border-gray-300 rounded-md px-4 py-2"
+          type="text"
+          placeholder="Filter By Name"
+          name="agencyName"
+        />
+        <button
+          type="submit"
+          className="px-4 py-2 bg-blue-900 text-white font-semibold rounded-md cursor-pointer"
+        >
+          Search
+        </button>
+      </form>
+
       {agencies && agencies.length > 0 ? (
         <div className="grid lg:grid-cols-2 gap-4">
           {agencies.map((a) => (

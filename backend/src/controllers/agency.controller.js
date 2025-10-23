@@ -30,9 +30,12 @@ const addAgencyController = async (req, res) => {
 const getAgenciesController = async (req, res) => {
   try {
     const query = req.query || {};
+    if (query.agencyName) {
+      query.agencyName = { $regex: query.agencyName, $options: "i" };
+    }
 
     const agencies = await Agency.find(query).select("-password");
-    if (!agencies || agencies.length < 1) {
+    if (!agencies) {
       return res
         .status(404)
         .json({ success: false, message: "No Agencies Found" });

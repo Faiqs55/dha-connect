@@ -5,13 +5,17 @@ import React, { useEffect, useState } from "react";
 import { MdEmail } from "react-icons/md";
 import { IoMdCall } from "react-icons/io";
 import { IoLogoWhatsapp } from "react-icons/io5";
+import Link from "next/link";
 
 const page = () => {
   const [agents, setAgents] = useState([]);
+  const [querySearch, setQuerySearch] = useState({
+    name: "",
+  });
   const { value: userToken, isLoaded } = useLocalStorage("userToken", null);
 
-  const getAgents = async () => {
-    const res = await agentService.getMyAgents(userToken);
+  const getAgents = async (q = {}) => {
+    const res = await agentService.getMyAgents(userToken, q);
     if (res.success) {
       setAgents(res.data);
     }
@@ -23,12 +27,54 @@ const page = () => {
     }
   }, [userToken]);
 
-  console.log("Agents: ", agents);
+  const inputChangeHandler = (e) => {
+    const { name, value } = e.target;
+    setQuerySearch((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const submitHanlder = (e) => {
+    e.preventDefault();
+    if (!(querySearch.name === "")) {
+      getAgents(querySearch);
+    }
+  };
 
   return (
     <>
-    <h1 className="text-4xl font-semibold underline mb-6">My Agents</h1>
-      {agents.length > 0 && <div className="mb-10 mt-6 grid gap-5">
+      <div className="mb-10">
+        <Link
+          className="text-gray-500 font-bold text-sm underline"
+          href={"/agency/dashboard"}
+        >
+          {"<< Dashboard"}
+        </Link>
+      </div>
+      <h1 className="text-4xl font-semibold underline mb-12">My Agents</h1>
+
+      <Link
+        className="px-4 py-2 bg-blue-900 text-white rounded-md font-semibold my-5"
+        href={"/agency/dashboard/agents/add"}
+      >
+        Add New
+      </Link>
+
+      <form className="flex gap-5 my-5" onSubmit={(e) => submitHanlder(e)}>
+        <input
+          value={querySearch.name}
+          onChange={(e) => {
+            inputChangeHandler(e);
+          }}
+          className="outline-none flex-1 border border-gray-300 rounded-md px-4 py-2"
+          type="text"
+          name="name"
+          placeholder="Search By Name"
+        />
+        <button className="px-4 py-2 bg-blue-900 text-white rounded-md font-semibold cursor-pointer">
+          Search
+        </button>
+      </form>
+      {agents.length > 0 && (
+        <div className="mb-10 mt-6 grid gap-5">
           {agents.map((agent) => (
             <div
               key={agent._id}
@@ -73,7 +119,8 @@ const page = () => {
               </div>
             </div>
           ))}
-        </div>}
+        </div>
+      )}
     </>
   );
 };

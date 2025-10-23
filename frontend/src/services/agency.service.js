@@ -22,8 +22,11 @@ class Agency {
 
   async getAllAgencies(query) {
     try {
-      let fetchURL = `${this.apiURL}/agency`;
+      let fetchURL = `${this.apiURL}/agency`;      
       if (query) {
+        if(query.status === "all") delete query.status;
+        if(query.agencyName === "") delete query.agencyName;
+        
         const queryKeys = Object.keys(query);
         queryKeys.forEach((key) => {
           fetchURL += `?${key}=${query[key]}`;

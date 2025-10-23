@@ -1,44 +1,49 @@
 class Agent {
-    apiURL;
+  apiURL;
   constructor() {
     this.apiURL = process.env.NEXT_PUBLIC_API_URL;
   }
 
-  async addAgent(token, data){
-        try {
-            const res = await fetch(`${this.apiURL}/agent`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(data)
-            });
+  async addAgent(token, data) {
+    try {
+      const res = await fetch(`${this.apiURL}/agent`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
 
-            return res.json();
-        } catch (error) {
-            console.log(error);
-        }
+      return res.json();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  async getMyAgents(token){
+  async getMyAgents(token, query) {
     try {
-        const res = await fetch(`${this.apiURL}/agent/my`, {
-            method: "get",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
+      let fetchURL = `${this.apiURL}/agent/my`;
+      if (query) {
+        const queryKeys = Object.keys(query);
+        queryKeys.forEach((key) => {
+          fetchURL += `?${key}=${query[key]}`;
         });
+      }
+      const res = await fetch(fetchURL, {
+        method: "get",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        return res.json()
+      return res.json();
     } catch (error) {
-        console.log(error);
-        
+      console.log(error);
     }
   }
 }
-
 
 const agentService = new Agent();
 export default agentService;

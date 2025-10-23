@@ -9,21 +9,14 @@ const page = () => {
       link: "/agency/dashboard/update-agency"
     },
     {
-      label: "Add Agent",
-      link: "/agency/dashboard/agents/add"
-    },
-    {
-      label: "Add Property",
-      link: "/agency/dashboard/properties/add"
-    },
-    {
-      label: "View Agents",
+      label: "Agents",
       link: "/agency/dashboard/agents"
     },
     {
-      label: "View Properties",
+      label: "Properties",
       link: "/agency/dashboard/properties"
     },
+    
     
   ]
 

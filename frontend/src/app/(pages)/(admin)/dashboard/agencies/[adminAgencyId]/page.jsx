@@ -3,21 +3,20 @@ import { useState, useEffect } from "react";
 import agencyService from "@/services/agency.service";
 import { useParams } from "next/navigation";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import AlertResult from "@/Components/AlertResult";
+import Link from "next/link";
 
 const page = () => {
   const id = useParams().adminAgencyId;
   const { value: token } = useLocalStorage("authToken");
   const [agency, setAgency] = useState(null);
+  const [toast, setToast] = useState(null);
   const [formData, setFormData] = useState({
     featuredAds: "",
     videoAds: "",
     classifiedAds: "",
     status: "",
   });
-
-  const clickHandler = () => {
-    setSidebarOpen((prev) => !prev);
-  };
 
   const getAgency = async () => {
     try {
@@ -39,19 +38,15 @@ const page = () => {
     }
   };
 
-  console.log(agency);  
-  
-
   const inputChangeHandler = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Prepare the data to be submitted
-    const submitData = {
+    const payload = {
       featuredAds: parseInt(formData.featuredAds) || 0,
       videoAds: parseInt(formData.videoAds) || 0,
       classifiedAds: parseInt(formData.classifiedAds) || 0,
@@ -59,13 +54,18 @@ const page = () => {
     };
 
     try {
-      const res = await agencyService.updateAgency(id, submitData, token);
+      const res = await agencyService.updateAgency(id, payload, token);
       if (!res.success) {
-        alert(res.message);
+        setToast({ success: false, message: res.message || "Update failed" });
+        return;
       }
-      window.location.reload();
-    } catch (error) {
-      console.log(error);
+
+      setToast({ success: true, message: "Agency updated successfully" });
+      setTimeout(() => {
+        window.location.href = "/dashboard/agencies"; // or any route you want
+      }, 1500);
+    } catch (err) {
+      setToast({ success: false, message: err.message || "Server error" });
     }
   };
 
@@ -73,12 +73,28 @@ const page = () => {
     getAgency();
   }, [id]); // Added id as dependency
 
-  if(!agency){
-    return <div className="text-center text-4xl">Loading</div>
+  if (!agency) {
+    return <div className="text-center text-4xl">Loading</div>;
   }
 
   return (
     <div>
+      <AlertResult data={toast} onClose={() => setToast(null)} />
+      <div className="mb-10 flex gap-3">
+        <Link
+          className="text-gray-500 font-bold text-sm underline"
+          href={"/dashboard"}
+        >
+          {"<< Dashboard"}
+        </Link>
+        <Link
+          className="text-gray-500 font-bold text-sm underline"
+          href={"/dashboard/agencies"}
+        >
+          {"<< Agencies"}
+        </Link>
+      </div>
+
       <h1 className="text-3xl font-semibold mb-5">
         {agency.agencyName}: {agency.status}
       </h1>

@@ -10,6 +10,7 @@ import AgencyFormSection from "@/Components/AgencyFormSection";
 import AgencyFormInput from "@/Components/AgencyFormInput";
 import AgencyFormSelect from "@/Components/AgencyFormSelect";
 import AlertResult from "@/Components/AlertResult";
+import Link from "next/link";
 
 /* ---------- static selects ---------- */
 const cityOpts = [
@@ -182,6 +183,14 @@ export default function UpdateAgencyPage() {
       <AlertResult data={toast} onClose={() => setToast(null)} />
 
       <ContainerCenter>
+        <div className="mb-10">
+        <Link
+          className="text-gray-500 font-bold text-sm underline"
+          href={"/agency/dashboard"}
+        >
+          {"<< Dashboard"}
+        </Link>
+      </div>
         <h1 className="text-3xl font-semibold mb-6">Update Agency</h1>
 
         <form onSubmit={handleSubmit} className="space-y-8">
