@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/dha-connect-logo.png";
 import { useSearchParams } from "next/navigation";
+import { BsWhatsapp } from "react-icons/bs";
 
 const page = () => {
   const timeline = useSearchParams().get("timeline");
@@ -50,6 +51,7 @@ const page = () => {
                         <h3 className="text-lg font-semibold">{p.designation}</h3>
                         <p className="text-sm text-gray-600">{p.name}</p>
                         <a className="text-white bg-blue-900 font-semibold text-center mt-3 rounded-md block px-2 py-1 text-sm" href={`tel:+92${p.phone.replaceAll(" ", "").slice(1)}`}>Call</a>
+                         <a className="text-white justify-center flex items-center gap-3 bg-green-700 font-semibold text-center mt-3 rounded-md px-2 py-1 text-sm" href={`tel:+92${p.phone.replaceAll(" ", "").slice(1)}`}><BsWhatsapp/> WhatsApp</a>
                     </div>
                 </div>
                ))}

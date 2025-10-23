@@ -92,8 +92,8 @@ function getTodayDate() {
 function Section({ id, heading, rows }) {
   return (
     <section id={id} className="mb-8 bg-white border rounded shadow">
-      <div className="px-5 py-4 border-b">
-        <h2 className="text-xl font-semibold text-gray-800">{heading}</h2>
+      <div className="px-5 py-4 border-b bg-blue-900">
+        <h2 className="text-xl font-semibold text-white">{heading}</h2>
       </div>
 
       <div className="overflow-x-auto">
