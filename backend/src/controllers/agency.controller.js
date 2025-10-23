@@ -1,4 +1,5 @@
 const { Agency } = require("../models/agency.model");
+const { Agent } = require("../models/agent.model");
 const { User } = require("../models/user.model");
 const mongoose = require("mongoose")
 
@@ -51,13 +52,15 @@ const getSingleAgency = async (req, res) => {
   
   try {
     const id = req.params.id;
+    const agents = await Agent.find({agency: id});
     const agency = await Agency.findById(id).select("-password");
     if (!agency) {
       res
         .status(404)
         .json({ success: false, message: "Agency does not exist" });
     }
-    res.json({ message: "Agency Found", success: true, data: agency });
+    
+    res.json({ message: "Agency Found", success: true, data: {agency, agents: [...agents]} });
   } catch (error) {
     res.status(500).json({
       success: false,

@@ -8,7 +8,6 @@ const agentSchema = new mongoose.Schema({
 
   image: {
     type: String,
-    required: true
   },
 
   name: {
@@ -22,7 +21,12 @@ const agentSchema = new mongoose.Schema({
   phone: {
     type: String,
     required: true
+  },
+  email: {
+    type: String,
+    required: true
   }
+
 }, {timestamps: true});
 
 const Agent = mongoose.model("Agent", agentSchema);

@@ -15,6 +15,7 @@ const emptyForm = {
   name: "",
   designation: "",
   phone: "",
+  email: "",
   image: "", // Cloudinary URL
 };
 
@@ -127,7 +128,7 @@ export default function AddAgentPage() {
         </AgencyFormSection>
 
         {/* ------- fields ------- */}
-        <AgencyFormSection title="Agent Information" innerStyle="grid grid-cols-3 gap-5">
+        <AgencyFormSection title="Agent Information" innerStyle="grid grid-cols-2 gap-5">
           <AgencyFormInput
             label="Agent Name"
             name="name"
@@ -140,6 +141,14 @@ export default function AddAgentPage() {
             name="designation"
             value={form.designation}
             onChange={handleChange}
+            required
+          />
+          <AgencyFormInput
+            label="Agent Email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            required
           />
           <AgencyFormInput
             label="Agent Phone"
