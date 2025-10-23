@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useRef, useEffect } from "react";
 import { FaCaretDown } from "react-icons/fa";
 import { FaCaretUp } from "react-icons/fa";
@@ -69,7 +70,8 @@ const HeroFormSelect = (props) => {
       }
       return props.label;
     } else {
-      return props.value || props.label;
+      // Show the actual value (which could be placeholder like "Select City")
+      return props.value;
     }
   };
 
@@ -95,11 +97,18 @@ const HeroFormSelect = (props) => {
         onClick={toggleList}
         className="px-4 py-2 border-gray-300 border rounded-md flex items-center justify-between cursor-pointer"
       >
-        <span className="text-sm font-semibold text-gray-500">
+        <span className={`text-sm font-semibold ${
+          // Make placeholder text gray and selected values blue
+          (props.isPrice && (props.minValue || props.maxValue)) ||
+          (props.isPropertyType && (props.selectedResidentialTypes.length > 0 || props.selectedCommercialTypes.length > 0)) ||
+          (!props.isPrice && !props.isPropertyType && props.value !== props.label)
+            ? "text-blue-500" 
+            : "text-gray-500"
+        }`}>
           {getDisplayText()}
         </span>
-        {!isOpen && <FaCaretDown />}
-        {isOpen && <FaCaretUp />}
+        {!isOpen && <FaCaretDown className="text-gray-500" />}
+        {isOpen && <FaCaretUp className="text-gray-500" />}
       </div>
       
       {/* Dropdown options */}
@@ -221,15 +230,21 @@ const HeroFormSelect = (props) => {
             </div>
           ) : (
             // Regular options list
-            props.options.map((option) => (
-              <span
-                key={option}
-                onClick={() => handleOptionClick(option)}
-                className="block text-center hover:bg-blue-50 hover:text-blue-500 cursor-pointer py-2 rounded-md text-sm text-gray-400 font-semibold"
-              >
-                {option}
-              </span>
-            ))
+            <div className="space-y-1">
+              {props.options.map((option) => (
+                <div
+                  key={option}
+                  onClick={() => handleOptionClick(option)}
+                  className={`block text-center cursor-pointer py-2 rounded-md text-sm font-semibold ${
+                    props.value === option
+                      ? "bg-blue-50 text-blue-500" 
+                      : "hover:bg-blue-50 hover:text-blue-500 text-gray-400"
+                  }`}
+                >
+                  {option}
+                </div>
+              ))}
+            </div>
           )}
         </div>
       )}

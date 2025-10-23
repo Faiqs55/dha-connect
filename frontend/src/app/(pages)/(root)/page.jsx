@@ -169,6 +169,7 @@ const page = () => {
                     <div className="mt-5">
                         <h3 className="text-lg font-semibold">{p.designation}</h3>
                         <p className="text-sm text-gray-600">{p.name}</p>
+                        <a className="text-white bg-blue-900 font-semibold text-center mt-3 rounded-md block px-2 py-1 text-sm" href={`tel:+92${p.phone.replaceAll(" ", "").slice(1)}`}>Call</a>
                     </div>
                 </div>
                ))}

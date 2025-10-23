@@ -6,6 +6,7 @@ import CustomSelect from '@/Components/CustomSelect/CustomSelect';
 import agencyService from '@/services/agency.service';
 import { MdEmail } from "react-icons/md";
 import { IoMdCall } from "react-icons/io";
+import Link from 'next/link';
 
 const phases = ["All Phases", "Phase 1", "Phase 2", "Phase 3", "Phase 4"];
 const cities = ["All Cities", "Lahore", "Islamabad", "Karachi", "Multan"];
@@ -149,9 +150,11 @@ const page = () => {
                   alt=""
                 />
               </div>
-              <h3 className="text-lg text-center border-b border-gray-300 py-4 sm:py-2 font-semibold">
+              {/* <h3> */}
+              <Link href={`/agencies/${a._id}`} className="text-lg block hover:text-blue-800 hover:underline text-center border-b border-gray-300 py-4 sm:py-2 font-semibold">
                 {a.agencyName}
-              </h3>
+              </Link>
+              {/* </h3> */}
               <span className="text-center text-xs py-4 sm:py-2 font-semibold block">
                 347 Properties
               </span>

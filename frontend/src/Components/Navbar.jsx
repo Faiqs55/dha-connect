@@ -8,177 +8,188 @@ import { useState, useEffect, useRef } from "react";
 import { FaBarsStaggered, FaChevronDown } from "react-icons/fa6";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import useAuthStore, { useUserIsLoggedIn } from "@/store/auth.store";
 
-const navLinks = [
+// Consolidated navigation data
+const navigationItems = [
   { href: "/", label: "Home" },
   { href: "/search/sale", label: "Sale" },
   { href: "/search/rent", label: "Rent" },
   { href: "/search/project", label: "Project" },
   { href: "/file-rates", label: "File Rates" },
-  { href: "/forms", label: "Forms" },
-  { href: "/agencies", label: "Agencies" },
+  { 
+    type: "dropdown",
+    label: "Forms",
+    links: [
+      { href: "/forms/building-control-forms", label: "Building Control Forms" },
+      { href: "/forms/finance-forms", label: "Finance Forms" },
+      { href: "/forms/transfer-forms", label: "Transfer Forms" },
+      { href: "/forms/land-forms", label: "Land Forms" },
+      { href: "/forms/maintenance-forms", label: "Maintenance Forms" },
+      { href: "/forms/miscellaneous-forms", label: "Miscellaneous Forms" },
+      { href: "/forms/security-forms", label: "Security Forms" },
+      { href: "/forms/sports-forms", label: "Sports Forms" },
+    ]
+  },
+  { 
+    type: "dropdown",
+    label: "Agencies",
+    links: [
+      { href: "/agencies", label: "All Agencies" },
+      { href: "/agencies?type=affiliates", label: "Affiliates" },
+    ]
+  },
   { href: "/transfer-expense", label: "Transfer Expense" },
   { href: "/elected-bodies", label: "Elected Bodies" },
 ];
 
-// Forms dropdown data
-const formsLinks = [
-  {
-    href: "/forms?form=building-control-forms",
-    label: "building control forms",
-  },
-  { href: "/forms?form=finance-forms",
-     label: "Finance Forms"
-     },
-  { href: "/forms?form=transfer-forms",
-     label: "Transfer Forms"
-     },
-  { href: "/forms?form=land-forms",
-     label: "Land Forms"
-     },
-  { href: "/forms?form=maintenance-forms",
-     label: "Maintenance Forms"
-     },
-  { href: "/forms?form=miscellaneous-forms",
-     label: "Miscellaneous Forms"
-     },
-  { href: "/forms?form=security-forms",
-     label: "Security Forms"
-     },
-  { href: "/forms?form=sports-forms",
-     label: "Sports Forms"
-     },
-];
-
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-  const [bodyDropdownOpen, setBodyDropdownOpen] = useState(false);
-  const [formsDropdownOpen, setFormsDropdownOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
   const headerRef = useRef(null);
-  const dropdownRef = useRef(null);
-  const bodyDropdownRef = useRef(null);
-  const formsDropdownRef = useRef(null);
+  const dropdownRefs = useRef({});
   const pathname = usePathname();
   const router = useRouter();
   const [navbarHeight, setNavbarHeight] = useState(0);
 
-  const MenuHandler = () => {
-    setMenuOpen((prev) => !prev);
+  // Toggle mobile menu
+  const toggleMenu = () => setMenuOpen(prev => !prev);
+
+  // Toggle dropdown
+  const toggleDropdown = (dropdownName) => {
+    setOpenDropdown(prev => prev === dropdownName ? null : dropdownName);
   };
 
-  const toggleProfileDropdown = () => {
-    setProfileDropdownOpen((prev) => !prev);
-  };
-
-  const toggleBodyDropdown = () => {
-    setBodyDropdownOpen((prev) => !prev);
-  };
-
-  const toggleFormsDropdown = () => {
-    setFormsDropdownOpen((prev) => !prev);
-  };
-
-  const handleLogout = () => {
-    logout();
-    setProfileDropdownOpen(false);
-    setBodyDropdownOpen(false);
-    setFormsDropdownOpen(false);
+  // Close all dropdowns
+  const closeAll = () => {
     setMenuOpen(false);
-    router.push("/");
+    setOpenDropdown(null);
   };
 
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setProfileDropdownOpen(false);
-      }
-      if (
-        bodyDropdownRef.current &&
-        !bodyDropdownRef.current.contains(event.target)
-      ) {
-        setBodyDropdownOpen(false);
-      }
-      if (
-        formsDropdownRef.current &&
-        !formsDropdownRef.current.contains(event.target)
-      ) {
-        setFormsDropdownOpen(false);
+      const isOutside = Object.values(dropdownRefs.current).every(
+        ref => ref && !ref.contains(event.target)
+      );
+      if (isOutside) {
+        setOpenDropdown(null);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Calculate navbar height after component mounts
+  // Calculate navbar height
   useEffect(() => {
-    if (headerRef.current) {
-      setNavbarHeight(headerRef.current.offsetHeight);
-    }
-
-    const handleResize = () => {
+    const updateHeight = () => {
       if (headerRef.current) {
         setNavbarHeight(headerRef.current.offsetHeight);
       }
     };
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    updateHeight();
+    window.addEventListener("resize", updateHeight);
+    return () => window.removeEventListener("resize", updateHeight);
   }, []);
 
-  // Check if dropdowns should be active
-  const isBodyActive = pathname.startsWith("/body");
-  const isFormsActive = pathname.startsWith("/forms");
+  // Check if link is active
+  const isActive = (href) => pathname === href;
+
+  // Render navigation items
+  const renderNavItem = (item, index) => {
+    if (item.type === "dropdown") {
+      const isOpen = openDropdown === item.label;
+      const isActive = pathname.startsWith(`/${item.label.toLowerCase()}`);
+      
+      return (
+        <div 
+          key={item.label}
+          ref={el => dropdownRefs.current[item.label] = el}
+          className="relative"
+        >
+          <button
+            onClick={() => toggleDropdown(item.label)}
+            className={`px-4 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-[#114085] text-sm duration-300 text-gray-200 lg:text-gray-700 lg:hover:text-white font-semibold border-b-[1px] lg:border-none flex items-center gap-1 border-gray-600 w-full lg:w-auto ${
+              isActive && "active"
+            }`}
+          >
+            {item.label}
+            <FaChevronDown className={`text-xs transition-transform ${isOpen ? "rotate-180" : ""}`} />
+          </button>
+          
+          {isOpen && (
+            <div className="absolute left-0 mt-0 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+              {item.links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={closeAll}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-blue-600"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Regular link
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        onClick={closeAll}
+        className={`px-4 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-[#114085] text-sm duration-300 text-gray-200 lg:text-gray-700 lg:hover:text-white font-semibold border-b-[1px] lg:border-none block border-gray-600 ${
+          isActive(item.href) && "active"
+        }`}
+      >
+        {item.label}
+      </Link>
+    );
+  };
 
   return (
     <>
-      <header ref={headerRef} className="fixed w-full bg-[#fff] z-50 shadow">
+      <header ref={headerRef} className="fixed w-full bg-white z-50 shadow">
         <TopBar />
         <nav className="py-[5px]">
           <ContainerCenter className="sm:w-[90%] flex justify-between lg:justify-normal items-center lg:items-stretch xl:items-center xl:gap-10 lg:flex-col xl:flex-row">
-            <div
-              onClick={MenuHandler}
-              className="menu-open-btn bg-gray-300 lg:hidden px-3 py-2 cursor-pointer rounded-sm"
+            {/* Mobile Menu Button */}
+            <button
+              onClick={toggleMenu}
+              className="lg:hidden bg-gray-300 px-3 py-2 cursor-pointer rounded-sm"
             >
               <FaBarsStaggered className="text-2xl" />
-            </div>
+            </button>
+
+            {/* Logo */}
             <div className="logo self-end lg:self-start">
               <Image src={logo} width={100} height={50} alt="Company Logo" />
             </div>
+
+            {/* Navigation Menu */}
             <ul
               className={`${
-                !menuOpen ? "left-[-800px]" : "left-0"
+                menuOpen ? "left-0" : "left-[-800px]"
               } lg:left-0 flex lg:items-center flex-wrap lg:gap-2 lg:border-t-2 xl:border-none border-gray-300 lg:pt-3 pb-5 absolute lg:relative flex-col lg:flex-row bg-gray-800 lg:bg-transparent w-[80%] md:w-[50%] lg:w-auto h-[100vh] lg:h-auto top-0 duration-300`}
             >
-              <div className="menu-control lg:hidden px-4 py-3 border-b-[1px] border-gray-400 flex items-center justify-between text-gray-200">
-                <h4 className="">MENU</h4>
-                <RxCross1 onClick={MenuHandler} className="cursor-pointer" />
+              {/* Mobile Menu Header */}
+              <div className="menu-control lg:hidden px-4 py-3 border-b border-gray-400 flex items-center justify-between text-gray-200">
+                <h4>MENU</h4>
+                <RxCross1 onClick={closeAll} className="cursor-pointer" />
               </div>
-              {navLinks.map((link) => {
-                const active = pathname === link.href;
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMenuOpen(false)}
-                    className={`px-4 ${
-                      active && "active"
-                    } lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-[#114085] text-sm duration-300 text-gray-200 lg:text-gray-700 lg:hover:text-white font-semibold border-b-[1px] lg:border-none block border-gray-600`}
-                  >
-                    {link.label}
-                  </Link>
-                );
-              })}
 
+              {/* Navigation Items */}
+              {navigationItems.map(renderNavItem)}
+
+              {/* Society Maps Button */}
               <Link
-                href={"/maps"}
-                onClick={() => setMenuOpen(false)}
-                className="bg-[#114085] text-sm text-white px-4 py-3 lg:py-2 lg:rounded-sm lg:self-start"
+                href="/maps"
+                onClick={closeAll}
+                className="bg-[#114085] text-sm text-white px-4 py-3 lg:py-2 lg:rounded-sm lg:self-start mt-2 lg:mt-0"
               >
                 Society Maps
               </Link>
@@ -186,7 +197,9 @@ const Navbar = () => {
           </ContainerCenter>
         </nav>
       </header>
-      <div style={{ height: `${navbarHeight}px` }}></div>
+      
+      {/* Spacer for fixed navbar */}
+      <div style={{ height: `${navbarHeight}px` }} />
     </>
   );
 };

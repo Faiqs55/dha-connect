@@ -1,7 +1,7 @@
 const { Agency } = require("../models/agency.model");
 const { Agent } = require("../models/agent.model");
 const { User } = require("../models/user.model");
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 // ADD NEW AGENCY
 const addAgencyController = async (req, res) => {
@@ -29,8 +29,8 @@ const addAgencyController = async (req, res) => {
 // GET ALL APPROVED AGENCIES
 const getAgenciesController = async (req, res) => {
   try {
-    const query = req.query || {};    
-    
+    const query = req.query || {};
+
     const agencies = await Agency.find(query).select("-password");
     if (!agencies || agencies.length < 1) {
       return res
@@ -49,18 +49,21 @@ const getAgenciesController = async (req, res) => {
 
 // GET SINGLE AGENCY BY ID
 const getSingleAgency = async (req, res) => {
-  
   try {
     const id = req.params.id;
-    const agents = await Agent.find({agency: id});
+    const agents = await Agent.find({ agency: id });
     const agency = await Agency.findById(id).select("-password");
     if (!agency) {
       res
         .status(404)
         .json({ success: false, message: "Agency does not exist" });
     }
-    
-    res.json({ message: "Agency Found", success: true, data: {agency, agents: [...agents]} });
+
+    res.json({
+      message: "Agency Found",
+      success: true,
+      data: { agency, agents: [...agents] },
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -69,36 +72,36 @@ const getSingleAgency = async (req, res) => {
   }
 };
 
-
-// GET AGENCY OF A USER 
+// GET AGENCY OF A USER
 const getUserAgency = async (req, res) => {
-  
   try {
-    
     const user = req.user;
     const agency = await Agency.findById(user.agency).select("-password");
 
-    if(!agency){
-      res.status(404).json({success: false, message: "No Agency Assigned to User."})
+    if (!agency) {
+      res
+        .status(404)
+        .json({ success: false, message: "No Agency Assigned to User." });
     }
-    res.status(200).json({success: true, message: "User Found", data: agency});
+    res
+      .status(200)
+      .json({ success: true, message: "User Found", data: agency });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: error.message,
     });
   }
-}
+};
 
 // UPDATE AGENCY
 const updateAgency = async (req, res) => {
   try {
     const id = req.params.id;
     const data = req.body;
-    const user = req.user;    
+    const user = req.user;
 
     console.log(data);
-    
 
     // CHECK IF THE USER IS NOT ADMIN TRYING TO PERFORM ADMIN ACTION
     if (
@@ -149,6 +152,19 @@ const updateAgency = async (req, res) => {
         .json({ success: false, message: "Action Forbidden" });
     }
 
+    const agency = await Agency.findById(id);
+
+    if ("status" in data && agency.status === data.status) {
+      delete data.status;
+    }
+
+    if ("status" in data && data.status !== "Approved") {
+      const user = await User.findOne({ agency: id });
+      if (user) {
+        await user.deleteOne();
+      }
+    }
+
     const updatedAgency = await Agency.findByIdAndUpdate(id, data);
     if (updateAgency && data.status === "Approved") {
       const user = await User.create({
@@ -160,12 +176,10 @@ const updateAgency = async (req, res) => {
       });
 
       if (!user) {
-        return res
-          .status(401)
-          .json({
-            success: false,
-            message: "Agency Admin User could not be created",
-          });
+        return res.status(401).json({
+          success: false,
+          message: "Agency Admin User could not be created",
+        });
       }
     }
     res.status(200).json({ success: true, message: "Agency Updated." });
@@ -182,5 +196,5 @@ module.exports = {
   getAgenciesController,
   getSingleAgency,
   updateAgency,
-  getUserAgency
+  getUserAgency,
 };

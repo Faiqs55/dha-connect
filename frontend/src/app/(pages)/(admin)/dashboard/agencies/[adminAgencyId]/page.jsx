@@ -27,17 +27,20 @@ const page = () => {
         return;
       }
 
-      setAgency(res.data);
+      setAgency(res.data.agency);
       setFormData({
-        featuredAds: res.data.featuredAds || "", // Use res.data directly
-        videoAds: res.data.videoAds || "",
-        classifiedAds: res.data.classifiedAds || "",
-        status: res.data.status || "",
+        featuredAds: res.data.agency.featuredAds || 0, // Use res.data directly
+        videoAds: res.data.agency.videoAds || 0,
+        classifiedAds: res.data.agency.classifiedAds || 20,
+        status: res.data.agency.status || "",
       });
     } catch (error) {
       console.log(error.message);
     }
   };
+
+  console.log(agency);  
+  
 
   const inputChangeHandler = (e) => {
     const { name, value } = e.target;

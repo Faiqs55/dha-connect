@@ -11,6 +11,7 @@ const page = () => {
   const {
     value: token,
     setValue: setToken,
+    removeValue: removeToken,
     isLoaded,
   } = useLocalStorage("authToken", null);
   const router = useRouter();
@@ -32,9 +33,19 @@ const page = () => {
     }
   }, [loginData]);
 
+  const validateToken = async (token) => {
+    const res = await authService.checkUserLogin(token);
+    if (!res.success) {
+      removeToken();
+      return;
+    } else {
+      router.push("/dashboard");
+    }
+  };
+
   useEffect(() => {
     if (isLoaded && token) {
-      router.push("/dashboard");
+      validateToken(token)
     }
   }, [isLoaded, token, router]);
 

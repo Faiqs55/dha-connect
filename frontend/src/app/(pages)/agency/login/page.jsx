@@ -12,7 +12,12 @@ const page = () => {
   const [submiting, setSubmiting] = useState(false);
   const [disable, setDisable] = useState(true);
 
-  const { value: userToken, setValue: setToken, isLoaded } = useLocalStorage("userToken", null);
+  const {
+    value: userToken,
+    setValue: setToken,
+    removeValue: removeUser,
+    isLoaded,
+  } = useLocalStorage("userToken", null);
   const [loginData, setLoginData] = useState({
     email: null,
     password: null,
@@ -28,9 +33,19 @@ const page = () => {
     }
   }, [loginData]);
 
+  const validateToken = async (token) => {
+    const res = await authService.checkUserLogin(token);
+    if (!res.success) {
+      removeUser();
+      return;
+    } else {
+      router.push("/agency/dashboard");
+    }
+  };
+
   useEffect(() => {
     if (userToken && isLoaded) {
-      router.push("/agency/dashboard");
+      validateToken(userToken);
     } else {
       setLoading(false);
     }

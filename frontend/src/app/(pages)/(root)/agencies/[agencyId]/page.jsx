@@ -157,7 +157,7 @@ const page = () => {
             </a>
             <a
               className="bg-blue-50 text-blue-800 font-semibold px-2.5 md:px-5 py-1.5 rounded-md flex items-center gap-1 md:gap-2 text-xs md:text-base"
-              href={`tel:+${agency.agency.ceoPhone.replaceAll(" ", "").slice(1)}`}
+              href={`tel:+92${agency.agency.ceoPhone.replaceAll(" ", "").slice(1)}`}
             >
               <IoMdCall />
               Call
@@ -239,14 +239,14 @@ const page = () => {
                             <div className="btns flex gap-2.5 mt-3">
                               <a
                                 className="flex text-sm sm:text-base items-center gap-2 px-2 sm:px-5 py-1 sm:py-2 bg-blue-100 text-blue-700 font-semibold rounded-md"
-                                href="#"
+                                href={`mailto:${agent.email}`}
                               >
                                 <MdEmail className="text-lg"/>
                                 Email
                               </a>
                               <a
                                 className="flex text-sm sm:text-base items-center gap-2 px-2 sm:px-5 py-1 sm:py-2 bg-blue-100 text-blue-700 font-semibold rounded-md"
-                                href="#"
+                                href={`tel:+92${agent.phone.replaceAll(" ", "").slice(1)}`}
                               >
                                 <IoMdCall className="text-lg"/>
                                 Call
