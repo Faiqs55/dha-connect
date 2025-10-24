@@ -18,14 +18,18 @@ const sectors = [
 
 const page = () => {
   const [phase, setPhase] = useState(null);
+  const [sector, setSector] = useState(null);
   const phaseName = useParams().phase;
+  const sectorName = useParams().sector;
 
   useEffect(() => {
     const foundPhase = maps.find((m) => m.phase === phaseName);
-    setPhase(foundPhase);
+    setPhase(foundPhase)
+    const foundSector = foundPhase.sectors.find(s => s.sector === sectorName);
+    setSector(foundSector);
   }, [phase]);
 
-  if (!phase) {
+  if (!sector || !phase) {
     return;
   }
   return (
@@ -33,7 +37,7 @@ const page = () => {
       {/* Header & Breadcrumb */}
       <div className="max-w-6xl mx-auto mb-6">
         <h1 className="text-3xl font-semibold text-gray-800 mb-2">
-          {phase.title}
+          {phase.title}: {sector.title}
         </h1>
       </div>
 
@@ -41,7 +45,7 @@ const page = () => {
       <div className="max-w-6xl mx-auto rounded-lg overflow-hidden shadow-md mb-10">
         <iframe
           title="DHA Phase 1 Lahore Map"
-          src={phase.mapLink}
+          src={sector.mapLink}
           width="100%"
           height="400"
           allowFullScreen=""
@@ -51,7 +55,7 @@ const page = () => {
       </div>
 
       {/* Sectors List */}
-      <div className="max-w-6xl mx-auto">
+      {/* <div className="max-w-6xl mx-auto">
         <h2 className="text-2xl font-semibold text-gray-800 mb-6">
           Society Maps in {phase.title}
         </h2>
@@ -60,7 +64,7 @@ const page = () => {
           {phase.sectors.map((sector, index) => (
             <Link
               key={sector.id}
-              href={`${phase.phase}/${sector.sector}`}
+              href={`./${sector.sector}`}
               className="block bg-white p-4 hover:shadow-md hover:border-blue-400 transition duration-300"
             >
               <p className="text-blue-600 font-medium hover:underline">
@@ -69,7 +73,7 @@ const page = () => {
             </Link>
           ))}
         </div>
-      </div>
+      </div> */}
     </section>
   );
 };
