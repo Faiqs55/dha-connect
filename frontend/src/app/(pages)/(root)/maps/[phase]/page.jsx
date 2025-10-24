@@ -4,18 +4,6 @@ import { maps } from "@/static-data/mapsData";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
-const sectors = [
-  { name: "Sector A", link: "/maps/phase-1-lahore/sector-a" },
-  { name: "Sector B", link: "/maps/phase-1-lahore/sector-b" },
-  { name: "Sector C", link: "/maps/phase-1-lahore/sector-c" },
-  { name: "Sector D", link: "/maps/phase-1-lahore/sector-d" },
-  { name: "Sector E", link: "/maps/phase-1-lahore/sector-e" },
-  { name: "Sector F", link: "/maps/phase-1-lahore/sector-f" },
-  { name: "Sector G", link: "/maps/phase-1-lahore/sector-g" },
-  { name: "Sector H", link: "/maps/phase-1-lahore/sector-h" },
-  { name: "Sector J", link: "/maps/phase-1-lahore/sector-j" },
-];
-
 const page = () => {
   const [phase, setPhase] = useState(null);
   const phaseName = useParams().phase;

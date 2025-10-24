@@ -15,7 +15,7 @@ const page = () => {
           {maps.map((map, index) => (
             <Link
               key={index}
-              href={`/maps/${map.phase}`}
+              href={`${map.phase == "phase-1" ? "/phase-1" : `/maps/${map.phase}`}`}
               className="w-full max-w-sm bg-white  overflow-hidden shadow  transition-shadow duration-300"
             >
               <div className="overflow-hidden">
