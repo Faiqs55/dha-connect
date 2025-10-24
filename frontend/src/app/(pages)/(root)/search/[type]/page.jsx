@@ -5,9 +5,15 @@ import WidgetSearchFrom from "@/Components/WidgetSearchFrom";
 import { FaRegEnvelope } from "react-icons/fa6";
 import { hotProperties } from "@/static-data/propertiesData";
 import PropertiesCard from "@/Components/PropertiesCard";
+import { useParams } from "next/navigation";
 
 
 const page = () => {
+
+  const searchType = useParams().type;
+  console.log(searchType);
+  
+
   return (
     <>
 
@@ -15,8 +21,8 @@ const page = () => {
       <div className="p-5">
         <div className="w-full hero rounded-xl py-16 md:py-24 lg:py-28">
           <ContainerCenter className={`flex flex-col`}>
-            <h1 className="text-white text-4xl font-semibold text-shadow">
-              Buy Properties in DHA - Lahore
+            <h1 className="text-white text-4xl font-semibold text-shadow capitalize">
+              {searchType} Properties in DHA - Lahore
             </h1>
           </ContainerCenter>
         </div>
@@ -28,7 +34,7 @@ const page = () => {
         <ContainerCenter className={`flex flex-col xl:flex-row gap-10`}>
           {/* LEFT  */}
           <div className="recent-properties w-full xl:w-[70%]">
-            <h2 className="text-3xl">Buy Properties</h2>
+            <h2 className="text-3xl capitalize">{searchType} Properties</h2>
 
             <div className="flex flex-col gap-10 mt-10">
               {hotProperties.map((data, index) => (

@@ -12,7 +12,7 @@ import { usePathname, useRouter } from "next/navigation";
 // Consolidated navigation data
 const navigationItems = [
   { href: "/", label: "Home" },
-  { href: "/search/sale", label: "Sale" },
+  { href: "/search/buy", label: "Buy" },
   { href: "/search/rent", label: "Rent" },
   { href: "/search/project", label: "Project" },
   { href: "/file-rates", label: "File Rates" },
