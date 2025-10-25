@@ -12,11 +12,11 @@ const TopBar = () => {
         <div className="flex gap-1.5 md:gap-5 flex-wrap">
           <span className="flex items-center gap-2">
             <FaPhoneAlt />
-            <a href="#">+92 0323-xxxxxxx</a>
+            <a href="#">+92 0321 5678920</a>
           </span>
           <span className="flex items-center gap-2">
             <IoMail />
-            <a href="#">info@dha-clone.com</a>
+            <a href="#">info@dhaconnects.com</a>
           </span>
         </div>
 

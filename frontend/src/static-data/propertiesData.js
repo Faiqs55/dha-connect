@@ -14,7 +14,7 @@ export const hotProperties = [
         maxArea: 4367
     },
     {
-        img: "https://media.zameen.com/thumbnails/279679251-400x300.jpeg",
+        img: "https://media.zameen.com/thumbnails/284663758-400x300.jpeg",
         name: "Zameen ARX",
         description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
         author: "Sabhi",
@@ -28,7 +28,7 @@ export const hotProperties = [
         maxArea: 4367
     },
     {
-        img: "https://media.zameen.com/thumbnails/279679251-400x300.jpeg",
+        img: "https://media.zameen.com/thumbnails/283715528-400x300.jpeg",
         name: "Zameen ARX",
         description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
         author: "Sabhi",
@@ -42,7 +42,7 @@ export const hotProperties = [
         maxArea: 4367
     },
     {
-        img: "https://media.zameen.com/thumbnails/279679251-400x300.jpeg",
+        img: "https://media.zameen.com/thumbnails/276489404-400x300.jpeg",
         name: "Zameen ARX",
         description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
         author: "Sabhi",
@@ -56,7 +56,7 @@ export const hotProperties = [
         maxArea: 4367
     },
     {
-        img: "https://media.zameen.com/thumbnails/279679251-400x300.jpeg",
+        img: "https://media.zameen.com/thumbnails/277126698-400x300.jpeg",
         name: "Zameen ARX",
         description: "SABHi investor 03218477186 Ph7. Y X Z W U T S 1 Kanal new house 🏠🏡🏡🏠🏡🏠 wanted for rent budget 350",
         author: "Sabhi",
