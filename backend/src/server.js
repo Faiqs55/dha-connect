@@ -5,6 +5,7 @@ const { connectDB } = require("./config/db.config");
 const { agencyRouter } = require("./routes/agency.routes");
 const { userRouter } = require("./routes/user.routes");
 const { agentRouter } = require("./routes/agent.routes");
+const { propertyRouter } = require("./routes/property.routes");
 
 dotenv.config();
 const app = express();
@@ -31,5 +32,6 @@ app.get("/api/health", (req, res) => {
 app.use("/api/agency", agencyRouter);
 app.use("/api/user", userRouter);
 app.use("/api/agent", agentRouter);
+app.use("/api/property", propertyRouter)
 
 app.listen(port, () => console.log(`Server is running on PORT: ${port}`));
