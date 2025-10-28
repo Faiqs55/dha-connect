@@ -12,7 +12,7 @@ const page = () => {
   const [querySearch, setQuerySearch] = useState({
     name: "",
   });
-  const { value: userToken, isLoaded } = useLocalStorage("userToken", null);
+  const { value: userToken, isLoaded } = useLocalStorage("agencyToken", null);
 
   const getAgents = async (q = {}) => {
     const res = await agentService.getMyAgents(userToken, q);

@@ -23,7 +23,7 @@ const emptyForm = {
 };
 
 export default function AddAgentPage() {
-  const { value: token } = useLocalStorage("userToken", null);
+  const { value: token } = useLocalStorage("agencyToken", null);
   const [form, setForm] = useState(emptyForm);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
