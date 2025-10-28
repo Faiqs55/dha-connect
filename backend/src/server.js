@@ -29,8 +29,8 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok", message: "API health is good" });
 });
 
-app.use("/api/agency", agencyRouter);
 app.use("/api/user", userRouter);
+app.use("/api/agency", agencyRouter);
 app.use("/api/agent", agentRouter);
 app.use("/api/property", propertyRouter)
 

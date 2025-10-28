@@ -1,17 +1,20 @@
 const express = require("express");
 const { getAllProperties, createPropertyController, getSinglePropertyComtroller, updatePropertyController, deletePropertyController } = require("../controllers/property.cntroller");
-const { protect } = require("../middlewares/authMiddleware");
+const { isAgent, protect } = require("../middlewares/authMiddleware");
 
 const propertyRouter = express.Router();
 
 propertyRouter.route("/")
 .get(getAllProperties)
-.post(protect, createPropertyController);
+.post(isAgent, createPropertyController);
 
 propertyRouter.route("/:id")
 .get(getSinglePropertyComtroller)
-.put(protect, updatePropertyController)
+.put(isAgent, updatePropertyController);
+propertyRouter.route("agency/:id")
 .delete(protect, deletePropertyController);
+propertyRouter.route("agent/:id")
+.delete(isAgent, deletePropertyController);
 
 module.exports = {
     propertyRouter

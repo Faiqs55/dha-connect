@@ -1,19 +1,14 @@
 const { Agency } = require("../models/agency.model");
+const { Agent } = require("../models/agent.model");
 const { Property } = require("../models/property.model");
-const { User } = require("../models/user.model");
 
 const createPropertyController = async (req, res) => {
   try {
-    const user = req.user;
-    if (user.role !== "agent") {
-      return res
-        .status(403)
-        .json({ success: false, message: "Only Agents Can add Properties" });
-    }
+    const agent = req.agent;
 
     const body = req.body;
     const adType = body.adType;
-    const agency = await Agency.findById(user.agency);
+    const agency = await Agency.findById(agent.agency);
     if (adType !== "none" && agency[adType] === 0) {
       res.status(400).json({
         success: false,
@@ -22,8 +17,8 @@ const createPropertyController = async (req, res) => {
     }
     const property = await Property.create({
       ...body,
-      agency: user.agency,
-      agent: user._id,
+      agency: agent.agency,
+      agent: agent._id,
     });
 
     if (body.adType !== "none") {
@@ -56,7 +51,7 @@ const getSinglePropertyComtroller = async (req, res) => {
     }
 
     const agency = await Agency.findById(property.agency);
-    const agent = await User.findById(property.agent);
+    const agent = await Agent.findById(property.agent);
 
     res
       .status(200)
@@ -83,7 +78,7 @@ const getAllProperties = async (req, res) => {
 
 const updatePropertyController = async (req, res) => {
   try {
-    const user = req.user;
+    const agent = req.agent;
     const id = req.params.id;
     const body = req.body;
 
@@ -99,7 +94,7 @@ const updatePropertyController = async (req, res) => {
       res.status(404).json({ success: false, message: "Property Not Found" });
     }
 
-    if (user.role !== "agent" || user._id !== property.agent) {
+    if (agent._id !== property.agent) {
       res.status(403).json({ success: false, message: "Action Forbidden" });
     }
 
@@ -119,17 +114,18 @@ const deletePropertyController = async (req, res) => {
   try {
     const id = req.params.id;
     const user = req.user;
+    const agent = req.agent;
 
     const property = await Property.findById(id);
 
-    if (user.role !== "agent" && user.role !== "agency") {
+    if (!agent && user.role !== "agency") {
       res.status(403).json({
         success: false,
         message: "Only agents or agencies can delete Properties",
       });
     }
 
-    if (property.agency !== user.agency && property.agent !== user._id) {
+    if (property.agency !== user.agency && property.agent !== agent._id) {
       res.status(403).json({
         success: false,
         message: "You can only Delete your own agency",
@@ -148,11 +144,10 @@ const deletePropertyController = async (req, res) => {
   }
 };
 
-
 module.exports = {
-    createPropertyController,
-    getSinglePropertyComtroller,
-    getAllProperties,
-    updatePropertyController,
-    deletePropertyController
-}
+  createPropertyController,
+  getSinglePropertyComtroller,
+  getAllProperties,
+  updatePropertyController,
+  deletePropertyController,
+};

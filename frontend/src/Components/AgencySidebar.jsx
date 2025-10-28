@@ -59,7 +59,7 @@ export default function AgencySidebar({ open }) {
         <button
           onClick={() => {
             logout();
-            window.location.href = "/agency/login";
+            window.location.href = "/user-login";
           }}
           className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 transition text-sm font-semibold"
         >

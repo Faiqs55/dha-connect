@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const agentSchema = new mongoose.Schema({
   agency: {
@@ -25,9 +26,28 @@ const agentSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true
+  },
+
+  password: {
+    type: String,
+    required: true
   }
 
 }, {timestamps: true});
+
+
+agentSchema.pre("save", async function (next) {
+    if(!this.isModified("password")) return next();
+
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+});
+
+agentSchema.methods.matchPassword = async function (pass) {
+    return await bcrypt.compare(pass, this.password)
+}
+
 
 const Agent = mongoose.model("Agent", agentSchema);
 module.exports = {

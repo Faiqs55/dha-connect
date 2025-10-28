@@ -4,8 +4,8 @@ import { GoogleMap, LoadScript, GroundOverlay } from "@react-google-maps/api";
 
 const page = () => {
   const center = {
-    lat: 31.484173, 
-    lng: 74.393376,
+    lat: 31.472202263735927, 
+    lng: 74.37676656495834 ,
   };
 
   const containerStyle = {
@@ -13,11 +13,12 @@ const page = () => {
   height: "500px",
 };
 
+
   const bounds = {
-    north: 31.48896509106268,
-    south: 31.47003214430233,
-    east: 74.40891326056854,
-    west: 74.38101105466853,
+    north: 31.48453355528388, 
+    south: 31.46271951681101, 
+    east: 74.39239688642047,
+    west: 74.35597205579292,
   };
 
   return (
@@ -39,7 +40,7 @@ const page = () => {
             mapTypeId="satellite"
           >
             <GroundOverlay
-              url="/DHA-Phase-1.png" // place your image in public/images/
+              url="/p-3.png" // place your image in public/images/
               bounds={bounds}
               opacity={0.8}
             />

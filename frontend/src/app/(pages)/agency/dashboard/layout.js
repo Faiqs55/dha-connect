@@ -6,10 +6,11 @@ import { FaBarsStaggered } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
 import Spinner from "@/Components/Spinner";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import authService from "@/services/auth.service";
 
 const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const {value: userToken, isLoaded} = useLocalStorage("userToken");
+  const {value: agencyToken, isLoaded} = useLocalStorage("agencyToken");
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -21,13 +22,26 @@ const DashboardLayout = ({ children }) => {
     return () => window.removeEventListener("resize", close);
   }, []);
 
-  useEffect(() => {
-    if (!userToken && isLoaded) {
-      router.push("/agency/login");
-    } else {
-      setLoading(false);
+  const validateToken = async (token) => {
+    const res = await authService.checkUserLogin(token, null);
+    if(!res.success){
+      router.push("/user-login");
+    }else{
+      setLoading(false)
+      return;
     }
-  }, [userToken, isLoaded]);
+  }
+
+  useEffect(() => {
+    if (agencyToken && isLoaded) {
+      validateToken(agencyToken);
+      return;
+    } 
+
+    if(!agencyToken && isLoaded){
+      router.push("/user-login");
+    }
+  }, [agencyToken, isLoaded]);
 
   
 

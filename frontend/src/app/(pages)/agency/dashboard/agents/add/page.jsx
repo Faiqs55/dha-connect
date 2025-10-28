@@ -18,6 +18,7 @@ const emptyForm = {
   designation: "",
   phone: "",
   email: "",
+  password: "",
   image: "", // Cloudinary URL
 };
 
@@ -172,6 +173,14 @@ export default function AddAgentPage() {
             label="Agent Email"
             name="email"
             value={form.email}
+            onChange={handleChange}
+            required
+          />
+          <AgencyFormInput
+            label="Agent Password"
+            name="password"
+            value={form.password}
+            type="password"
             onChange={handleChange}
             required
           />
