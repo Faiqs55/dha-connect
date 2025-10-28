@@ -44,6 +44,12 @@ const propertySchema = new mongoose.Schema(
       required: true,
       enum: ["buy", "rent", "project"],
     },
+    type: {
+      type: String,
+      required: true,
+      enum: ["residential", "commercial"],
+      default: "residential",
+    },
     size: {
       type: String,
       required: true,
@@ -58,9 +64,9 @@ const propertySchema = new mongoose.Schema(
       type: [String],
     },
     adType: {
-        type: String,
-        enum: ["classifiedAds", "videoAds", "featuredAds", "none"],
-        default: "none"
+      type: String,
+      enum: ["classifiedAds", "videoAds", "featuredAds", "none"],
+      default: "none",
     },
     price: {
       type: String,
@@ -69,6 +75,30 @@ const propertySchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+propertySchema.add({
+  paymentPlan: {
+    type: String,
+    enum: ["yearly", "monthly", "weekly", "daily", "other"],
+    required: function () {
+      return this.category === "rent";
+    },
+  },
+
+  residentialTypes: {
+    type: String,
+    required: function () {
+      return this.type === "residential";
+    },
+  },
+
+  commercialTypes: {
+    type: String,
+    required: function () {
+      return this.type === "commercial";
+    },
+  },
+});
 
 const Property = mongoose.model("Property", propertySchema);
 module.exports = {

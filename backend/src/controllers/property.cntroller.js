@@ -9,8 +9,9 @@ const createPropertyController = async (req, res) => {
     const body = req.body;
     const adType = body.adType;
     const agency = await Agency.findById(agent.agency);
+
     if (adType !== "none" && agency[adType] === 0) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: `Action Failed: You have used all of your ${adType}`,
       });
@@ -22,17 +23,21 @@ const createPropertyController = async (req, res) => {
     });
 
     if (body.adType !== "none") {
-      agency[adType] = agency[adType] - 1;
-      agency.save();
+      if (agency[adType] === 0) {
+        return;
+      } else {
+        agency[adType] = agency[adType] - 1;
+        agency.save();
+      }
     }
 
-    if (!Property) {
-      res
+    if (!property) {
+     return res
         .status(400)
         .json({ success: false, message: "Property Could not be added" });
     }
 
-    res.status(201).json({ success: true, data: property });
+    res.status(201).json({ success: true, data: property, message: "Property has been added." });
   } catch (error) {
     res.status(500).json({
       success: false,
