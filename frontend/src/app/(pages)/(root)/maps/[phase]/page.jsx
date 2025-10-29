@@ -1,21 +1,45 @@
 "use client";
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import { maps } from "@/static-data/mapsData";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { GoogleMap, LoadScript, GroundOverlay } from "@react-google-maps/api";
+import Spinner from "@/Components/Spinner";
+
+const containerStyle = {
+  width: "100%",
+  height: "500px",
+};
 
 const page = () => {
   const [phase, setPhase] = useState(null);
   const phaseName = useParams().phase;
+  let bounds;
+  let center;
 
   useEffect(() => {
     const foundPhase = maps.find((m) => m.phase === phaseName);
     setPhase(foundPhase);
   }, [phase]);
 
-  if (!phase) {
-    return;
+  if (phase) {
+    bounds = {
+      north: phase?.north,
+      south: phase?.south,
+      east: phase?.east,
+      west: phase?.west,
+    };
+
+    center = {
+      lng: phase?.long,
+      lat: phase?.lat,
+    };
   }
+
+  if (!phase || !bounds || !center) {
+    return <Spinner />;
+  }
+
   return (
     <section className="bg-gray-50 py-10 px-4 md:px-10">
       {/* Header & Breadcrumb */}
@@ -26,17 +50,24 @@ const page = () => {
       </div>
 
       {/* Map Section */}
-      <div className="max-w-6xl mx-auto rounded-lg overflow-hidden shadow-md mb-10">
-        <iframe
-          title="DHA Phase 1 Lahore Map"
-          src={phase.mapLink}
-          width="100%"
-          height="400"
-          allowFullScreen=""
-          loading="lazy"
-          className="border-0 w-full h-[400px]"
-        ></iframe>
-      </div>
+      {phase && bounds && center && (
+        <div className="max-w-6xl mx-auto rounded-lg overflow-hidden shadow-md mb-10">
+          <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_MAPS}>
+            <GoogleMap
+              mapContainerStyle={containerStyle}
+              center={center}
+              zoom={15}
+              mapTypeId="satellite"
+            >
+              <GroundOverlay
+                url={phase.overlay} // place your image in public/images/
+                bounds={bounds}
+                opacity={0.8}
+              />
+            </GoogleMap>
+          </LoadScript>
+        </div>
+      )}
 
       {/* Sectors List */}
       <div className="max-w-6xl mx-auto">

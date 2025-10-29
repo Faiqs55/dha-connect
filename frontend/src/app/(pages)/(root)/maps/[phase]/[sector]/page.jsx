@@ -1,36 +1,47 @@
 "use client";
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import { maps } from "@/static-data/mapsData";
-import Link from "next/link";
 import { useParams } from "next/navigation";
+import Spinner from "@/Components/Spinner";
+import { GoogleMap, LoadScript, GroundOverlay } from "@react-google-maps/api";
 
-const sectors = [
-  { name: "Sector A", link: "/maps/phase-1-lahore/sector-a" },
-  { name: "Sector B", link: "/maps/phase-1-lahore/sector-b" },
-  { name: "Sector C", link: "/maps/phase-1-lahore/sector-c" },
-  { name: "Sector D", link: "/maps/phase-1-lahore/sector-d" },
-  { name: "Sector E", link: "/maps/phase-1-lahore/sector-e" },
-  { name: "Sector F", link: "/maps/phase-1-lahore/sector-f" },
-  { name: "Sector G", link: "/maps/phase-1-lahore/sector-g" },
-  { name: "Sector H", link: "/maps/phase-1-lahore/sector-h" },
-  { name: "Sector J", link: "/maps/phase-1-lahore/sector-j" },
-];
+
+const containerStyle = {
+  width: "100%",
+  height: "500px",
+};
 
 const page = () => {
   const [phase, setPhase] = useState(null);
   const [sector, setSector] = useState(null);
   const phaseName = useParams().phase;
   const sectorName = useParams().sector;
+  let bounds;
+  let center;
 
   useEffect(() => {
     const foundPhase = maps.find((m) => m.phase === phaseName);
-    setPhase(foundPhase)
-    const foundSector = foundPhase.sectors.find(s => s.sector === sectorName);
+    setPhase(foundPhase);
+    const foundSector = foundPhase.sectors.find((s) => s.sector === sectorName);
     setSector(foundSector);
   }, [phase]);
 
-  if (!sector || !phase) {
-    return;
+  if (phase && sector) {
+    bounds = {
+      north: phase?.north,
+      south: phase?.south,
+      east: phase?.east,
+      west: phase?.west,
+    };
+
+    center = {
+      lng: sector?.long,
+      lat: sector?.lat,
+    };
+  }
+
+  if (!sector || !phase || !bounds || !center) {
+    return <Spinner />;
   }
   return (
     <section className="bg-gray-50 py-10 px-4 md:px-10">
@@ -42,38 +53,24 @@ const page = () => {
       </div>
 
       {/* Map Section */}
-      <div className="max-w-6xl mx-auto rounded-lg overflow-hidden shadow-md mb-10">
-        <iframe
-          title="DHA Phase 1 Lahore Map"
-          src={sector.mapLink}
-          width="100%"
-          height="400"
-          allowFullScreen=""
-          loading="lazy"
-          className="border-0 w-full h-[400px]"
-        ></iframe>
-      </div>
-
-      {/* Sectors List */}
-      {/* <div className="max-w-6xl mx-auto">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-          Society Maps in {phase.title}
-        </h2>
-
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {phase.sectors.map((sector, index) => (
-            <Link
-              key={sector.id}
-              href={`./${sector.sector}`}
-              className="block bg-white p-4 hover:shadow-md hover:border-blue-400 transition duration-300"
+      {phase && bounds && center && sector && (
+        <div className="max-w-6xl mx-auto rounded-lg overflow-hidden shadow-md mb-10">
+          <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_MAPS}>
+            <GoogleMap
+              mapContainerStyle={containerStyle}
+              center={center}
+              zoom={17}
+              mapTypeId="satellite"
             >
-              <p className="text-blue-600 font-medium hover:underline">
-                {sector.title}, {phase.title}
-              </p>
-            </Link>
-          ))}
+              <GroundOverlay
+                url={phase.overlay} // place your image in public/images/
+                bounds={bounds}
+                opacity={0.8}
+              />
+            </GoogleMap>
+          </LoadScript>
         </div>
-      </div> */}
+      )}
     </section>
   );
 };
