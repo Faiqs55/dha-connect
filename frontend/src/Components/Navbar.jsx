@@ -35,7 +35,7 @@ const navigationItems = [
     label: "Agencies",
     links: [
       { href: "/agencies", label: "All Agencies" },
-      { href: "/agencies?type=affiliates", label: "Affiliates" },
+      { href: "/affiliates", label: "Affiliates" },
     ]
   },
   { href: "/transfer-expense", label: "Transfer Expense" },
