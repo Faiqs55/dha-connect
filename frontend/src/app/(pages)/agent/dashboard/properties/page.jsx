@@ -46,8 +46,8 @@ const page = () => {
         </Link>
       </div>
 
-      <div className="flex mb-10 justify-between items-center">
-        <h1 className="text-3xl font-semibold text-gray-700 ">
+      <div className="flex md:flex-row flex-col gap-5 md:gap-0 mb-10 justify-between items-center">
+        <h1 className="text-3xl text-center md:text-left font-semibold text-gray-700 ">
           My Properties Listing
         </h1>
         <Link
@@ -59,7 +59,7 @@ const page = () => {
       </div>
       {/* FILTERS  */}
       <form onSubmit={submitHandler}>
-        <div className="flex gap-5 mb-5">
+        <div className="flex md:flex-row flex-col gap-5 mb-5">
           <input
             onChange={(e) => setTitleFilter(e.target.value)}
             value={titleFilter}
@@ -94,7 +94,7 @@ const page = () => {
       {!loading ? (
         <div className="mt-5">
           {properties.length > 0 ? (
-            <div className="grid grid-cols-3 gap-5">
+            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
               {properties.map((p) => (
                 <div className="shadow rounded-md p-5" key={p._id}>
                   <div className="h-[200px] w-full relative mb-2">

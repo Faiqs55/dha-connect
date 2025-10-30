@@ -28,7 +28,6 @@ class Auth {
   }
 
   async checkUserLogin(token, role) {
-    console.log(role);
     
     try {
       let url;

@@ -38,8 +38,6 @@ class Property {
           fetchURL += `?${key}=${query[key]}`;
         });
       }
-
-      console.log(fetchURL);
       
 
       const res = await fetch(fetchURL);
