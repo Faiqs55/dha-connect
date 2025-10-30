@@ -1,431 +1,597 @@
 "use client";
-import { useState, useEffect } from "react";
-import { FaRegTrashAlt } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import ContainerCenter from "@/Components/ContainerCenter";
-import AgencyFormSection from "@/Components/AgencyFormSection";
-import AgencyFormInput from "@/Components/AgencyFormInput";
-import AgencyFormSelect from "@/Components/AgencyFormSelect";
+import { FaRegTrashAlt } from "react-icons/fa";
 import AlertResult from "@/Components/AlertResult";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
 import propertyService from "@/services/property.service";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
-/* ---------------- static select data ---------------- */
-const categoryOpts = [
-  { val: "buy", label: "Buy" },
-  { val: "rent", label: "Rent" },
-  { val: "project", label: "Project" },
-];
-const typeOpts = [
-  { val: "residential", label: "Residential" },
-  { val: "commercial", label: "Commercial" },
-];
-const statusOpts = [
-  { val: "available", label: "Available" },
-  { val: "sold", label: "Sold" },
-];
-const adTypeOpts = [
-  { val: "none", label: "None" },
-  { val: "classifiedAds", label: "Classified Ads" },
-  { val: "videoAds", label: "Video Ads" },
-  { val: "featuredAds", label: "Featured Ads" },
-];
-const paymentPlanOpts = [
-  { val: "yearly", label: "Yearly" },
-  { val: "monthly", label: "Monthly" },
-  { val: "weekly", label: "Weekly" },
-  { val: "daily", label: "Daily" },
-  { val: "other", label: "Other" },
-];
-const phaseOpts = [
-  { val: "phase1", label: "Phase 1" },
-  { val: "phase2", label: "Phase 2" },
-  { val: "phase3", label: "Phase 3" },
-];
+/* ---------- helpers ---------- */
+const FormBlock = ({ heading, children }) => (
+  <div className="bg-white shadow p-5 rounded-md">
+    <h3 className="text-xl font-semibold mb-5">{heading}</h3>
+    <div className="flex flex-col gap-4">{children}</div>
+  </div>
+);
 
-/* ---------------- empty form ---------------- */
-const emptyForm = {
-  name: "",
-  agent: "",
-  agency: "",
-  images: [],
-  video: "",
-  phase: phaseOpts[0].val,
-  address: "",
-  description: "",
-  category: categoryOpts[0].val,
-  type: typeOpts[0].val,
-  size: "",
-  status: statusOpts[0].val,
-  features: "",
-  adType: adTypeOpts[0].val,
-  price: "",
-  paymentPlan: "",
-  residentialTypes: "",
-  commercialTypes: "",
-};
+const Badge = ({ label, active, onClick }) => (
+  <span
+    onClick={onClick}
+    className={`px-2 py-1 sm:px-4 sm:py-2 sm:text-sm text-xs sm:font-semibold rounded-full cursor-pointer transition ${
+      active
+        ? "border-blue-500 bg-blue-100 text-blue-500"
+        : "bg-gray-200 text-gray-600 border-transparent"
+    }`}
+  >
+    {label}
+  </span>
+);
 
-export default function CreatePropertyPage() {
-  const [form, setForm] = useState(emptyForm);
-  const [imageFiles, setImageFiles] = useState([]);
-  const [previews, setPreviews] = useState([]);
-  const [toast, setToast] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
+const Tab = ({ value, current, set, label }) => (
+  <button
+    type="button"
+    onClick={() => set(value)}
+    className={`px-3 py-1.5 sm:px-5 sm:py-2 text-sm font-semibold border-b-2 transition ${
+      current === value ? "border-blue-700 text-blue-700" : "border-transparent"
+    }`}
+  >
+    {label}
+  </button>
+);
+
+/* ---------- main page ---------- */
+export default function page() {
+  const basicInputStyles = "border border-gray-300 rounded-md px-3 py-2";
+
   const { value: token, isLoaded } = useLocalStorage("agentToken", null);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((f) => ({ ...f, [name]: value }));
-  };
+  /* ---------- media ---------- */
+  const [imageFiles, setImageFiles] = useState([]);
+  const [videoFile, setVideoFile] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(""); // <-- NEW
+  const [previewList, setPreviewList] = useState([]);
+  const [thumbIndex, setThumbIndex] = useState(0);
 
-  const handleImages = (e) => {
+  /* ---------- choices ---------- */
+  const [purpose, setPurpose] = useState("Sell");
+  const [type, setType] = useState("residential");
+  const [subType, setSubType] = useState("House");
+
+  const subTypes = {
+    residential: [
+      "House",
+      "Flat",
+      "Upper Portion",
+      "Lower Portion",
+      "Farm House",
+      "Room",
+      "Penthouse",
+    ],
+    plot: [
+      "Residential Plot",
+      "Commercial Plot",
+      "Agricultural Land",
+      "Industrial Land",
+      "Plot File",
+      "Plot Form",
+    ],
+    commercial: ["Office", "Shop", "Warehouse", "Factory", "Building", "Other"],
+  };
+  useEffect(() => setSubType(subTypes[type][0]), [type]);
+
+  const bedOpts = [
+    "Studio",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "10+",
+  ];
+  const bathOpts = ["1", "2", "3", "4", "5", "6", "6+"];
+  const [bedrooms, setBedrooms] = useState("");
+  const [bathrooms, setBathrooms] = useState("");
+
+  /* ---------- fields ---------- */
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [paymentPlan, setPaymentPlan] = useState("Monthly");
+  const [adType, setAdType] = useState("none");
+  const [phase, setPhase] = useState("Phase 1");
+  const [address, setAddress] = useState("");
+  const [price, setPrice] = useState("");
+  const [area, setArea] = useState("");
+  const [areaUnit, setAreaUnit] = useState("Marla");
+  const [otherText, setOtherText] = useState("");
+
+  /* ---------- ui ---------- */
+  const [submitting, setSubmitting] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  /* ---------- validation ---------- */
+  const isValid =
+    title.trim() &&
+    purpose &&
+    type &&
+    subType &&
+    phase &&
+    address.trim() &&
+    price &&
+    area.trim() &&
+    areaUnit &&
+    imageFiles.length > 0;
+
+  /* ---------- media helpers ---------- */
+  const fileToPreview = (file) =>
+    new Promise((res) => {
+      const reader = new FileReader();
+      reader.onload = (e) => res({ url: e.target.result, name: file.name });
+      reader.readAsDataURL(file);
+    });
+
+  const triggerImagePicker = () =>
+    document.getElementById("image-input").click();
+  const triggerVideoPicker = () =>
+    document.getElementById("video-input").click();
+
+  const addImages = async (e) => {
     const files = Array.from(e.target.files);
-    if (!files.length) return;
-    const oversized = files.some((f) => f.size > 5 * 1024 * 1024);
-    if (oversized)
-      return setToast({ success: false, message: "Max 5 MB per image" });
+    const newPreviews = await Promise.all(files.map(fileToPreview));
     setImageFiles((prev) => [...prev, ...files]);
-    setPreviews((prev) => [
-      ...prev,
-      ...files.map((f) => URL.createObjectURL(f)),
-    ]);
+    setPreviewList((prev) => [...prev, ...newPreviews]);
   };
 
   const removeImage = (idx) => {
     setImageFiles((prev) => prev.filter((_, i) => i !== idx));
-    setPreviews((prev) => prev.filter((_, i) => i !== idx));
+    setPreviewList((prev) => prev.filter((_, i) => i !== idx));
+    if (thumbIndex === idx) setThumbIndex(0);
   };
 
-  /* ---------- radios & clear opposite type ---------- */
-  const radioSet = (() => {
-    if (form.type === "residential") {
-      if (form.category === "buy")
-        return {
-          group: "residential",
-          opts: ["Plots", "House", "File", "Apartments"],
-        };
-      if (form.category === "rent" || form.category === "project")
-        return { group: "residential", opts: ["House", "File", "Apartments"] };
-    }
-    if (form.type === "commercial") {
-      if (form.category === "buy")
-        return {
-          group: "commercial",
-          opts: ["Office", "Shop", "Warehouse", "Building"],
-        };
-      if (form.category === "rent" || form.category === "project")
-        return {
-          group: "commercial",
-          opts: ["Office", "Shop", "Warehouse", "Building"],
-        };
-    }
-    return null;
-  })();
+  const addVideo = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 50 * 1024 * 1024) return alert("Video must be ≤ 50 MB");
+    setVideoFile(file);
+    // generate preview url for local video element
+    setVideoPreview(URL.createObjectURL(file));
+  };
 
-  useEffect(() => {
-    if (form.type === "residential")
-      setForm((f) => ({ ...f, commercialTypes: "" }));
-    if (form.type === "commercial")
-      setForm((f) => ({ ...f, residentialTypes: "" }));
-  }, [form.type]);
+  const removeVideo = () => {
+    setVideoFile(null);
+    setVideoPreview("");
+  };
 
-  /* ---------- remove paymentPlan when category !== rent ---------- */
-  useEffect(() => {
-    if (form.category !== "rent") {
-      setForm((f) => {
-        const { paymentPlan, ...rest } = f;
-        return rest;
-      });
-    }
-  }, [form.category]);
+  /* ---------- Cloudinary upload (works for both image & video) ---------- */
+const uploadToCloudinary = async (file, resourceType = "image") => {
+  try {
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("upload_preset", "dha-agency-logo"); // <-- your preset (must allow video)
 
+    const url = `https://api.cloudinary.com/v1_1/dhdgrfseu/${resourceType}/upload`;
+    const { data } = await axios.post(url, fd);
+    return data.secure_url;
+  } catch (error) {
+    // make caller abort submission
+    throw new Error("Cloudinary upload failed");
+  }
+};
+
+  /* ---------- submit ---------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!imageFiles.length)
-      return setToast({
-        success: false,
-        message: "At least one image is required",
-      });
+    if (!isValid) return;
 
     setSubmitting(true);
     setToast(null);
 
-    const uploadPromises = imageFiles.map((file) => {
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("upload_preset", "dha-agency-logo");
-      return axios.post(
-        `https://api.cloudinary.com/v1_1/dhdgrfseu/image/upload`,
-        fd
-      );
-    });
-
-    let imageUrls;
     try {
-      const resps = await Promise.all(uploadPromises);
-      imageUrls = resps.map((r) => r.data.secure_url);
-    } catch {
-      setToast({ success: false, message: "Image upload failed" });
-      setSubmitting(false);
-      return;
-    }
+      const imageUrls = await Promise.all(
+        imageFiles.map((f) => uploadToCloudinary(f, "image"))
+      );
+      const videoUrl = videoFile
+        ? await uploadToCloudinary(videoFile, "video")
+        : "";
 
-    /* build payload without paymentPlan unless category === rent */
-    const { paymentPlan, ...restForm } = form;
-    const payload = {
-      ...(form.category === "rent" ? { paymentPlan } : {}),
-      ...restForm,
-      images: imageUrls,
-      features: form.features
-        .split(",")
-        .map((f) => f.trim())
-        .filter(Boolean),
-    };
+      const payload = {
+        title: title.trim(),
+        description: description.trim(),
+        adType,
+        category: purpose,
+        paymentPlan,
+        type,
+        subType,
+        phase,
+        address: address.trim(),
+        price,
+        area: area.trim(),
+        areaUnit,
+        bedrooms,
+        bathrooms,
+        otherFeatures: otherText
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        images: imageUrls,
+        video: videoUrl,
+        thumbnailImage: imageUrls[thumbIndex],
+      };
 
-    if (isLoaded) {      
+      /* TODO: await propertyService.addProperty(payload); */
       const res = await propertyService.addProperty(payload, token);
       setToast(res);
+
       if (res.success) {
-        setForm(emptyForm);
+        /* ======  CLEAR FORM ON SUCCESS  ====== */
+        setTitle("");
+        setDescription("");
+        setAdType("none");
+        setPurpose("Sell");
+        setPaymentPlan("Monthly");
+        setType("residential");
+        setSubType(subTypes.residential[0]);
+        setPhase("Phase 1");
+        setAddress("");
+        setPrice("");
+        setArea("");
+        setAreaUnit("Marla");
+        setBedrooms("");
+        setBathrooms("");
+        setOtherText("");
         setImageFiles([]);
-        setPreviews([]);
+        setPreviewList([]);
+        setVideoFile(null);
+        setVideoPreview(""); // <-- NEW
+        setThumbIndex(0);
+        window.location.reload();
       }
+    } catch (err) {
+      // Cloudinary failed -> show error toast and DO NOT call backend
+      setToast({ success: false, message: "Upload failed, please try again." });
+    } finally {
       setSubmitting(false);
     }
-
   };
 
   return (
     <>
-      <AlertResult data={toast} onClose={() => setToast(null)} />
+      <AlertResult data={toast} onClose={() => {setToast(null)}} />
 
-      <div className="page-head bg-gray-100">
-        <ContainerCenter className="py-15">
-          <h1 className="text-4xl">Property Creation Form</h1>
-        </ContainerCenter>
-      </div>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        {/* hidden native inputs */}
+        <input
+          id="image-input"
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={addImages}
+          className="hidden"
+        />
+        <input
+          id="video-input"
+          type="file"
+          accept="video/*"
+          onChange={addVideo}
+          className="hidden"
+        />
 
-      <form onSubmit={handleSubmit} className="py-10">
-        <ContainerCenter className="space-y-10">
-          {/* ------- images ------- */}
-          <AgencyFormSection title="Property Images">
-            <input
-              type="file"
-              multiple
-              hidden
-              onChange={handleImages}
-              accept="image/*"
-            />
-            {previews.length === 0 ? (
-              <div
-                onClick={(e) => e.currentTarget.querySelector("input")?.click()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  const files = Array.from(e.dataTransfer.files);
-                  if (files.length) handleImages({ target: { files } });
-                }}
-                onDragOver={(e) => e.preventDefault()}
-                className="bg-gray-200 py-6 rounded text-center cursor-pointer hover:bg-gray-300"
-              >
-                Drag & Drop or <span className="underline">Browse</span>
-                <input
-                  type="file"
-                  multiple
-                  hidden
-                  accept="image/*"
-                  onChange={handleImages}
+        {/* ---------- Property Media (TOP) ---------- */}
+        <FormBlock heading="Property Media">
+          {/* images */}
+          <div>
+            <label className="text-sm font-semibold mb-2 block">
+              Property Images *
+            </label>
+            <button
+              type="button"
+              onClick={triggerImagePicker}
+              className="px-4 py-2 text-sm font-semibold rounded-full bg-blue-100 text-blue-700 border border-blue-500 hover:bg-blue-200 transition"
+            >
+              + Add Images
+            </button>
+            <div className="flex flex-wrap gap-3 mt-3">
+              {previewList.map((p, i) => (
+                <div
+                  key={i}
+                  onClick={() => setThumbIndex(i)}
+                  className={`relative cursor-pointer rounded overflow-hidden border-2 ${
+                    thumbIndex === i ? "border-blue-600" : "border-transparent"
+                  }`}
+                >
+                  <img src={p.url} alt="" className="h-24 w-24 object-cover" />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeImage(i);
+                    }}
+                    className="absolute top-1 right-1 bg-rose-500 text-white p-1 rounded"
+                  >
+                    <FaRegTrashAlt />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* video */}
+          <div>
+            <label className="text-sm font-semibold mb-2 block">
+              Property Video (≤ 50 MB)
+            </label>
+            <button
+              type="button"
+              onClick={triggerVideoPicker}
+              className="px-4 py-2 text-sm font-semibold rounded-full bg-gray-200 text-gray-700 border border-gray-300 hover:bg-gray-300 transition"
+            >
+              + Add Video
+            </button>
+            {videoFile && (
+              <div className="mt-3 flex items-center gap-3">
+                <video
+                  src={videoPreview}
+                  controls
+                  className="h-24 w-24 object-cover rounded"
                 />
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {previews.map((src, idx) => (
-                  <div key={idx} className="relative">
-                    <img
-                      src={src}
-                      alt={`preview-${idx}`}
-                      className="h-32 w-full object-cover rounded"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(idx)}
-                      className="absolute top-2 right-2 bg-rose-500 text-white p-1.5 rounded"
-                    >
-                      <FaRegTrashAlt />
-                    </button>
-                  </div>
-                ))}
+                <button
+                  type="button"
+                  onClick={removeVideo}
+                  className="bg-rose-500 text-white p-2 rounded"
+                >
+                  <FaRegTrashAlt />
+                </button>
               </div>
             )}
-          </AgencyFormSection>
+          </div>
+        </FormBlock>
 
-          {/* ------- basic info ------- */}
-          <AgencyFormSection
-            title="Basic Information"
-            innerStyle="grid md:grid-cols-2 gap-4"
+        {/* ---------- Property Information ---------- */}
+        <FormBlock heading="Property Information">
+          <label className="text-sm font-semibold mb-1">Property Title *</label>
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className={basicInputStyles}
+            type="text"
+            placeholder="Enter Title for your Property"
+            required
+          />
+
+          <label className="text-sm font-semibold mb-1">
+            Property Description
+          </label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Describe your property (optional)"
+            className={`${basicInputStyles} min-h-[100px]`}
+          />
+
+          <label className="text-sm font-semibold mb-1">
+            Advertisement Type
+          </label>
+          <select
+            value={adType}
+            onChange={(e) => setAdType(e.target.value)}
+            className={basicInputStyles}
           >
-            <AgencyFormInput
-              label="Property Name"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              required
-            />
-            <AgencyFormInput
-              label="YouTube Video URL (Optional)"
-              name="video"
-              value={form.video}
-              onChange={handleChange}
-            />
-            <AgencyFormSelect
-              label="Category"
-              name="category"
-              value={form.category}
-              onChange={handleChange}
-              options={categoryOpts}
-            />
-            <AgencyFormSelect
-              label="Type"
-              name="type"
-              value={form.type}
-              onChange={handleChange}
-              options={typeOpts}
-            />
-            <AgencyFormInput
-              label="Size (sqft etc.)"
-              name="size"
-              value={form.size}
-              onChange={handleChange}
-              required
-            />
-            <AgencyFormInput
-              label="Price"
-              name="price"
-              value={form.price}
-              onChange={handleChange}
-              required
-            />
-            <AgencyFormSelect
-              label="Status"
-              name="status"
-              value={form.status}
-              onChange={handleChange}
-              options={statusOpts}
-            />
-            <AgencyFormSelect
-              label="Advertisement Type"
-              name="adType"
-              value={form.adType}
-              onChange={handleChange}
-              options={adTypeOpts}
-            />
-          </AgencyFormSection>
+            <option value="none">None</option>
+            <option value="classifiedAds">Classified Ad</option>
+            <option value="videoAds">Video Ad</option>
+            <option value="featureAds">Feature Ads</option>
+          </select>
+        </FormBlock>
 
-          {/* ------- sub-type radios (buy / rent / project) ------- */}
-          {radioSet && (
-            <AgencyFormSection
-              title={`${
-                form.type === "residential" ? "Residential" : "Commercial"
-              } sub types`}
+        {/* ---------- Location & Purpose ---------- */}
+        <FormBlock heading="Location & Purpose">
+          <div>
+            <label className="text-sm font-semibold mb-2 block">
+              Select Purpose *
+            </label>
+            <div className="flex gap-3">
+              {["Sell", "Rent", "Project"].map((p) => (
+                <Badge
+                  key={p}
+                  label={p}
+                  active={purpose === p}
+                  onClick={() => setPurpose(p)}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="text-sm font-semibold mb-2 block">
+              Select Property Type *
+            </label>
+            <div className="border-b border-gray-200 flex">
+              <Tab
+                value="residential"
+                current={type}
+                set={setType}
+                label="Residential"
+              />
+              <Tab value="plot" current={type} set={setType} label="Plot" />
+              <Tab
+                value="commercial"
+                current={type}
+                set={setType}
+                label="Commercial"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-sm font-semibold mb-2 block">
+              Sub-type *
+            </label>
+            <div className="flex flex-wrap gap-3">
+              {subTypes[type].map((st) => (
+                <Badge
+                  key={st}
+                  label={st}
+                  active={subType === st}
+                  onClick={() => setSubType(st)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {purpose === "Rent" && (
+            <div className="flex flex-col">
+              <label className="text-sm font-semibold mb-2 block">
+                Payment Plan *
+              </label>
+              <select
+                className={`${basicInputStyles}`}
+                value={paymentPlan}
+                onChange={(e) => setPaymentPlan(e.target.value)}
+              >
+                <option value="Yearly">Yearly</option>
+                <option value="Monthly">Monthly</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Daily">Daily</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          )}
+
+          <div className="flex flex-col">
+            <label className="text-sm font-semibold mb-2 block">
+              Select Phase *
+            </label>
+            <select
+              value={phase}
+              onChange={(e) => setPhase(e.target.value)}
+              className={basicInputStyles}
             >
-              <RadioGroup
-                name={
-                  radioSet.group === "residential"
-                    ? "residentialTypes"
-                    : "commercialTypes"
-                }
-                value={
-                  radioSet.group === "residential"
-                    ? form.residentialTypes
-                    : form.commercialTypes
-                }
-                onChange={handleChange}
-                options={radioSet.opts}
-              />
-            </AgencyFormSection>
-          )}
+              {Array.from({ length: 10 }, (_, i) => (
+                <option key={i + 1} value={`Phase ${i + 1}`}>{`Phase ${
+                  i + 1
+                }`}</option>
+              ))}
+            </select>
+          </div>
 
-          {/* ------- payment plan: only rent ------- */}
-          {form.category === "rent" && (
-            <AgencyFormSection title="Payment Plan">
-              <AgencyFormSelect
-                label="Payment Plan"
-                name="paymentPlan"
-                value={form.paymentPlan}
-                onChange={handleChange}
-                options={paymentPlanOpts}
-              />
-            </AgencyFormSection>
-          )}
-
-          {/* ------- location ------- */}
-          <AgencyFormSection
-            title="Location"
-            innerStyle="grid md:grid-cols-2 gap-4"
-          >
-            <AgencyFormSelect
-              label="Phase"
-              name="phase"
-              value={form.phase}
-              onChange={handleChange}
-              options={phaseOpts}
-            />
-            <AgencyFormInput
-              label="Street Address"
-              name="address"
-              value={form.address}
-              onChange={handleChange}
+          <div className="flex flex-col">
+            <label className="text-sm font-semibold mb-2 block">
+              Enter Location Address *
+            </label>
+            <input
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              type="text"
+              placeholder="e.g. 209 Sector A, Phase 1"
+              className={basicInputStyles}
               required
             />
-          </AgencyFormSection>
+          </div>
+        </FormBlock>
 
-          {/* ------- description & features ------- */}
-          <AgencyFormSection title="Description & Features">
-            <textarea
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              placeholder="Description (optional)"
-              className="w-full border rounded p-2"
-              rows={3}
+        {/* ---------- Price & Area ---------- */}
+        <FormBlock heading="Price & Area">
+          <div className="flex flex-col">
+            <label className="text-sm font-semibold mb-2 block">
+              {purpose === "Rent" && paymentPlan + " Plan"} Price (PKR) *
+            </label>
+            <input
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              type="number"
+              placeholder="Enter Price"
+              className={basicInputStyles}
+              required
             />
-            <AgencyFormInput
-              label="Features (comma separated, optional)"
-              name="features"
-              value={form.features}
-              onChange={handleChange}
-            />
-          </AgencyFormSection>
+          </div>
 
-          {/* ------- submit ------- */}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
-          >
-            {submitting ? "Creating..." : "Create Property"}
-          </button>
-        </ContainerCenter>
+          <div>
+            <label className="text-sm font-semibold mb-2 block">
+              Area Size *
+            </label>
+            <div className="flex gap-3 sm:flex-row flex-col">
+              <input
+                value={area}
+                onChange={(e) => setArea(e.target.value)}
+                type="text"
+                placeholder="Area"
+                className={`${basicInputStyles} sm:flex-5`}
+                required
+              />
+              <select
+                value={areaUnit}
+                onChange={(e) => setAreaUnit(e.target.value)}
+                className={`${basicInputStyles} sm:flex-2`}
+              >
+                <option>Marla</option>
+                <option>Sq. Ft.</option>
+                <option>Sq. M.</option>
+                <option>Sq. Yd.</option>
+                <option>Kanal</option>
+              </select>
+            </div>
+          </div>
+        </FormBlock>
+
+        {/* ---------- Features & Amenities ---------- */}
+        <FormBlock heading="Features & Amenities">
+          <div>
+            <label className="text-sm font-semibold mb-2 block">Bedrooms</label>
+            <div className="flex flex-wrap gap-3">
+              {bedOpts.map((b) => (
+                <Badge
+                  key={b}
+                  label={b}
+                  active={bedrooms === b}
+                  onClick={() => setBedrooms(b)}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="text-sm font-semibold mb-2 block">
+              Bathrooms
+            </label>
+            <div className="flex flex-wrap gap-3">
+              {bathOpts.map((bt) => (
+                <Badge
+                  key={bt}
+                  label={bt}
+                  active={bathrooms === bt}
+                  onClick={() => setBathrooms(bt)}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-sm font-semibold mb-2 block">
+              Other Features (optional)
+            </label>
+            <input
+              type="text"
+              value={otherText}
+              onChange={(e) => setOtherText(e.target.value)}
+              placeholder="e.g. Swimming Pool, Gym, Security"
+              className={basicInputStyles}
+            />
+          </div>
+        </FormBlock>
+
+        {/* ---------- Submit ---------- */}
+        <button
+          type="submit"
+          disabled={submitting || !isValid}
+          className="bg-blue-900 disabled:cursor-not-allowed text-white font-semibold py-2 rounded-md disabled:bg-gray-400"
+        >
+          {submitting ? "Uploading…" : "Submit Property"}
+        </button>
       </form>
     </>
-  );
-}
-
-function RadioGroup({ name, value, onChange, options }) {
-  return (
-    <div className="flex gap-4 flex-wrap">
-      {options.map((opt) => (
-        <label key={opt} className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            name={name}
-            value={opt}
-            checked={value === opt}
-            onChange={onChange}
-            className="accent-blue-600"
-          />
-          <span>{opt}</span>
-        </label>
-      ))}
-    </div>
   );
 }

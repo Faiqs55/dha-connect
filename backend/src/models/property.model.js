@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const propertySchema = new mongoose.Schema(
   {
-    name: {
+    title: {
       type: String,
       required: true,
     },
@@ -24,6 +24,10 @@ const propertySchema = new mongoose.Schema(
         message: "At least one image link is required",
       },
     },
+    thumbnailImage: {
+       type: String,
+       required: true
+    },
 
     video: {
       type: String,
@@ -42,17 +46,31 @@ const propertySchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
-      enum: ["buy", "rent", "project"],
+      enum: ["Sell", "Rent", "Project"],
     },
     type: {
       type: String,
       required: true,
-      enum: ["residential", "commercial"],
+      enum: ["residential", "plot", "commercial"],
       default: "residential",
     },
-    size: {
+    subType: {
+      type: String,
+      required: true
+    },
+    area: {
       type: String,
       required: true,
+    },
+    areaUnit: {
+      type: String,
+      required: true
+    },
+    bathrooms: {
+      type: String,
+    },
+    bedrooms: {
+      type: String,
     },
     status: {
       type: String,
@@ -60,7 +78,7 @@ const propertySchema = new mongoose.Schema(
       enum: ["available", "sold"],
       default: "available",
     },
-    features: {
+    otherFeatures: {
       type: [String],
     },
     adType: {
@@ -79,23 +97,9 @@ const propertySchema = new mongoose.Schema(
 propertySchema.add({
   paymentPlan: {
     type: String,
-    enum: ["yearly", "monthly", "weekly", "daily", "other"],
+    enum: ["Yearly", "Monthly", "Weekly", "Daily", "Other"],
     required: function () {
       return this.category === "rent";
-    },
-  },
-
-  residentialTypes: {
-    type: String,
-    required: function () {
-      return this.type === "residential";
-    },
-  },
-
-  commercialTypes: {
-    type: String,
-    required: function () {
-      return this.type === "commercial";
     },
   },
 });
