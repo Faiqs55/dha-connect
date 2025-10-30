@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import ContainerCenter from "@/Components/ContainerCenter";
 import WidgetSearchFrom from "@/Components/WidgetSearchFrom";
 import { FaRegEnvelope } from "react-icons/fa6";
-import { hotProperties } from "@/static-data/propertiesData";
 import PropertiesCard from "@/Components/PropertiesCard";
 import { useSearchParams } from "next/navigation";
 import Spinner from "@/Components/Spinner";
@@ -12,6 +11,7 @@ import propertyService from "@/services/property.service";
 const page = () => {
   const searchParams = useSearchParams();
   const [filters, setFilters] = useState(null);
+  const [keyword, setKeyword] = useState("");
   const [allProperties, setAllProperties] = useState([]);
 
   useEffect(() => {
@@ -27,14 +27,18 @@ const page = () => {
       propertyService
         .getAllProperties(filters)
         .then((res) => {
-            if(res.success)
-          setAllProperties(res.data);
+          if (res.success) setAllProperties(res.data);
         })
         .catch((e) => console.log(e));
     }
   }, [filters]);
 
-  console.log(allProperties);
+  const submitHandler = (e) => {
+    e.preventDefault();
+    setFilters((prev) => ({ ...prev, title: keyword }));
+  };
+
+  
 
   return (
     <>
@@ -46,7 +50,7 @@ const page = () => {
               <ContainerCenter className={`flex flex-col`}>
                 <h1 className="text-white text-4xl font-semibold text-shadow capitalize">
                   {filters.category
-                    ? filters.category === "sell"
+                    ? filters.category === "Sell"
                       ? "Buy"
                       : filters.category
                     : "All"}{" "}
@@ -64,18 +68,40 @@ const page = () => {
                 <h2 className="text-3xl capitalize">
                   {" "}
                   {filters.category
-                    ? filters.category === "sell"
+                    ? filters.category === "Sell"
                       ? "Buy"
                       : filters.category
                     : "All"}{" "}
                   Properties
                 </h2>
 
-              {(allProperties && allProperties.length > 0) ?  <div className="flex flex-col gap-10 mt-10">
-                  { allProperties.map((data, index) => (
-                    <PropertiesCard key={data._id} data={data} />
-                  ))}
-                </div> : <p className="text-2xl text-center">No Properties Found.</p>}
+                <form className="mt-5" onSubmit={(e) => submitHandler(e)}>
+                  <div className="flex gap-2.5 items-center">
+                    <input
+                      className="flex-1 border border-gray-300 rounded-md px-4 py-2 outline-none"
+                      onChange={(e) => setKeyword(e.target.value)}
+                      type="text"
+                      name="title"
+                      placeholder="Enter Keywords to Search"
+                    />
+                    <button
+                      type="submit"
+                      className="cursor-pointer bg-blue-900 text-white font-semibold rounded-md px-4 py-2"
+                    >
+                      Search
+                    </button>
+                  </div>
+                </form>
+
+                {allProperties && allProperties.length > 0 ? (
+                  <div className="flex flex-col gap-10 mt-10">
+                    {allProperties.map((data, index) => (
+                      <PropertiesCard key={data._id} data={data} />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-2xl text-center mt-5">No Properties Found.</p>
+                )}
               </div>
 
               {/* RIGHT  */}

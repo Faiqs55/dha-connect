@@ -28,17 +28,21 @@ class Property {
 
   async getAllProperties(query) {
     try {
-      let fetchURL = `${this.apiURL}/property/`;      
+      let fetchURL = `${this.apiURL}/property`;
       if (query) {
         if (query.category === "All") delete query.category;
         if (query.title === "") delete query.title;
 
-        const queryKeys = Object.keys(query);
-        queryKeys.forEach((key) => {
-          fetchURL += `?${key}=${query[key]}`;
+        const params = new URLSearchParams();
+        Object.keys(query).forEach((key) => {
+          params.append(key, query[key]);
         });
+
+        const queryString = params.toString();
+        if (queryString) {
+          fetchURL += `?${queryString}`;
+        }
       }
-      
 
       const res = await fetch(fetchURL);
       return res.json();
@@ -54,10 +58,15 @@ class Property {
         if (query.category === "All") delete query.category;
         if (query.title === "") delete query.title;
 
-        const queryKeys = Object.keys(query);
-        queryKeys.forEach((key) => {
-          fetchURL += `?${key}=${query[key]}`;
+        const params = new URLSearchParams();
+        Object.keys(query).forEach((key) => {
+          params.append(key, query[key]);
         });
+
+        const queryString = params.toString();
+        if (queryString) {
+          fetchURL += `?${queryString}`;
+        }
       }
 
       const res = await fetch(fetchURL, {

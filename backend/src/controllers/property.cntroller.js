@@ -84,9 +84,12 @@ const getSinglePropertyComtroller = async (req, res) => {
 const getAllProperties = async (req, res) => {
   try {
     const query = req.query;
+    
     if (query.title) {
       query.title = { $regex: query.title, $options: "i" };
     }
+    
+
     const properties = await Property.find({...query});
     res.status(200).json({ success: true, data: properties });
   } catch (error) {
