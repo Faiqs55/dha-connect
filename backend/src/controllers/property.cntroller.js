@@ -32,12 +32,18 @@ const createPropertyController = async (req, res) => {
     }
 
     if (!property) {
-     return res
+      return res
         .status(400)
         .json({ success: false, message: "Property Could not be added" });
     }
 
-    res.status(201).json({ success: true, data: property, message: "Property has been added." });
+    res
+      .status(201)
+      .json({
+        success: true,
+        data: property,
+        message: "Property has been added.",
+      });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -58,9 +64,15 @@ const getSinglePropertyComtroller = async (req, res) => {
     const agency = await Agency.findById(property.agency);
     const agent = await Agent.findById(property.agent);
 
+    const data = {
+      ...property._doc,
+      agency,
+      agent
+    }
+
     res
       .status(200)
-      .json({ success: true, data: { ...property, agency, agent } });
+      .json({ success: true, data });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -72,6 +84,30 @@ const getSinglePropertyComtroller = async (req, res) => {
 const getAllProperties = async (req, res) => {
   try {
     const properties = await Property.find();
+    res.status(200).json({ success: true, data: properties });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const getAgentPropertiesController = async (req, res) => {
+  try {
+    const agent = req.agent;
+    const query = req.query;
+    if (query.title) {
+      query.title = { $regex: query.title, $options: "i" };
+    }
+
+    const properties = await Property.find({ agent: agent._id, ...query });
+
+    if (!properties) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Could not Find Properties" });
+    }
     res.status(200).json({ success: true, data: properties });
   } catch (error) {
     res.status(500).json({
@@ -155,4 +191,5 @@ module.exports = {
   getAllProperties,
   updatePropertyController,
   deletePropertyController,
+  getAgentPropertiesController,
 };

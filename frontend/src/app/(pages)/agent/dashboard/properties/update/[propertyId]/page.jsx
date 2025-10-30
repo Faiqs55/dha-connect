@@ -6,6 +6,7 @@ import AlertResult from "@/Components/AlertResult";
 import propertyService from "@/services/property.service";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 /* ---------- helpers ---------- */
 const FormBlock = ({ heading, children }) => (
@@ -45,6 +46,24 @@ export default function page() {
   const basicInputStyles = "border border-gray-300 rounded-md px-3 py-2";
 
   const { value: token, isLoaded } = useLocalStorage("agentToken", null);
+  const id = useParams().propertyId;
+  const [property, setProperty] = useState(null);
+
+  useEffect(() => {
+    propertyService
+      .getPropertyById(id)
+      .then((res) => {
+        if (res.success) {
+          setProperty(res.data);
+        } else {
+          console.log(res.message);
+        }
+      })
+      .catch((e) => console.log(e));
+  }, []);
+
+  console.log(property);
+  
 
   /* ---------- media ---------- */
   const [imageFiles, setImageFiles] = useState([]);
@@ -168,20 +187,20 @@ export default function page() {
   };
 
   /* ---------- Cloudinary upload (works for both image & video) ---------- */
-const uploadToCloudinary = async (file, resourceType = "image") => {
-  try {
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("upload_preset", "dha-agency-logo"); // <-- your preset (must allow video)
+  const uploadToCloudinary = async (file, resourceType = "image") => {
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("upload_preset", "dha-agency-logo"); // <-- your preset (must allow video)
 
-    const url = `https://api.cloudinary.com/v1_1/dhdgrfseu/${resourceType}/upload`;
-    const { data } = await axios.post(url, fd);
-    return data.secure_url;
-  } catch (error) {
-    // make caller abort submission
-    throw new Error("Cloudinary upload failed");
-  }
-};
+      const url = `https://api.cloudinary.com/v1_1/dhdgrfseu/${resourceType}/upload`;
+      const { data } = await axios.post(url, fd);
+      return data.secure_url;
+    } catch (error) {
+      // make caller abort submission
+      throw new Error("Cloudinary upload failed");
+    }
+  };
 
   /* ---------- submit ---------- */
   const handleSubmit = async (e) => {
@@ -261,9 +280,14 @@ const uploadToCloudinary = async (file, resourceType = "image") => {
 
   return (
     <>
-      <AlertResult data={toast} onClose={() => {setToast(null)}} />
+      <AlertResult
+        data={toast}
+        onClose={() => {
+          setToast(null);
+        }}
+      />
 
- <div className="mb-10 flex gap-2.5">
+      <div className="mb-10 flex gap-2.5">
         <Link
           className="text-gray-500 font-bold text-sm underline"
           href={"/agent/dashboard"}
