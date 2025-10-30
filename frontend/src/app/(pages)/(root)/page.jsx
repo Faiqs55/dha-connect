@@ -15,6 +15,7 @@ import FAQ from '@/Components/FAQ';
 import { FaRegEnvelope } from 'react-icons/fa6';
 import { body } from '@/static-data/electedBody';
 import { BsWhatsapp } from "react-icons/bs";
+import propertyService from '@/services/property.service';
 
 
 const bodyData = body.find(b => b.timeline === "current");
@@ -22,6 +23,7 @@ const bodyData = body.find(b => b.timeline === "current");
 const page = () => {
 
   const [agenciesData, setAgenciesData] = useState(null);
+  const [properties, setProperties] = useState([]);
   const getAgencies = async () => {
     const query = {status: "Approved"};
     const data = await agencyService.getAllAgencies(query);
@@ -46,6 +48,16 @@ const page = () => {
   useEffect(() => {
     getAgencies();
   }, []);
+
+  useEffect(() => {
+    propertyService.getAllProperties()
+    .then(res => {
+      if(res.success){
+        setProperties(res.data);
+      }
+    })
+    .catch(e => console.log(e));
+  }, [])
 
   return (
     <>
@@ -243,11 +255,12 @@ const page = () => {
           <div className="recent-properties w-full xl:w-[70%]">
             <h2 className="text-3xl">Recent Properties</h2>
             {/* PROPERTIES CARDS  */}
-            <div className="flex flex-col gap-10 mt-10">
-              {hotProperties.map((data, index) => (
-                <PropertiesCard key={data.id} data={data} />
+            {properties.length > 0 &&<div className="flex flex-col gap-10 mt-10">
+              {properties.map((data, index) => (
+                <PropertiesCard key={data._id} data={data} />
               ))}
-            </div>
+            </div>}
+            {properties.length < 1 && <p>No Properties Available</p>}
           </div>
 
           {/* RIGHT  */}

@@ -26,6 +26,29 @@ class Property {
     }
   }
 
+  async getAllProperties(query) {
+    try {
+      let fetchURL = `${this.apiURL}/property/`;      
+      if (query) {
+        if (query.category === "All") delete query.category;
+        if (query.title === "") delete query.title;
+
+        const queryKeys = Object.keys(query);
+        queryKeys.forEach((key) => {
+          fetchURL += `?${key}=${query[key]}`;
+        });
+      }
+
+      console.log(fetchURL);
+      
+
+      const res = await fetch(fetchURL);
+      return res.json();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async getAgentProperties(token, query = null) {
     try {
       let fetchURL = `${this.apiURL}/property/get/agent/properties`;
@@ -38,7 +61,6 @@ class Property {
           fetchURL += `?${key}=${query[key]}`;
         });
       }
-      console.log(fetchURL);
 
       const res = await fetch(fetchURL, {
         headers: {

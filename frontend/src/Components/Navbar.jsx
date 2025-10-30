@@ -12,9 +12,9 @@ import { usePathname, useRouter } from "next/navigation";
 // Consolidated navigation data
 const navigationItems = [
   { href: "/", label: "Home" },
-  { href: "/search/buy", label: "Buy" },
-  { href: "/search/rent", label: "Rent" },
-  { href: "/search/project", label: "Project" },
+  { href: "/properties?category=Sell", label: "Buy" },
+  { href: "/properties?category=Rent", label: "Rent" },
+  { href: "/properties?category=Project", label: "Project" },
   { href: "/file-rates", label: "File Rates" },
   { 
     type: "dropdown",
