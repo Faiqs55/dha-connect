@@ -11,6 +11,9 @@ const PropertiesCard = ({ data }) => {
     <div className="flex flex-col md:flex-row border border-gray-300 rounded-md overflow-hidden">
       {/* CARD IMG  */}
       <div className="relative w-full h-[200px] md:w-[300px] md:h-[auto]">
+        {data.adType === "classifiedAds" && <span className="absolute z-10 left-3 top-3 capitalize bg-slate-500 text-slate-200 text-sm px-2 py-1 rounded-md font-semibold">Classified Ad</span>}
+        {data.adType === "videoAds" && <span className="absolute z-10 left-3 top-3 capitalize bg-amber-600 text-white text-sm px-2 py-1 rounded-md font-semibold">Video Ad</span>}
+        {data.adType === "featuredAds" && <span className="absolute z-10 left-3 top-3 capitalize bg-blue-700 text-white text-sm px-2 py-1 rounded-md font-semibold">Featured Ad</span>}
         <Image
         fill
           className="object-cover object-center md:h-full w-full"

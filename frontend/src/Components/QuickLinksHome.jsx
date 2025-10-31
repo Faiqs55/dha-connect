@@ -72,14 +72,14 @@ const ProjectCard = ({ name, img, link }) => {
 
 const QuickLinkHome = () => {
   const projects = [
-    { name: "DHA MAP", img: dhaMap, link: "#" },
-    { name: "Video Gallery", img: videoGallery, link: "#" },
-    { name: "File Rate", img: fileRate, link: "#" },
-    { name: "Transfer Expert", img: transferExpert, link: "#" },
-    { name: "Affilat Agency", img: affilatAgency, link: "#" },
-    { name: "Form", img: form, link: "#" },
-    { name: "For Rent", img: forRent, link: "#" },
-    { name: "For Sale", img: forSale, link: "#" },
+    { name: "DHA MAP", img: dhaMap, link: "/maps" },
+    { name: "Agencies", img: videoGallery, link: "/agencies" },
+    { name: "File Rate", img: fileRate, link: "/file-rates" },
+    { name: "Transfer Expense", img: transferExpert, link: "/transfer-expense" },
+    { name: "Affilat Agency", img: affilatAgency, link: "/affiliates" },
+    { name: "Form", img: form, link: "/forms" },
+    { name: "For Rent", img: forRent, link: "/properties?category=Rent" },
+    { name: "For Sale", img: forSale, link: "/properties?category=Buy" },
   ];
 
   return (
