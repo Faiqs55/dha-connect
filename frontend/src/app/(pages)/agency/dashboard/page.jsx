@@ -12,12 +12,6 @@ const page = () => {
       label: "Agents",
       link: "/agency/dashboard/agents"
     },
-    {
-      label: "Properties",
-      link: "/agency/dashboard/properties"
-    },
-    
-    
   ]
 
   return (

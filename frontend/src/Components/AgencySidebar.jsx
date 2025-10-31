@@ -23,7 +23,6 @@ export default function AgencySidebar({ open }) {
   const links = [
     { href: "/agency/dashboard", label: "Dashboard", exact: true },
     { href: "/agency/dashboard/update-agency", label: "View & Update My Agency" },
-    { href: "/agency/dashboard/properties", label: "My Properties" },
     { href: "/agency/dashboard/agents", label: "My Agents" },
   ];
 

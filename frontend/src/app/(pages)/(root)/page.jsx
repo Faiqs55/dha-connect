@@ -16,6 +16,7 @@ import { FaRegEnvelope } from 'react-icons/fa6';
 import { body } from '@/static-data/electedBody';
 import { BsWhatsapp } from "react-icons/bs";
 import propertyService from '@/services/property.service';
+import QuickLinkHome from '@/Components/QuickLinksHome';
 
 
 const bodyData = body.find(b => b.timeline === "current");
@@ -288,6 +289,7 @@ const page = () => {
           </div>
         </ContainerCenter>
         <ContainerCenter>
+          <QuickLinkHome/>
           <FAQ/>
         </ContainerCenter>
       </div>
