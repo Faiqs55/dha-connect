@@ -1,0 +1,51 @@
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build outputs
+dist/
+build/
+
+# Coverage reports
+coverage/
+
+# Uploaded files (adjust if you store uploads elsewhere)
+uploads/
+
+# Database files (optional, if you're using local DBs like SQLite)
+*.sqlite
+*.sqlite3
+*.db
+
+# PM2 logs
+pids/
+*.pid
+*.seed
+
+# IDE specific files
+.vscode/
+.idea/
+
+# Temp files
+tmp/
+temp/
+
+# Dependency lock files (optional if you only use one)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
