@@ -185,7 +185,7 @@ const Navbar = () => {
 
             {/* Logo */}
             <div className="logo self-end lg:self-start">
-              <Image src={logo} width={100} height={50} alt="Company Logo" />
+              <Image src={'/dha-connect-logo-header.png'} width={100} height={50} alt="Company Logo" />
             </div>
 
             {/* Navigation Menu */}

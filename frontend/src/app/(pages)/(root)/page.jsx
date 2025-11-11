@@ -16,6 +16,7 @@ import { body } from "@/static-data/electedBody";
 import { BsWhatsapp } from "react-icons/bs";
 import propertyService from "@/services/property.service";
 import QuickLinkHome from "@/Components/QuickLinksHome";
+import Link from "next/link";
 
 const bodyData = body.find((b) => b.timeline === "current");
 
@@ -118,12 +119,12 @@ const page = () => {
 
       {/* CTA FOR PROPERTIES  */}
       <div className="mx-5 md:mx-0 mb-5">
-        <ContainerCenter className="flex flex-col md:flex-row items-center w-full bg-gradient-to-r from-[#0c4f47] to-[#1e7066] rounded-md px-5 md:gap-5 py-5 md:py-0">
+        <ContainerCenter className="flex flex-col md:flex-row items-center w-full bg-gradient-to-r from-blue-950 to-blue-800 rounded-md px-5 md:gap-5 py-5 md:py-0">
           <div className="self-end hidden lg:block">
             <Image src={ctaImage} alt="Call to action svg image" />
           </div>
           <div className="py-10 md:flex-1">
-            <h3 className="text-[#caf4b7] text-2xl font-semibold">
+            <h3 className="text-blue-100 text-2xl font-semibold">
               Sell or Rent Your Property with Confidence
             </h3>
             <p className="text-white">
@@ -131,19 +132,19 @@ const page = () => {
             </p>
           </div>
           <div className="">
-            <a
-              href="#"
+            <Link
+              href="/properties"
               className="bg-white text-[#1e7066] px-4 py-2 text-xl rounded-md font-semibold"
             >
               Get Started
-            </a>
+            </Link>
           </div>
         </ContainerCenter>
       </div>
 
       {/* CTA FOR BROKERS  */}
       <div className="mx-5 md:mx-0 mb-5">
-        <ContainerCenter className="flex flex-col md:flex-row md:items-center w-full bg-gradient-to-r from-[#073530] to-[#1e7066] rounded-md px-5 gap-5 py-5">
+        <ContainerCenter className="flex flex-col md:flex-row md:items-center w-full bg-gradient-to-r from-blue-950 to-blue-800 rounded-md px-5 gap-5 py-5">
           <div className="flex">
             {[
               "https://images.bayut.com/thumbnails/770429815-240x180.webp",
@@ -170,12 +171,12 @@ const page = () => {
             <p>Find trusted agents awarded for their excellent performance</p>
           </div>
           <div className="">
-            <a
-              href="#"
+            <Link
+              href="/agencies"
               className="bg-white text-[#1e7066] px-4 py-2 text-xl rounded-md font-semibold"
             >
               Get Started
-            </a>
+            </Link>
           </div>
         </ContainerCenter>
       </div>
@@ -214,93 +215,116 @@ const page = () => {
             gap={20}
             navButtonOffset={0}
           >
-            {bodyData.people.map((p) => (
-              <div
-                key={p.id}
-                className=" p-5 shadow bg-gradient-to-t from-blue-50 to-[#114085] rounded-lg"
-              >
-                <div className="shadow overflow-hidden rounded-md w-full h-[300px] sm:h-[350px] md:h-[200px]">
-                  <img
-                    className="object-center object-cover w-full"
-                    src={p.img}
-                    alt={p.name}
-                  />
+            {bodyData.people
+              .slice()
+              .sort((a, b) => {
+                const order = [
+                  "President",
+                  "Senior Vice President",
+                  "Vice President",
+                  "Director Information",
+                ];
+                const aIndex = order.indexOf(a.designation);
+                const bIndex = order.indexOf(b.designation);
+
+                if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+                if (aIndex !== -1) return -1;
+                if (bIndex !== -1) return 1;
+                return 0;
+              })
+              .map((p) => (
+                <div
+                  key={p.id}
+                  className="p-5 shadow bg-gradient-to-t from-blue-50 to-[#114085] rounded-lg"
+                >
+                  <div className="shadow overflow-hidden rounded-md w-full h-[300px] sm:h-[350px] md:h-[200px]">
+                    <img
+                      className="object-center object-cover w-full"
+                      src={p.img}
+                      alt={p.name}
+                    />
+                  </div>
+                  <div className="mt-5">
+                    <h3 className="text-lg font-semibold">{p.designation}</h3>
+                    <p className="text-sm text-gray-600">{p.name}</p>
+                    <a
+                      className="text-white bg-blue-900 font-semibold text-center mt-3 rounded-md block px-2 py-1 text-sm"
+                      href={`tel:+92${p.phone.replaceAll(" ", "").slice(1)}`}
+                    >
+                      Call
+                    </a>
+                    <a
+                      className="text-white justify-center flex items-center gap-3 bg-green-700 font-semibold text-center mt-3 rounded-md px-2 py-1 text-sm"
+                      href={`tel:+92${p.phone.replaceAll(" ", "").slice(1)}`}
+                    >
+                      <BsWhatsapp /> WhatsApp
+                    </a>
+                  </div>
                 </div>
-                <div className="mt-5">
-                  <h3 className="text-lg font-semibold">{p.designation}</h3>
-                  <p className="text-sm text-gray-600">{p.name}</p>
-                  <a
-                    className="text-white bg-blue-900 font-semibold text-center mt-3 rounded-md block px-2 py-1 text-sm"
-                    href={`tel:+92${p.phone.replaceAll(" ", "").slice(1)}`}
-                  >
-                    Call
-                  </a>
-                  <a
-                    className="text-white justify-center flex items-center gap-3 bg-green-700 font-semibold text-center mt-3 rounded-md px-2 py-1 text-sm"
-                    href={`tel:+92${p.phone.replaceAll(" ", "").slice(1)}`}
-                  >
-                    <BsWhatsapp /> WhatsApp
-                  </a>
-                </div>
-              </div>
-            ))}
+              ))}
           </Carousel>
         )}
       </ContainerCenter>
 
       {/* FEATURED PROPERTIES  */}
-      {fProperties && <section className="mt-10">
-        <ContainerCenter>
-          <Carousel
-            title={"Featured Properties"}
-            bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
-            show={{ xl: 3, l: 3, md: 2, sm: 1 }}
-            gap={20}
-            autoPlay={true}
-            autoPlayInterval={3000}
-          >
-            {fProperties.map((p) => (
-              <PropertyCarouselCard p={p} />
-            ))}
-          </Carousel>
-        </ContainerCenter>
-      </section>}
+      {fProperties && (
+        <section className="mt-10">
+          <ContainerCenter>
+            <Carousel
+              title={"Featured Properties"}
+              bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
+              show={{ xl: 3, l: 3, md: 2, sm: 1 }}
+              gap={20}
+              autoPlay={true}
+              autoPlayInterval={3000}
+            >
+              {fProperties.map((p) => (
+                <PropertyCarouselCard p={p} />
+              ))}
+            </Carousel>
+          </ContainerCenter>
+        </section>
+      )}
 
       {/* VIDEO PROPERTIES  */}
-      {vProperties && <section className="mt-10">
-        <ContainerCenter>
-          <Carousel
-            title={"Video Properties"}
-            bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
-            show={{ xl: 3, l: 3, md: 2, sm: 1 }}
-            gap={20}
-            autoPlay={true}
-            autoPlayInterval={3000}
-          >
-            {vProperties.map((p) => (
-              <PropertyCarouselCard p={p} />
-            ))}
-          </Carousel>
-        </ContainerCenter>
-      </section>}
+      {vProperties && (
+        <section className="mt-10">
+          <ContainerCenter>
+            <Carousel
+              title={"Video Properties"}
+              bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
+              show={{ xl: 3, l: 3, md: 2, sm: 1 }}
+              gap={20}
+              autoPlay={true}
+              autoPlayInterval={3000}
+            >
+              {vProperties.map((p) => (
+                <PropertyCarouselCard p={p} />
+              ))}
+            </Carousel>
+          </ContainerCenter>
+        </section>
+      )}
 
       {/* Classified PROPERTIES  */}
-      {cProperties && <section className="mt-10">
-        <ContainerCenter>
-          <Carousel
-            title={"Classified Properties"}
-            bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
-            show={{ xl: 3, l: 3, md: 2, sm: 1 }}
-            gap={20}
-            autoPlay={true}
-            autoPlayInterval={3000}
-          >
-            {cProperties.map((p) => (
-              <PropertyCarouselCard p={p} />
-            ))}
-          </Carousel>
-        </ContainerCenter>
-      </section>}
+      {cProperties && (
+        <section className="mt-10">
+          <ContainerCenter>
+            <Carousel
+              title={"Classified Properties"}
+              bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
+              show={{ xl: 3, l: 3, md: 2, sm: 1 }}
+              gap={20}
+              autoPlay={true}
+              autoPlayInterval={3000}
+            >
+              {cProperties.map((p) => (
+                <PropertyCarouselCard p={p} />
+              ))}
+            </Carousel>
+          </ContainerCenter>
+        </section>
+      )}
 
       {/* MAIN SECTION  */}
       <div className="main mt-10">

@@ -4,31 +4,31 @@ import {useState} from 'react'
 import Modal from '@/Components/Modal'
 import ContainerCenter from '@/Components/ContainerCenter';
 import { FiShare2, FiX, FiLink, FiCopy } from "react-icons/fi";
-import { FaFacebookF, FaTwitter, FaLinkedinIn, FaWhatsapp, FaEnvelope, FaMicrosoft } from "react-icons/fa";
+import { FaFacebookF, FaTwitter, FaLinkedinIn, FaWhatsapp, FaEnvelope, FaInstagram } from "react-icons/fa";
 import { SiGmail } from "react-icons/si";
 import { HiOutlineQrCode, HiOutlineUsers } from "react-icons/hi2";
 
 const PHASES = [
-  { label: "DHA Phase 1", filename: "/te/dp1.jpg" },
-  { label: "DHA Phase 2", filename: "/te/dp2.jpg" },
-  { label: "DHA Phase 3-yz block", filename: "/te/dp3-yz.jpg" },
-  { label: "DHA Phase 3", filename: "/te/dp3.jpg" },
-  { label: "DHA Phase 4", filename: "/te/dp4.jpg" },
-  { label: "DHA Phase 5 M block", filename: "/te/dp5-mb.jpg" },
-  { label: "DHA Phase 5", filename: "/te/dp5.jpg" },
-  { label: "DHA Phase 6 RAYA", filename: "/te/dp6-r.jpg" },
-  { label: "DHA Phase 6", filename: "/te/dp6-cmn.jpg" },
-  { label: "DHA Phase 6 (C+M+N)", filename: "/te/dp6-cmn.jpg" },
-  { label: "DHA Phase 7 blocks", filename: "/te/dp7-b.jpg" },
-  { label: "DHA Phase 7", filename: "/te/dp7.jpg" },
-  { label: "DHA Phase 8 (s)", filename: "/te/dp8-s.jpg" },
-  { label: "DHA Phase 8 (x)", filename: "/te/dp8-x.jpg" },
-  { label: "DHA Phase 8 (y)", filename: "/te/dp8-y.jpg" },
-  { label: "DHA Phase 8 (z IVY Green)", filename: "/te/dp8-z.jpg" },
-  { label: "DHA Phase 9P (a+p+q)", filename: "/te/dp9.jpg" },
-  { label: "DHA Phase 9P (j)", filename: "/te/dp9-j.jpg" },
-  { label: "DHA Phase 9P", filename: "/te/dp9.jpg" },
-  { label: "DHA Phase 9T", filename: "/te/dp9-t.jpg" },
+  { label: "DHA PHASE 1", filename: "/te/dp1.jpg" },
+  { label: "DHA PHASE 2", filename: "/te/dp2.jpg" },
+  { label: "DHA PHASE 3-YZ BLOCK", filename: "/te/dp3-yz.jpg" },
+  { label: "DHA PHASE 3", filename: "/te/dp3.jpg" },
+  { label: "DHA PHASE 4", filename: "/te/dp4.jpg" },
+  { label: "DHA PHASE 5 M BLOCK", filename: "/te/dp5-mb.jpg" },
+  { label: "DHA PHASE 5", filename: "/te/dp5.jpg" },
+  { label: "DHA PHASE 6 RAYA", filename: "/te/dp6-r.jpg" },
+  { label: "DHA PHASE 6", filename: "/te/dp6-cmn.jpg" },
+  { label: "DHA PHASE 6 (C+M+N)", filename: "/te/dp6-cmn.jpg" },
+  { label: "DHA PHASE 7 BLOCKS", filename: "/te/dp7-b.jpg" },
+  { label: "DHA PHASE 7", filename: "/te/dp7.jpg" },
+  { label: "DHA PHASE 8 (S)", filename: "/te/dp8-s.jpg" },
+  { label: "DHA PHASE 8 (X)", filename: "/te/dp8-x.jpg" },
+  { label: "DHA PHASE 8 (Y)", filename: "/te/dp8-y.jpg" },
+  { label: "DHA PHASE 8 (Z IVY GREEN)", filename: "/te/dp8-z.jpg" },
+  { label: "DHA PHASE 9P (A+P+Q)", filename: "/te/dp9.jpg" },
+  { label: "DHA PHASE 9P (J)", filename: "/te/dp9-j.jpg" },
+  { label: "DHA PHASE 9P", filename: "/te/dp9.jpg" },
+  { label: "DHA PHASE 9T", filename: "/te/dp9-t.jpg" },
 ];
 
 function SharePlatform({ name, href, icon: Icon, iconColor, iconBgColor }) {
@@ -69,34 +69,6 @@ function ShareModal({ phaseName, shareUrl, onClose }) {
       iconColor: "text-white",
     },
     {
-      name: "Mail",
-      href: `mailto:?subject=${encodeURIComponent(phaseName)}&body=${encodeURIComponent(shareUrl)}`,
-      icon: FaEnvelope,
-      iconBgColor: "bg-blue-500",
-      iconColor: "text-white",
-    },
-    {
-      name: "Outlook",
-      href: `https://outlook.live.com/owa/?path=/mail/action/compose&subject=${encodeURIComponent(phaseName)}&body=${encodeURIComponent(shareUrl)}`,
-      icon: FaMicrosoft,
-      iconBgColor: "bg-[#0078d4]",
-      iconColor: "text-white",
-    },
-    {
-      name: "Microsoft Teams",
-      href: `https://teams.microsoft.com/share?href=${encodeURIComponent(shareUrl)}`,
-      icon: HiOutlineUsers,
-      iconBgColor: "bg-[#6264a7]",
-      iconColor: "text-white",
-    },
-    {
-      name: "Gmail",
-      href: `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(phaseName)}&body=${encodeURIComponent(shareUrl)}`,
-      icon: SiGmail,
-      iconBgColor: "bg-[#ea4335]",
-      iconColor: "text-white",
-    },
-    {
       name: "Facebook",
       href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
       icon: FaFacebookF,
@@ -115,6 +87,13 @@ function ShareModal({ phaseName, shareUrl, onClose }) {
       href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
       icon: FaLinkedinIn,
       iconBgColor: "bg-[#0a66c2]",
+      iconColor: "text-white",
+    },
+    {
+      name: "Instagram",
+      href: `https://www.instagram.com/?url=${encodeURIComponent(shareUrl)}`,
+      icon: FaInstagram,
+      iconBgColor: "bg-gradient-to-br from-purple-500 to-pink-500",
       iconColor: "text-white",
     },
   ];
