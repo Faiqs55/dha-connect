@@ -26,5 +26,14 @@
     border: 1px solid #274abb;
 }
 
+/* Add to your global CSS */
+.slider-thumb::-webkit-slider-thumb {
+  @apply appearance-none h-5 w-5 rounded-full bg-blue-600 cursor-pointer border-2 border-white shadow-md;
+}
+
+.slider-thumb::-moz-range-thumb {
+  @apply appearance-none h-5 w-5 rounded-full bg-blue-600 cursor-pointer border-2 border-white shadow-md border-none;
+}
+
 @keyframes fade-in-down{0%{opacity:0;transform:translateY(-10px)}100%{opacity:1;transform:translateY(0)}}
 .animate-fade-in-down{animation:fade-in-down .3s ease-out forwards}

@@ -13,6 +13,8 @@ const containerStyle = {
 
 const page = () => {
   const [phase, setPhase] = useState(null);
+  const [opacity, setOpacity] = useState(0.9);
+  const [mapKey, setMapKey] = useState(0); // Add key to force re-render
   const phaseName = useParams().phase;
   let bounds;
   let center;
@@ -20,7 +22,12 @@ const page = () => {
   useEffect(() => {
     const foundPhase = maps.find((m) => m.phase === phaseName);
     setPhase(foundPhase);
-  }, [phase]);
+  }, [phaseName]); // Fixed dependency - was [phase], should be [phaseName]
+
+  // Force map re-render when opacity changes
+  useEffect(() => {
+    setMapKey(prev => prev + 1);
+  }, [opacity]);
 
   if (phase) {
     bounds = {
@@ -49,20 +56,52 @@ const page = () => {
         </h1>
       </div>
 
+      {/* Map Controls */}
+      <div className="max-w-6xl mx-auto mb-4">
+        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex-1">
+              <label htmlFor="opacity-slider" className="block text-sm font-medium text-gray-700 mb-1">
+                Map Overlay Opacity: <span className="text-blue-600 font-medium">{Math.round(opacity * 100)}%</span>
+              </label>
+              <input
+                id="opacity-slider"
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value={opacity}
+                onChange={(e) => setOpacity(parseFloat(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"
+              />
+              <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <span>More Transparent</span>
+                <span>More Opaque</span>
+              </div>
+            </div>
+            <div className="text-xs text-gray-500 bg-gray-50 px-3 py-2 rounded border border-gray-200">
+              <p>Adjust slider to see through the overlay</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Map Section */}
       {phase && bounds && center && (
         <div className="max-w-6xl mx-auto rounded-lg overflow-hidden shadow-md mb-10">
           <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_MAPS}>
             <GoogleMap
+              key={mapKey} // Force re-render when opacity changes
               mapContainerStyle={containerStyle}
               center={center}
               zoom={15}
               mapTypeId="satellite"
             >
               <GroundOverlay
-                url={phase.overlay} // place your image in public/images/
+                key={`ground-overlay-${opacity}`} // Additional key for GroundOverlay
+                url={phase.overlay}
                 bounds={bounds}
-                opacity={0.9}
+                opacity={opacity}
               />
             </GoogleMap>
           </LoadScript>
@@ -80,7 +119,7 @@ const page = () => {
             <Link
               key={sector.id}
               href={`${phase.phase}/${sector.sector}`}
-              className="block bg-white p-4 hover:shadow-md hover:border-blue-400 transition duration-300"
+              className="block bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md hover:border-blue-400 transition duration-300"
             >
               <p className="text-blue-600 font-medium hover:underline">
                 {sector.title}, {phase.title}
@@ -89,6 +128,31 @@ const page = () => {
           ))}
         </div>
       </div>
+
+      {/* Custom slider thumb styles */}
+      <style jsx>{`
+        .slider-thumb::-webkit-slider-thumb {
+          appearance: none;
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: #2563eb;
+          cursor: pointer;
+          border: 2px solid #ffffff;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .slider-thumb::-moz-range-thumb {
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: #2563eb;
+          cursor: pointer;
+          border: 2px solid #ffffff;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          border: none;
+        }
+      `}</style>
     </section>
   );
 };
