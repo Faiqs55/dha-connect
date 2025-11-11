@@ -33,7 +33,7 @@ const page = () => {
   useEffect(() => {
     getAgencies();
   }, []);
-
+  
 
    const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -155,10 +155,10 @@ const page = () => {
                 {a.agencyName}
               </Link>
               {/* </h3> */}
-              <span className="text-center text-xs py-4 sm:py-2 font-semibold block">
+              {/* <span className="text-center text-xs py-4 sm:py-2 font-semibold block">
                 347 Properties
-              </span>
-              <div className="flex border-t border-gray-300 gap-2 px-2 py-2">
+              </span> */}
+              <div className="flex gap-2 px-2 py-2">
                 <span className="bg-blue-50 text-blue-600 flex items-center justify-center gap-2.5 rounded-md font-semibold flex-1 py-2 text-center cursor-pointer">
                   <MdEmail />
                   Email

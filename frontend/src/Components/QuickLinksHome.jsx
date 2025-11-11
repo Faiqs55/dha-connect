@@ -8,7 +8,6 @@ const form = "/QuickLinks/Form.jpg";
 const forRent = "/QuickLinks/For Rent.jpg";
 const forSale = "/QuickLinks/For Sale.jpg";
 
-
 const ProjectCard = ({ name, img, link }) => {
   const [first, ...rest] = name.split(" ");
   const second = rest.join(" ");
@@ -25,19 +24,11 @@ const ProjectCard = ({ name, img, link }) => {
         bg-white 
         transition-all duration-500 ease-in-out
         rounded-md
+        shadow-md hover:shadow-lg
       "
     >
       
-      <div
-        className="
-          absolute inset-0 
-          bg-sky-900 opacity-0
-          transition-opacity duration-700 ease-in-out
-          group-hover:opacity-80
-        "
-      ></div>
-
-      
+      {/* Background Image */}
       <img
         src={img}
         alt={name}
@@ -53,22 +44,44 @@ const ProjectCard = ({ name, img, link }) => {
         "
       />
 
-      
+      {/* Gradient Overlay for better text visibility */}
       <div
         className="
-          absolute bottom-1 left-1/2 transform -translate-x-1/2
+          absolute inset-0 
+          bg-gradient-to-t from-black/70 via-black/30 to-transparent
+          opacity-80
+          transition-opacity duration-700 ease-in-out
+          group-hover:opacity-60
+        "
+      ></div>
+
+      {/* Dark overlay on hover */}
+      <div
+        className="
+          absolute inset-0 
+          bg-sky-900 opacity-0
+          transition-opacity duration-700 ease-in-out
+          group-hover:opacity-80
+        "
+      ></div>
+
+      
+      {/* Text Content */}
+      <div
+        className="
+          absolute bottom-2 left-1/2 transform -translate-x-1/2
           text-white text-[1.7rem] font-semibold text-center
           z-40 tracking-tight
           w-full whitespace-nowrap overflow-hidden text-ellipsis
+          px-2
         "
       >
-        <span className="font-light">{first} </span>
-        <span className="font-bold">{second}</span>
+        <span className="font-light drop-shadow-lg">{first} </span>
+        <span className="font-bold drop-shadow-lg">{second}</span>
       </div>
     </a>
   );
 };
-
 
 const QuickLinkHome = () => {
   const projects = [

@@ -1,5 +1,6 @@
 const { Agency } = require("../models/agency.model");
 const { Agent } = require("../models/agent.model");
+const { Property } = require("../models/property.model");
 const { User } = require("../models/user.model");
 const mongoose = require("mongoose");
 
@@ -56,6 +57,7 @@ const getSingleAgency = async (req, res) => {
     const id = req.params.id;
     const agents = await Agent.find({ agency: id });
     const agency = await Agency.findById(id).select("-password");
+    const properties = await Property.find({agency: id});
     if (!agency) {
       res
         .status(404)
@@ -65,7 +67,7 @@ const getSingleAgency = async (req, res) => {
     res.json({
       message: "Agency Found",
       success: true,
-      data: { agency, agents: [...agents] },
+      data: { agency, agents: [...agents], properties: [...properties] },
     });
   } catch (error) {
     res.status(500).json({

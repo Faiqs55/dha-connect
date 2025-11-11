@@ -51,9 +51,6 @@ const page = () => {
     }
     return null; // invalid
   }, [agency]);
-
-
-  console.log(videoId);
   
 
   // Update URL when tab changes
@@ -93,7 +90,7 @@ const page = () => {
               {agency.agency.agencyName}
             </h1>
             <p className="w-fit font-semibold text-white bg-blue-900 px-6 py-2 rounded-md">
-              Properties - (55)
+              Properties - ({agency.properties.length})
             </p>
           </div>
         </ContainerCenter>
@@ -186,11 +183,11 @@ const page = () => {
                   <h2 className="text-xl font-semibold mb-4">
                     Properties List
                   </h2>
-                  <div className="flex flex-col gap-4">
-                    {hotProperties.map((p) => (
+                  {agency.properties ? <div className="flex flex-col gap-4">
+                    {agency.properties.map((p) => (
                       <PropertiesCard key={p.id} data={p} />
                     ))}
-                  </div>
+                  </div> : <h3>This Agency has no Active Properties</h3>}
                 </div>
               )}
 
