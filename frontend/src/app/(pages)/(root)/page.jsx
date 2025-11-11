@@ -147,10 +147,10 @@ const page = () => {
         <ContainerCenter className="flex flex-col md:flex-row md:items-center w-full bg-gradient-to-r from-blue-950 to-blue-800 rounded-md px-5 gap-5 py-5">
           <div className="flex">
             {[
-              "https://images.bayut.com/thumbnails/770429815-240x180.webp",
-              "https://images.bayut.com/thumbnails/727791641-240x180.webp",
-              "https://images.bayut.com/thumbnails/786411891-240x180.webp",
-              "https://images.bayut.com/thumbnails/791403857-240x180.webp",
+              "/dha-elected-bodies/zeeshan-butt.png",
+              "/dha-elected-bodies/imran-fiaz.png",
+              "/dha-elected-bodies/abrar-husain.png",
+              "/dha-elected-bodies/p.png",
             ].map((img, index) => {
               return (
                 <div
