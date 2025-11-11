@@ -254,7 +254,7 @@ export default function page() {
     try {
       const fd = new FormData();
       fd.append("file", file);
-      fd.append("upload_preset", "dha-agency-logo");
+      fd.append("upload_preset", "dha-agency-logo"); 
 
       const url = `https://api.cloudinary.com/v1_1/dhdgrfseu/${resourceType}/upload`;
       const { data } = await axios.post(url, fd);

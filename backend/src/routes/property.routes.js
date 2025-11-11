@@ -1,5 +1,5 @@
 const express = require("express");
-const { getAllProperties, createPropertyController, updatePropertyStatusController, getSinglePropertyController, updatePropertyController, deletePropertyController, getAgentPropertiesController, getAgencyProperties } = require("../controllers/property.cntroller");
+const { getAllProperties, createPropertyController, updatePropertyStatusController, getSinglePropertyComtroller, updatePropertyController, deletePropertyController, getAgentPropertiesController, getAgencyProperties } = require("../controllers/property.cntroller");
 const { isAgent, protect } = require("../middlewares/authMiddleware");
 
 const propertyRouter = express.Router();
@@ -9,7 +9,7 @@ propertyRouter.route("/")
 .post(isAgent, createPropertyController);
 
 propertyRouter.route("/:id")
-.get(getSinglePropertyController)
+.get(getSinglePropertyComtroller)
 .put(isAgent, updatePropertyController);
 propertyRouter.route("agency/:id")
 .delete(protect, deletePropertyController);

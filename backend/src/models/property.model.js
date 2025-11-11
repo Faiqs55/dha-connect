@@ -25,9 +25,10 @@ const propertySchema = new mongoose.Schema(
       },
     },
     thumbnailImage: {
-      type: String,
-      required: true
+       type: String,
+       required: true
     },
+
     video: {
       type: String,
     },
@@ -50,7 +51,8 @@ const propertySchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      enum: ["Houses", "Plots", "Files", "Commercial"],
+      enum: ["residential", "plot", "commercial"],
+      default: "residential",
     },
     subType: {
       type: String,
@@ -62,8 +64,7 @@ const propertySchema = new mongoose.Schema(
     },
     areaUnit: {
       type: String,
-      required: true,
-      enum: ["Marla", "Sq. Ft.", "Sq. M.", "Sq. Yd.", "Kanal"]
+      required: true
     },
     bathrooms: {
       type: String,
@@ -90,29 +91,13 @@ const propertySchema = new mongoose.Schema(
       required: true,
     },
     plotAmenities: {
-      type: [String],
+      type: String,
     },
     plotFileType: {
       type: String,
-    },
-    plotNumber: {
-      type: String,
-    },
-    expiresAt: {
-      type: Date,
-      default: function() {
-        return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-      },
-      index: { expireAfterSeconds: 0 }
-    },
-    isPermanent: {
-      type: Boolean,
-      default: false
     }
   },
-  { 
-    timestamps: true 
-  }
+  { timestamps: true }
 );
 
 propertySchema.add({
@@ -120,63 +105,10 @@ propertySchema.add({
     type: String,
     enum: ["Yearly", "Monthly", "Weekly", "Daily", "Other"],
     required: function () {
-      return this.category === "Rent";
+      return this.category === "rent";
     },
   },
 });
-
-// Create TTL index for automatic deletion after 30 days
-propertySchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
-
-// Middleware to handle expiration logic
-propertySchema.pre('save', function(next) {
-  if (!this.expiresAt && !this.isPermanent) {
-    this.expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-  }
-  
-  if (this.isPermanent) {
-    this.expiresAt = undefined;
-  }
-  
-  next();
-});
-
-// Static method to extend expiration
-propertySchema.statics.extendExpiration = function(propertyId, days = 30) {
-  return this.findByIdAndUpdate(
-    propertyId,
-    { 
-      expiresAt: new Date(Date.now() + days * 24 * 60 * 60 * 1000),
-      isPermanent: false 
-    },
-    { new: true }
-  );
-};
-
-// Static method to make property permanent (no auto-delete)
-propertySchema.statics.makePermanent = function(propertyId) {
-  return this.findByIdAndUpdate(
-    propertyId,
-    { 
-      expiresAt: undefined,
-      isPermanent: true 
-    },
-    { new: true }
-  );
-};
-
-// Virtual for days remaining until expiration
-propertySchema.virtual('daysRemaining').get(function() {
-  if (!this.expiresAt || this.isPermanent) return null;
-  const now = new Date();
-  const diffTime = this.expiresAt - now;
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays > 0 ? diffDays : 0;
-});
-
-// Ensure virtual fields are serialized when converting to JSON
-propertySchema.set('toJSON', { virtuals: true });
-propertySchema.set('toObject', { virtuals: true });
 
 const Property = mongoose.model("Property", propertySchema);
 module.exports = {

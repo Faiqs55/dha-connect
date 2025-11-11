@@ -31,6 +31,14 @@ const IconContactQueries = () => (
   </svg>
 );
 
+const IconElectedBodies = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M17 21v-6a3 3 0 00-3-3H6a3 3 0 00-3 3v6" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12h-4m2 2v-4" />
+  </svg>
+);
+
 const IconAgencies = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -55,6 +63,7 @@ export default function Sidebar({ open }) {
     { href: "/dashboard/file-rates", label: "File Rates", icon: IconFileRates },
     { href: "/dashboard/phase-names", label: "Phase Names", icon: IconPhaseNames },
     { href: "/dashboard/contact-queries", label: "Contact Queries", icon: IconContactQueries },
+    { href: "/dashboard/elected-bodies", label: "Elected Bodies", icon: IconElectedBodies },
     // { href: "/dashboard/properties", label: "Properties" },
   ];
 

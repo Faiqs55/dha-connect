@@ -21,47 +21,18 @@ const createPropertyController = async (req, res) => {
     if (adType !== "none") {
       body.status = "pending";
     }
-
-    // Create property data object with proper field mapping
-    const propertyData = {
+    const property = await Property.create({
       ...body,
       agency: agent.agency,
       agent: agent._id,
-      // Ensure proper field names match schema
-      category: body.category,
-      type: body.type,
-      subType: body.subType,
-      area: body.area,
-      areaUnit: body.areaUnit,
-      price: body.price,
-      phase: body.phase,
-      address: body.address,
-      plotNumber: body.plotNumber,
-      description: body.description,
-      images: body.images,
-      thumbnailImage: body.thumbnailImage,
-      video: body.video,
-      adType: body.adType,
-      // Handle conditional fields
-      ...(body.bedrooms && { bedrooms: body.bedrooms }),
-      ...(body.bathrooms && { bathrooms: body.bathrooms }),
-      ...(body.otherFeatures && { otherFeatures: body.otherFeatures }),
-      ...(body.plotAmenities && { plotAmenities: body.plotAmenities }),
-      ...(body.plotFileType && { plotFileType: body.plotFileType }),
-      // Add payment plan for Rent category
-      ...(body.category === "Rent" && body.paymentPlan && { paymentPlan: body.paymentPlan }),
-      // Set expiration (will be set to 30 days by model default)
-      expiresAt: body.expiresAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-      isPermanent: body.isPermanent || false
-    };
-
-    const property = await Property.create(propertyData);
+    });
 
     if (body.adType !== "none") {
       if (agency[adType] === 0) {
         return;
       } else {
         agency[adType] = agency[adType] - 1;
+        
         await agency.save();
       }
 
@@ -89,11 +60,10 @@ const createPropertyController = async (req, res) => {
       res.status(201).json({
         success: true,
         data: property,
-        message: "Property has been added. It will auto-delete after 30 days.",
+        message: "Property has been added.",
       });
     }
   } catch (error) {
-    console.error("Create Property Error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -101,13 +71,13 @@ const createPropertyController = async (req, res) => {
   }
 };
 
-const getSinglePropertyController = async (req, res) => {
+const getSinglePropertyComtroller = async (req, res) => {
   try {
     const id = req.params.id;
     const property = await Property.findById(id);
 
     if (!property) {
-      return res.status(404).json({ success: false, message: "Property Not Found" });
+      res.status(404).json({ success: false, message: "Property Not Found" });
     }
 
     const agency = await Agency.findById(property.agency);
@@ -117,13 +87,10 @@ const getSinglePropertyController = async (req, res) => {
       ...property._doc,
       agency,
       agent,
-      // Include virtual fields
-      daysRemaining: property.daysRemaining
     };
 
     res.status(200).json({ success: true, data });
   } catch (error) {
-    console.error("Get Single Property Error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -135,99 +102,13 @@ const getAllProperties = async (req, res) => {
   try {
     const query = req.query;
 
-    // Build filter object
-    const filter = {};
-
-    // Add search by title if provided
     if (query.title) {
-      filter.title = { $regex: query.title, $options: "i" };
+      query.title = { $regex: query.title, $options: "i" };
     }
 
-    // Add filters for other fields
-    if (query.category && query.category !== 'All') {
-      filter.category = query.category;
-    }
-
-    if (query.type && query.type !== 'All') {
-      filter.type = query.type;
-    }
-
-    if (query.subType && query.subType !== 'All') {
-      filter.subType = query.subType;
-    }
-
-    if (query.phase && query.phase !== 'All') {
-      filter.phase = query.phase;
-    }
-
-    if (query.status && query.status !== 'All') {
-      filter.status = query.status;
-    }
-
-    if (query.adType && query.adType !== 'All') {
-      filter.adType = query.adType;
-    }
-
-    // Filter by permanent status
-    if (query.isPermanent && query.isPermanent !== 'All') {
-      filter.isPermanent = query.isPermanent === 'true';
-    }
-
-    // Price range filter
-    if (query.minPrice || query.maxPrice) {
-      filter.price = {};
-      if (query.minPrice) filter.price.$gte = query.minPrice;
-      if (query.maxPrice) filter.price.$lte = query.maxPrice;
-    }
-
-    // Filter by expiration status
-    if (query.expired === 'true') {
-      filter.expiresAt = { $lt: new Date() };
-    } else if (query.expired === 'false') {
-      filter.expiresAt = { $gte: new Date() };
-    }
-
-    const properties = await Property.find(filter)
-      .populate('agent').select("-password")
-      .populate('agency').select("-password")
-      .sort({ createdAt: -1 });
-
-    // Sort properties by adType in the specified order
-    const sortedProperties = properties.sort((a, b) => {
-      // Define the priority order for adTypes
-      const adTypePriority = {
-        'featuredAds': 1,    // Highest priority
-        'videoAds': 2,       // Second priority
-        'classifiedAds': 3,   // Third priority
-        'none': 4            // Lowest priority
-      };
-
-      // Get the priority for each property's adType
-      const priorityA = adTypePriority[a.adType] || 5; // Default to 5 if adType not found
-      const priorityB = adTypePriority[b.adType] || 5; // Default to 5 if adType not found
-
-      // If same priority, maintain the original order (by createdAt descending)
-      if (priorityA === priorityB) {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      }
-
-      // Sort by priority (lower number = higher priority)
-      return priorityA - priorityB;
-    });
-
-    // Add virtual fields to response
-    const propertiesWithExpiration = sortedProperties.map(property => ({
-      ...property._doc,
-      daysRemaining: property.daysRemaining
-    }));
-
-    res.status(200).json({ 
-      success: true, 
-      data: propertiesWithExpiration,
-      count: propertiesWithExpiration.length 
-    });
+    const properties = await Property.find({ ...query });
+    res.status(200).json({ success: true, data: properties });
   } catch (error) {
-    console.error("Get All Properties Error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -239,54 +120,19 @@ const getAgentPropertiesController = async (req, res) => {
   try {
     const agent = req.agent;
     const query = req.query;
-    
-    // Build filter object
-    const filter = { agent: agent._id };
-
     if (query.title) {
-      filter.title = { $regex: query.title, $options: "i" };
+      query.title = { $regex: query.title, $options: "i" };
     }
 
-    if (query.category && query.category !== 'All') {
-      filter.category = query.category;
-    }
-
-    if (query.type && query.type !== 'All') {
-      filter.type = query.type;
-    }
-
-    if (query.status && query.status !== 'All') {
-      filter.status = query.status;
-    }
-
-    // Filter by expiration status
-    if (query.expired === 'true') {
-      filter.expiresAt = { $lt: new Date() };
-    } else if (query.expired === 'false') {
-      filter.expiresAt = { $gte: new Date() };
-    }
-
-    const properties = await Property.find(filter).sort({ createdAt: -1 });
+    const properties = await Property.find({ agent: agent._id, ...query });
 
     if (!properties) {
       return res
         .status(404)
         .json({ success: false, message: "Could not Find Properties" });
     }
-
-    // Add virtual fields to response
-    const propertiesWithExpiration = properties.map(property => ({
-      ...property._doc,
-      daysRemaining: property.daysRemaining
-    }));
-    
-    res.status(200).json({ 
-      success: true, 
-      data: propertiesWithExpiration,
-      count: properties.length 
-    });
+    res.status(200).json({ success: true, data: properties });
   } catch (error) {
-    console.error("Get Agent Properties Error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -400,25 +246,8 @@ const updatePropertyController = async (req, res) => {
       }
     }
 
-    // Prevent agents from updating expiration fields
-    delete body.expiresAt;
-    delete body.isPermanent;
-
-    // Update the property with new schema fields
-    const updateData = {
-      ...body,
-      // Ensure proper field mapping for new schema
-      ...(body.type && { type: body.type }),
-      ...(body.subType && { subType: body.subType }),
-      ...(body.areaUnit && { areaUnit: body.areaUnit }),
-      ...(body.plotAmenities !== undefined && { plotAmenities: body.plotAmenities }),
-      ...(body.plotFileType !== undefined && { plotFileType: body.plotFileType }),
-      ...(body.otherFeatures !== undefined && { otherFeatures: body.otherFeatures }),
-      ...(body.plotNumber !== undefined && { plotNumber: body.plotNumber }),
-      ...(body.category === "Rent" && body.paymentPlan && { paymentPlan: body.paymentPlan })
-    };
-
-    Object.assign(property, updateData);
+    // Update the property
+    Object.assign(property, body);
     await property.save();
 
     // Save agency and agent if their ad counts changed
@@ -429,23 +258,20 @@ const updatePropertyController = async (req, res) => {
 
     res.status(200).json({ 
       success: true, 
-      data: {
-        ...property._doc,
-        daysRemaining: property.daysRemaining
-      },
+      data: property,
       message: oldAdType !== newAdType ? 
         `Ad type updated from ${oldAdType} to ${newAdType}. Status: ${body.status}` :
         "Property updated successfully"
     });
 
   } catch (error) {
-    console.error("Update Property Error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
+
 
 const updatePropertyStatusController = async (req, res) => {
   try {
@@ -479,15 +305,11 @@ const updatePropertyStatusController = async (req, res) => {
 
     res.status(200).json({ 
       success: true, 
-      data: {
-        ...property._doc,
-        daysRemaining: property.daysRemaining
-      },
+      data: property,
       message: `Property status updated to ${status}`
     });
 
   } catch (error) {
-    console.error("Update Property Status Error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -503,54 +325,25 @@ const deletePropertyController = async (req, res) => {
 
     const property = await Property.findById(id);
 
-    if (!property) {
-      return res.status(404).json({ success: false, message: "Property not found" });
-    }
-
     if (!agent && user.role !== "agency") {
-      return res.status(403).json({
+      res.status(403).json({
         success: false,
         message: "Only agents or agencies can delete Properties",
       });
     }
 
-    // Check ownership
-    if (user.role === "agency" && property.agency.toString() !== user.agency.toString()) {
-      return res.status(403).json({
+    if (property.agency !== user.agency && property.agent !== agent._id) {
+      res.status(403).json({
         success: false,
-        message: "You can only delete properties from your own agency",
+        message: "You can only Delete your own agency",
       });
     }
 
-    if (agent && property.agent.toString() !== agent._id.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: "You can only delete your own properties",
-      });
-    }
-
-    // Return ad count if property had a paid ad type
-    if (property.adType !== "none") {
-      const agency = await Agency.findById(property.agency);
-      const propertyAgent = await Agent.findById(property.agent);
-      
-      if (agency && propertyAgent) {
-        agency[property.adType] += 1;
-        propertyAgent[property.adType] += 1;
-        
-        await agency.save();
-        await propertyAgent.save();
-      }
-    }
-
-    await Property.findByIdAndDelete(id);
-    
-    res.status(200).json({ 
-      success: true, 
-      data: { message: "Property has been deleted" } 
-    });
+    await property.deleteOne();
+    res
+      .status(200)
+      .json({ success: true, data: { message: "Property has been deleted" } });
   } catch (error) {
-    console.error("Delete Property Error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -589,11 +382,6 @@ const getAgencyProperties = async (req, res) => {
       filter.type = query.type;
     }
 
-    // Add filter by subType if provided
-    if (query.subType && query.subType !== 'All') {
-      filter.subType = query.subType;
-    }
-
     // Add filter by status if provided
     if (query.status && query.status !== 'All') {
       filter.status = query.status;
@@ -602,28 +390,6 @@ const getAgencyProperties = async (req, res) => {
     // Add filter by agent if provided
     if (query.agent && query.agent !== 'All') {
       filter.agent = query.agent;
-    }
-
-    // Add filter by phase if provided
-    if (query.phase && query.phase !== 'All') {
-      filter.phase = query.phase;
-    }
-
-    // Add filter by adType if provided
-    if (query.adType && query.adType !== 'All') {
-      filter.adType = query.adType;
-    }
-
-    // Filter by permanent status
-    if (query.isPermanent && query.isPermanent !== 'All') {
-      filter.isPermanent = query.isPermanent === 'true';
-    }
-
-    // Filter by expiration status
-    if (query.expired === 'true') {
-      filter.expiresAt = { $lt: new Date() };
-    } else if (query.expired === 'false') {
-      filter.expiresAt = { $gte: new Date() };
     }
 
     const properties = await Property.find(filter)
@@ -637,15 +403,9 @@ const getAgencyProperties = async (req, res) => {
       });
     }
 
-    // Add virtual fields to response
-    const propertiesWithExpiration = properties.map(property => ({
-      ...property._doc,
-      daysRemaining: property.daysRemaining
-    }));
-
     res.status(200).json({
       success: true,
-      data: propertiesWithExpiration,
+      data: properties,
       count: properties.length
     });
 
@@ -658,149 +418,13 @@ const getAgencyProperties = async (req, res) => {
   }
 }
 
-// New controller to extend property expiration
-const extendPropertyExpirationController = async (req, res) => {
-  try {
-    const user = req.user;
-    const id = req.params.id;
-    const { days = 30 } = req.body;
-
-    // Only agency or admin can extend expiration
-    if (user.role !== "agency" && user.role !== "admin") {
-      return res.status(403).json({
-        success: false,
-        message: "Only agency or admin can extend property expiration"
-      });
-    }
-
-    const property = await Property.findById(id);
-    if (!property) {
-      return res.status(404).json({ success: false, message: "Property Not Found" });
-    }
-
-    // Agency can only extend their own properties
-    if (user.role === "agency" && property.agency.toString() !== user.agency.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: "You can only extend expiration for properties from your own agency"
-      });
-    }
-
-    const updatedProperty = await Property.extendExpiration(id, days);
-
-    res.status(200).json({
-      success: true,
-      data: {
-        ...updatedProperty._doc,
-        daysRemaining: updatedProperty.daysRemaining
-      },
-      message: `Property expiration extended by ${days} days`
-    });
-  } catch (error) {
-    console.error("Extend Property Expiration Error:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-// New controller to make property permanent
-const makePropertyPermanentController = async (req, res) => {
-  try {
-    const user = req.user;
-    const id = req.params.id;
-
-    // Only agency or admin can make properties permanent
-    if (user.role !== "agency" && user.role !== "admin") {
-      return res.status(403).json({
-        success: false,
-        message: "Only agency or admin can make properties permanent"
-      });
-    }
-
-    const property = await Property.findById(id);
-    if (!property) {
-      return res.status(404).json({ success: false, message: "Property Not Found" });
-    }
-
-    // Agency can only make their own properties permanent
-    if (user.role === "agency" && property.agency.toString() !== user.agency.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: "You can only make properties from your own agency permanent"
-      });
-    }
-
-    const updatedProperty = await Property.makePermanent(id);
-
-    res.status(200).json({
-      success: true,
-      data: {
-        ...updatedProperty._doc,
-        daysRemaining: updatedProperty.daysRemaining
-      },
-      message: "Property is now permanent and will not auto-delete"
-    });
-  } catch (error) {
-    console.error("Make Property Permanent Error:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-// New controller to get expired properties
-const getExpiredPropertiesController = async (req, res) => {
-  try {
-    const user = req.user;
-    
-    // Only agency or admin can view expired properties
-    if (user.role !== "agency" && user.role !== "admin") {
-      return res.status(403).json({
-        success: false,
-        message: "Only agency or admin can view expired properties"
-      });
-    }
-
-    let filter = { expiresAt: { $lt: new Date() } };
-
-    // Agency can only view their own expired properties
-    if (user.role === "agency") {
-      filter.agency = user.agency;
-    }
-
-    const expiredProperties = await Property.find(filter)
-      .populate('agent')
-      .populate('agency')
-      .sort({ expiresAt: -1 });
-
-    res.status(200).json({
-      success: true,
-      data: expiredProperties,
-      count: expiredProperties.length,
-      message: `Found ${expiredProperties.length} expired properties`
-    });
-  } catch (error) {
-    console.error("Get Expired Properties Error:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
 module.exports = {
   createPropertyController,
-  getSinglePropertyController,
+  getSinglePropertyComtroller,
   getAllProperties,
   updatePropertyController,
   deletePropertyController,
   getAgentPropertiesController,
   updatePropertyStatusController,
-  getAgencyProperties,
-  extendPropertyExpirationController,
-  makePropertyPermanentController,
-  getExpiredPropertiesController
+  getAgencyProperties
 };
