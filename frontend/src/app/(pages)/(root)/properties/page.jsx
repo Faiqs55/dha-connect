@@ -81,12 +81,19 @@ const Page = () => {
     setFormData(initialFormData);
   }, [searchParams]);
 
-  // Fetch properties when filters change
+  // Fetch properties when filters change - ALWAYS include status=available
   useEffect(() => {
     if (filters) {
       setLoading(true);
+      
+      // Create enhanced filters that always include status=available
+      const enhancedFilters = {
+        ...filters,
+        status: "available" // Always add status filter internally
+      };
+      
       propertyService
-        .getAllProperties(filters)
+        .getAllProperties(enhancedFilters)
         .then((res) => {
           if (res.success) setAllProperties(res.data);
           setLoading(false);
@@ -119,7 +126,7 @@ const Page = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Build query string from form data
+    // Build query string from form data (EXCLUDING status)
     const queryParams = new URLSearchParams();
     
     Object.entries(formData).forEach(([key, value]) => {
@@ -133,7 +140,7 @@ const Page = () => {
       }
     });
 
-    // Update URL with new filters
+    // Update URL with new filters (without status)
     const queryString = queryParams.toString();
     router.push(`/properties${queryString ? `?${queryString}` : ''}`);
     
@@ -275,18 +282,6 @@ const Page = () => {
                   style={{ top: `${navbarHeight + 20}px` }}
                 >
                   <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-                    {/* <div className="bg-gradient-to-r from-blue-900 to-blue-800 p-4">
-                      <h3 className="text-white text-xl font-bold flex items-center gap-2">
-                        <FaSearch className="text-blue-200" />
-                        Search Properties
-                      </h3>
-                      {activeFiltersCount > 0 && (
-                        <p className="text-blue-200 text-sm mt-1">
-                          {activeFiltersCount} active filter{activeFiltersCount !== 1 ? 's' : ''}
-                        </p>
-                      )}
-                    </div> */}
-                    
                     <div className="p-4">
                       <SearchFormContent 
                         formData={formData}
@@ -338,7 +333,7 @@ const Page = () => {
                         Properties
                       </h2>
                       <p className="text-gray-600 mt-1 text-sm sm:text-base">
-                        {allProperties.length} property{allProperties.length !== 1 ? 'ies' : ''} found
+                        {allProperties.length} available property{allProperties.length !== 1 ? 'ies' : ''} found
                         {activeFiltersCount > 0 && " with current filters"}
                       </p>
                     </div>
@@ -369,7 +364,7 @@ const Page = () => {
                   <div className="flex justify-center items-center py-12 sm:py-16">
                     <div className="text-center">
                       <Spinner />
-                      <p className="text-gray-600 mt-4 text-sm sm:text-base">Searching properties...</p>
+                      <p className="text-gray-600 mt-4 text-sm sm:text-base">Searching available properties...</p>
                     </div>
                   </div>
                 )}
@@ -388,11 +383,11 @@ const Page = () => {
                         <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
                           <FaSearch className="text-gray-400 text-xl sm:text-2xl" />
                         </div>
-                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-2 sm:mb-3">No Properties Found</h3>
+                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-2 sm:mb-3">No Available Properties Found</h3>
                         <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">
                           {activeFiltersCount > 0 
-                            ? "Try adjusting your search criteria to find more properties."
-                            : "There are currently no properties available. Please check back later."
+                            ? "Try adjusting your search criteria to find more available properties."
+                            : "There are currently no available properties. Please check back later."
                           }
                         </p>
                         {activeFiltersCount > 0 && (
@@ -400,7 +395,7 @@ const Page = () => {
                             onClick={handleReset}
                             className="bg-blue-900 hover:bg-blue-800 text-white font-semibold rounded-lg px-6 py-3 transition-all duration-200 active:scale-95 text-sm sm:text-base"
                           >
-                            Browse All Properties
+                            Browse All Available Properties
                           </button>
                         )}
                       </div>

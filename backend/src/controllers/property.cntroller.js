@@ -8,10 +8,13 @@ const createPropertyController = async (req, res) => {
 
     const body = req.body;
     const adType = body.adType;
-    const agency = await Agency.findById(agent.agency);
+    
+    // Get the latest agent data with populated agency info if needed
     agent = await Agent.findById(agent._id);
+    const agency = await Agency.findById(agent.agency);
 
-    if (adType !== "none" && agency[adType] === 0) {
+    // Check agent's ad count, NOT agency's
+    if (adType !== "none" && agent[adType] === 0) {
       return res.status(400).json({
         success: false,
         message: `Action Failed: You have used all of your ${adType}`,
@@ -56,18 +59,15 @@ const createPropertyController = async (req, res) => {
 
     const property = await Property.create(propertyData);
 
+    // Deduct from agent's ad count, NOT agency's
     if (body.adType !== "none") {
-      if (agency[adType] === 0) {
-        return;
+      if (agent[adType] === 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Action Failed: You have used all of your ${adType}`,
+        });
       } else {
-        agency[adType] = agency[adType] - 1;
-        await agency.save();
-      }
-
-      if(agent[adType] === 0){
-        return
-      }else{
-        agent[adType] = agent[adType] - 1; 
+        agent[adType] = agent[adType] - 1;
         await agent.save();
       }
     }
@@ -295,34 +295,24 @@ const updatePropertyController = async (req, res) => {
     const oldAdType = property.adType;
     const newAdType = body.adType;
 
-    // Get current agency and agent
-    const agency = await Agency.findById(property.agency);
+    // Get current agent (not agency)
     const currentAgent = await Agent.findById(property.agent);
 
-    if (!agency || !currentAgent) {
-      return res.status(404).json({ success: false, message: "Agency or Agent not found" });
+    if (!currentAgent) {
+      return res.status(404).json({ success: false, message: "Agent not found" });
     }
 
-    // Handle ad type changes
+    // Handle ad type changes - only check agent's ad count
     if (oldAdType !== newAdType) {
       // If changing FROM a paid ad type TO "none"
       if (oldAdType !== "none" && newAdType === "none") {
-        // Return the ad count to agency and agent
-        agency[oldAdType] += 1;
+        // Return the ad count to agent only
         currentAgent[oldAdType] += 1;
-        
-        // Change status to available
         body.status = "available";
       }
       // If changing FROM "none" TO a paid ad type
       else if (oldAdType === "none" && newAdType !== "none") {
-        // Check if agency and agent have enough ads
-        if (agency[newAdType] <= 0) {
-          return res.status(400).json({
-            success: false,
-            message: `Agency doesn't have enough ${newAdType} available`
-          });
-        }
+        // Check if agent has enough ads
         if (currentAgent[newAdType] <= 0) {
           return res.status(400).json({
             success: false,
@@ -330,26 +320,16 @@ const updatePropertyController = async (req, res) => {
           });
         }
 
-        // Deduct from agency and agent
-        agency[newAdType] -= 1;
+        // Deduct from agent only
         currentAgent[newAdType] -= 1;
-        
-        // Change status to pending
         body.status = "pending";
       }
       // If changing BETWEEN paid ad types
       else if (oldAdType !== "none" && newAdType !== "none") {
-        // Return the old ad type
-        agency[oldAdType] += 1;
+        // Return the old ad type to agent
         currentAgent[oldAdType] += 1;
 
-        // Check if agency and agent have enough of the new ad type
-        if (agency[newAdType] <= 0) {
-          return res.status(400).json({
-            success: false,
-            message: `Agency doesn't have enough ${newAdType} available`
-          });
-        }
+        // Check if agent has enough of the new ad type
         if (currentAgent[newAdType] <= 0) {
           return res.status(400).json({
             success: false,
@@ -357,11 +337,8 @@ const updatePropertyController = async (req, res) => {
           });
         }
 
-        // Deduct the new ad type
-        agency[newAdType] -= 1;
+        // Deduct the new ad type from agent
         currentAgent[newAdType] -= 1;
-        
-        // Keep status as pending
         body.status = "pending";
       }
     }
@@ -372,7 +349,7 @@ const updatePropertyController = async (req, res) => {
       if (!(oldAdType !== newAdType && 
           ((oldAdType === "none" && newAdType !== "none") || 
            (oldAdType !== "none" && newAdType === "none")))) {
-        delete body.status; // Remove status from update if agent tries to change it directly
+        delete body.status;
       }
     }
 
@@ -396,9 +373,8 @@ const updatePropertyController = async (req, res) => {
     Object.assign(property, updateData);
     await property.save();
 
-    // Save agency and agent if their ad counts changed
+    // Save agent if ad counts changed
     if (oldAdType !== newAdType) {
-      await agency.save();
       await currentAgent.save();
     }
 

@@ -57,7 +57,7 @@ const getSingleAgency = async (req, res) => {
     const id = req.params.id;
     const agents = await Agent.find({ agency: id });
     const agency = await Agency.findById(id).select("-password");
-    const properties = await Property.find({agency: id});
+    const properties = await Property.find({agency: id, status: "available"}) || [];
     if (!agency) {
       res
         .status(404)
