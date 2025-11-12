@@ -17,10 +17,10 @@ const Footer = () => {
           <div>
             <Image src={logo} width={100} height={50} alt="Company Logo" />
             <p className="text-sm leading-6 text-gray-400 font-semibold">
-              DHA Plus is Pakistan's No. 1 Real Estate App for all DHA Defence
+              DHA Connects is Pakistan's No. 1 Real Estate App for all DHA Defence
               Projects since 2011 and has since revolutionized the real estate
               industry of Pakistan by connecting buyers and sellers online in a
-              highly convenient way. DHA Plus authorize all type property Buy &
+              highly convenient way. DHA Connects authorize all type property Buy &
               Sell across all projects of DHA Defence Lahore, Karachi,
               Islamabad/Rawalpindi.
             </p>
@@ -43,15 +43,15 @@ const Footer = () => {
               <span>438 Block J3, Johar Town, Lahore</span>
               <span>
                 Phone:{
-                  <a className="text-blue-500" href="tel:+923230000000">
-                    +92 323-0000000
+                  <a className="text-blue-500" href="tel:+923215678920">
+                    +92 321 5678920
                   </a>
                 }
               </span>
               <span>
                 Email:{
-                  <a className="text-blue-500" href="mailto:info@dha.com">
-                    info@dha.com
+                  <a className="text-blue-500" href="mailto:info@dhaconnects.com">
+                    info@dhaconnects.com
                   </a>
                 }
               </span>
@@ -63,8 +63,7 @@ const Footer = () => {
       <div className="copy-right mt-10 text-[#707070]">
         <ContainerCenter className="py-[40px] border-t-[1px] border-gray-300">
           <p className="text-center">
-            © 2025 DHA Plus. All Rights Reserved. Made with ❤ by Excellence Code
-            Solutions
+            © 2025 DHA Connects. All Rights Reserved.
           </p>
         </ContainerCenter>
       </div>

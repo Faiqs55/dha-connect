@@ -439,6 +439,19 @@ export const forms = [
     ],
   },
   
-  
+   {
+    id: 9,
+    name: "NDC FORMS",
+    formList: [
+      {
+        id: 1,
+        name: "NDC Farm Form",
+        pdf: "/forms/ndc-farm.pdf",
+      },
+       
+      // ✅ Add more finance forms here in the same format
+    ],
+
+  },
     
 ];

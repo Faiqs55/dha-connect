@@ -56,6 +56,7 @@ const page = () => {
   const getProperties = async () => {
     const resC = await propertyService.getAllProperties({
       adType: "classifiedAds",
+      status: "available"
     });
 
     if (resC.success) {
@@ -64,7 +65,7 @@ const page = () => {
       setCProperties(null);
     }
 
-    const resV = await propertyService.getAllProperties({ adType: "videoAds" });
+    const resV = await propertyService.getAllProperties({ adType: "videoAds", status: "available" });
 
     if (resV.success) {
       setVProperties(resV.data);
@@ -74,6 +75,7 @@ const page = () => {
 
     const resF = await propertyService.getAllProperties({
       adType: "featuredAds",
+      status: "available"
     });
 
     if (resF.success) {
@@ -102,15 +104,15 @@ const page = () => {
       <div className="p-5">
         <div className="w-full hero rounded-xl py-16 md:py-24 lg:py-28">
           <ContainerCenter className={`flex flex-col`}>
-            <h1 className="text-white text-5xl mb-[15px] text-center">
+            <h1 className="text-white text-4xl sm:text-5xl mb-[15px] text-center">
               Find Properties in DHA Lahore
             </h1>
-            <h3 className="text-white text-2xl text-center mb-[40px]">
+            <h3 className="text-white text-xl sm:text-2xl text-center mb-[40px]">
               Real Data. Real Brokers. Real Properties.
             </h3>
             <HeroForm />
             {/* <HeroSearchForm color="#fff" /> */}
-            <h3 className="text-white text-3xl text-center mt-[40px]">
+            <h3 className="text-white text-xl sm:text-3xl text-center mt-[40px]">
               We’ve 38705 properties for you!
             </h3>
           </ContainerCenter>
@@ -295,6 +297,7 @@ const page = () => {
               bg={"bg-gradient-to-t from-[#fff] to-blue-100 rounded-lg"}
               show={{ xl: 3, l: 3, md: 2, sm: 1 }}
               gap={20}
+              sidePadding={0}
               autoPlay={true}
               autoPlayInterval={3000}
             >
