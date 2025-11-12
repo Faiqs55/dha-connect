@@ -82,7 +82,7 @@ const page = () => {
       setFProperties(null);
     }
 
-    const resA = await propertyService.getAllProperties();
+    const resA = await propertyService.getAllProperties({status: "available"});
 
     if (resA.success) {
       setProperties(resA.data);

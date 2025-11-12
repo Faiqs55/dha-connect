@@ -49,21 +49,25 @@ const addAgentController = async (req, res) => {
   try {
     const data = req.body;
     const user = req.user;
+    
     if (user.role === "admin") {
       return res
         .status(401)
         .json({ success: false, message: "Admins cannot Manage Agency Staff" });
     }
+    
     data.agency = user.agency;
     const agency = await Agency.findById(user.agency);
+    
+    // Check if agency has enough ads to allocate to agent
     if (
-      agency.classifiedAds < data.classifiedAds ||
-      agency.videoAds < data.videoAds ||
-      agency.featuredAds < data.featuredAds
+      (data.classifiedAds && agency.classifiedAds < data.classifiedAds) ||
+      (data.videoAds && agency.videoAds < data.videoAds) ||
+      (data.featuredAds && agency.featuredAds < data.featuredAds)
     ) {
       return res
         .status(403)
-        .json({ success: false, message: "You don't have enough ads." });
+        .json({ success: false, message: "You don't have enough ads to allocate." });
     }
 
     const agent = await Agent.create(data);
@@ -74,13 +78,38 @@ const addAgentController = async (req, res) => {
         .json({ success: false, message: "Agent Member could not be created" });
     }
 
-    agency.classifiedAds = agency.classifiedAds - agent.classifiedAds;
-    agency.videoAds = agency.videoAds - agent.videoAds;
-    agency.featuredAds = agency.featuredAds - agent.featuredAds;
+    // Deduct allocated ads from agency
+    if (data.classifiedAds) {
+      agency.classifiedAds = agency.classifiedAds - data.classifiedAds;
+    }
+    if (data.videoAds) {
+      agency.videoAds = agency.videoAds - data.videoAds;
+    }
+    if (data.featuredAds) {
+      agency.featuredAds = agency.featuredAds - data.featuredAds;
+    }
 
     await agency.save();
 
-    res.status(201).json({ success: true, message: "Agent member added" });
+    res.status(201).json({ 
+      success: true, 
+      message: "Agent member added",
+      data: {
+        agent: {
+          _id: agent._id,
+          name: agent.name,
+          email: agent.email,
+          classifiedAds: agent.classifiedAds,
+          videoAds: agent.videoAds,
+          featuredAds: agent.featuredAds
+        },
+        agencyRemainingAds: {
+          classifiedAds: agency.classifiedAds,
+          videoAds: agency.videoAds,
+          featuredAds: agency.featuredAds
+        }
+      }
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -158,9 +187,7 @@ const updateAgentController = async (req, res) => {
     const user = req.user;
     const id = req.params.id;
     const data = req.body;
-    let newAgencyClassifiedAds;
-    let newAgencyVideoAds;
-    let newAgencyFeaturedAds;
+    
     if (!(user.role === "agency")) {
       return res.status(401).json({
         success: false,
@@ -169,31 +196,11 @@ const updateAgentController = async (req, res) => {
     }
 
     const agent = await Agent.findById(id);
-
     if (!agent) {
       return res
         .status(404)
         .json({ success: false, message: "Agent Member does not Exist" });
     }
-    
-    
-
-    const agency = await Agency.findById(user.agency);
-    if (
-      agency.classifiedAds < data.classifiedAds ||
-      agency.videoAds < data.videoAds ||
-      agency.featuredAds < data.featuredAds
-    ) {
-      return res
-        .status(403)
-        .json({ success: false, message: "You don't have enough ads." });
-    }
-
-    newAgencyClassifiedAds =
-      agency.classifiedAds - (data.classifiedAds - agent.classifiedAds);
-    newAgencyVideoAds = agency.videoAds - (data.videoAds - agent.videoAds);
-    newAgencyFeaturedAds =
-      agency.featuredAds - (data.featuredAds - agent.featuredAds);
 
     if (agent.agency.toString() !== user.agency.toString()) {
       return res.status(401).json({
@@ -202,7 +209,41 @@ const updateAgentController = async (req, res) => {
       });
     }
 
-    const updatedAgent = await agent.updateOne(data);
+    const agency = await Agency.findById(user.agency);
+    
+    // Calculate the difference in ad allocation
+    const classifiedDiff = (data.classifiedAds || 0) - agent.classifiedAds;
+    const videoDiff = (data.videoAds || 0) - agent.videoAds;
+    const featuredDiff = (data.featuredAds || 0) - agent.featuredAds;
+
+    // Check if agency has enough ads for the update
+    if (
+      (classifiedDiff > 0 && agency.classifiedAds < classifiedDiff) ||
+      (videoDiff > 0 && agency.videoAds < videoDiff) ||
+      (featuredDiff > 0 && agency.featuredAds < featuredDiff)
+    ) {
+      return res
+        .status(403)
+        .json({ success: false, message: "You don't have enough ads to allocate." });
+    }
+
+    // Update agency ads based on the difference
+    if (classifiedDiff !== 0) {
+      agency.classifiedAds = agency.classifiedAds - classifiedDiff;
+    }
+    if (videoDiff !== 0) {
+      agency.videoAds = agency.videoAds - videoDiff;
+    }
+    if (featuredDiff !== 0) {
+      agency.featuredAds = agency.featuredAds - featuredDiff;
+    }
+
+    // Update agent with new data
+    const updatedAgent = await Agent.findByIdAndUpdate(
+      id, 
+      data, 
+      { new: true }
+    ).select("-password");
 
     if (!updatedAgent) {
       return res.status(400).json({
@@ -211,15 +252,18 @@ const updateAgentController = async (req, res) => {
       });
     }
 
-    await agency.updateOne({
-      classifiedAds: newAgencyClassifiedAds,
-      videoAds: newAgencyVideoAds,
-      featuredAds: newAgencyFeaturedAds,
-    });
+    await agency.save();
 
     res.status(200).json({
       success: true,
-      data: updatedAgent,
+      data: {
+        agent: updatedAgent,
+        agencyRemainingAds: {
+          classifiedAds: agency.classifiedAds,
+          videoAds: agency.videoAds,
+          featuredAds: agency.featuredAds
+        }
+      },
       message: "Agent has been updated",
     });
   } catch (error) {

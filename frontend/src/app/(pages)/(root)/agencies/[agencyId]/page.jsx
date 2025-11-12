@@ -183,7 +183,7 @@ const page = () => {
                   <h2 className="text-xl font-semibold mb-4">
                     Properties List
                   </h2>
-                  {agency.properties ? <div className="flex flex-col gap-4">
+                  {(agency.properties && agency.properties.length) ? <div className="flex flex-col gap-4">
                     {agency.properties.map((p) => (
                       <PropertiesCard key={p.id} data={p} />
                     ))}

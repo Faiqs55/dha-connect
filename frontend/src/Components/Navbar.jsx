@@ -25,7 +25,6 @@ const navigationItems = [
   },
   { href: "/properties?category=Sell", label: "Buy" },
   { href: "/properties?category=Rent", label: "Rent" },
-  { href: "/properties?category=Project", label: "Project" },
   { href: "/file-rates", label: "File Rates" },
   {
     type: "dropdown",

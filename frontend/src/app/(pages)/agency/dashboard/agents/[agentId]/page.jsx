@@ -82,14 +82,50 @@ export default function UpdateAgentPage() {
       }
     });
   }, [token, isLoaded, agentId]);
-  
+
+  /* ---------- Calculate maximum allowed ads based on current allocation ---------- */
+  const calculateMaxAds = (adType) => {
+    if (!agency || !originalAgent) return 0;
+    
+    const agencyAvailable = agency[adType] || 0;
+    const agentCurrent = originalAgent[adType] || 0;
+    
+    // Maximum = what agency has available + what agent currently has
+    return agencyAvailable + agentCurrent;
+  };
+
+  /* ---------- Check if new ad value is valid ---------- */
+  const isValidAdValue = (adType, newValue) => {
+    const maxAllowed = calculateMaxAds(adType);
+    return newValue >= 0 && newValue <= maxAllowed;
+  };
+
+  /* ---------- Get available ads for display ---------- */
+  const getAvailableAds = (adType) => {
+    if (!agency) return 0;
+    return agency[adType] || 0;
+  };
 
   /* ---------- generic field ---------- */
   const handleChange = (e) => {
     const { name, value, type } = e.target;
+    let newValue = type === 'number' ? parseInt(value) || 0 : value;
+
+    // Special validation for ad fields
+    if (name === 'classifiedAds' || name === 'videoAds' || name === 'featuredAds') {
+      if (!isValidAdValue(name, newValue)) {
+        const maxAllowed = calculateMaxAds(name);
+        setToast({ 
+          success: false, 
+          message: `Cannot assign ${newValue} ${name.replace('Ads', ' ads')}. Maximum allowed is ${maxAllowed}.` 
+        });
+        return; // Don't update the field if invalid
+      }
+    }
+
     setForm((f) => ({ 
       ...f, 
-      [name]: type === 'number' ? parseInt(value) || 0 : value 
+      [name]: newValue 
     }));
   };
 
@@ -98,7 +134,7 @@ export default function UpdateAgentPage() {
     const f = e.target.files[0];
     if (!f) return;
     if (f.size > 5 * 1024 * 1024)
-      return setToast({ success: false, message: "Max 5 MB" });
+      return setToast({ success: false, message: "Image size too large. Please select an image under 5MB." });
     setFile(f);
     setPreview(URL.createObjectURL(f));
   };
@@ -138,15 +174,35 @@ export default function UpdateAgentPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Additional validation for ad quotas
-    if (form.classifiedAds > (agency?.classifiedAds || 0)) {
-      return setToast({ success: false, message: "Cannot assign more classified ads than available" });
+    // Validate required fields
+    if (!form.name || !form.designation || !form.email || !form.phone) {
+      return setToast({ success: false, message: "Please fill in all required agent information fields." });
     }
-    if (form.videoAds > (agency?.videoAds || 0)) {
-      return setToast({ success: false, message: "Cannot assign more video ads than available" });
+
+    // Final validation for ad quotas
+    if (!isValidAdValue('classifiedAds', form.classifiedAds)) {
+      return setToast({ 
+        success: false, 
+        message: `Invalid classified ads allocation. Maximum allowed is ${calculateMaxAds('classifiedAds')}.` 
+      });
     }
-    if (form.featuredAds > (agency?.featuredAds || 0)) {
-      return setToast({ success: false, message: "Cannot assign more featured ads than available" });
+    if (!isValidAdValue('videoAds', form.videoAds)) {
+      return setToast({ 
+        success: false, 
+        message: `Invalid video ads allocation. Maximum allowed is ${calculateMaxAds('videoAds')}.` 
+      });
+    }
+    if (!isValidAdValue('featuredAds', form.featuredAds)) {
+      return setToast({ 
+        success: false, 
+        message: `Invalid featured ads allocation. Maximum allowed is ${calculateMaxAds('featuredAds')}.` 
+      });
+    }
+
+    // Check if all ads are being removed
+    if (form.classifiedAds === 0 && form.videoAds === 0 && form.featuredAds === 0) {
+      const proceed = confirm("You're removing all advertising quotas from this agent. They won't be able to create promoted properties. Continue anyway?");
+      if (!proceed) return;
     }
 
     setSubmitting(true);
@@ -175,8 +231,12 @@ export default function UpdateAgentPage() {
         if (originalImage && originalImage !== imageUrl) {
           oldImageToDelete = originalImage;
         }
-      } catch {
-        setToast({ success: false, message: "Image upload failed" });
+      } catch (error) {
+        console.error("Image upload failed:", error);
+        setToast({ 
+          success: false, 
+          message: "Failed to upload agent image. Please try again." 
+        });
         setSubmitting(false);
         return;
       }
@@ -205,7 +265,9 @@ export default function UpdateAgentPage() {
       
       setToast({
         success: res.success,
-        message: res.message || (res.success ? "Agent updated successfully" : "Failed to update agent"),
+        message: res.success 
+          ? "Agent updated successfully! Changes have been saved." 
+          : res.message || "Failed to update agent. Please try again.",
       });
 
       if (res.success) {
@@ -218,19 +280,22 @@ export default function UpdateAgentPage() {
           setOriginalImage(imageUrl);
         }
 
-        // Reset form for password field only
-        setForm(f => ({ ...f, password: "" }));
-        
         // Delete old image from Cloudinary if needed
         if (oldImageToDelete) {
           await deleteImageFromCloudinary(oldImageToDelete);
+        }
+
+        // Refresh agency data to get updated ad counts
+        const agencyRes = await agencyService.getMyAgency(token);
+        if (agencyRes.success) {
+          setAgency(agencyRes.data);
         }
       }
     } catch (error) {
       console.error("Error updating agent:", error);
       setToast({
         success: false,
-        message: "An error occurred while updating the agent",
+        message: "An unexpected error occurred while updating the agent. Please try again.",
       });
     }
     
@@ -238,7 +303,12 @@ export default function UpdateAgentPage() {
   };
 
   if (!agency || !agent) {
-    return <Spinner />;
+    return (
+      <div className="flex justify-center items-center min-h-64">
+        <Spinner/>
+        <span className="ml-3 text-gray-600">Loading agent information...</span>
+      </div>
+    );
   }
 
   return (
@@ -247,19 +317,25 @@ export default function UpdateAgentPage() {
 
       <div className="mb-10 flex gap-2.5">
         <Link
-          className="text-gray-500 font-bold text-sm underline"
+          className="text-gray-500 font-bold text-sm underline hover:text-gray-700 transition-colors"
           href={"/agency/dashboard"}
         >
-          {"<< Dashboard"}
+          {"← Dashboard"}
         </Link>
         <Link
-          className="text-gray-500 font-bold text-sm underline"
+          className="text-gray-500 font-bold text-sm underline hover:text-gray-700 transition-colors"
           href={"/agency/dashboard/agents"}
         >
-          {"<< My Agents"}
+          {"← My Agents"}
         </Link>
       </div>
-      <h1 className="text-4xl font-semibold underline mb-6">Update Agent</h1>
+      
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">Update Agent</h1>
+        <p className="text-gray-600">
+          Update agent information and adjust advertising quotas from your available pool.
+        </p>
+      </div>
 
       <form onSubmit={handleSubmit} className="mb-10 mt-5 space-y-8">
         {/* ------- image ------- */}
@@ -306,124 +382,179 @@ export default function UpdateAgentPage() {
         {/* ------- fields ------- */}
         <AgencyFormSection
           title="Agent Information"
-          innerStyle="grid grid-cols-2 gap-5"
+          innerStyle="grid grid-cols-1 md:grid-cols-2 gap-5"
         >
           <AgencyFormInput
-            label="Agent Name"
+            label="Agent Name *"
             name="name"
             value={form.name}
             onChange={handleChange}
+            placeholder="Enter full name"
             required
           />
           <AgencyFormInput
-            label="Agent Designation"
+            label="Designation *"
             name="designation"
             value={form.designation}
             onChange={handleChange}
+            placeholder="e.g., Senior Agent, Sales Manager"
             required
           />
           <AgencyFormInput
-            label="Agent Email"
+            label="Email Address *"
             name="email"
+            type="email"
             value={form.email}
             onChange={handleChange}
+            placeholder="agent@example.com"
             required
           />
           <AgencyFormInput
-            label="Agent Phone"
+            label="Phone Number *"
             name="phone"
             value={form.phone}
             onChange={handleChange}
+            placeholder="+92 300 1234567"
             required
           />
         </AgencyFormSection>
 
         {/* ------- Ad Quotas Section ------- */}
         <AgencyFormSection
-          title="Update Ads Quota"
-          innerStyle="grid grid-cols-1 md:grid-cols-3 gap-5"
+          title="Advertising Quotas"
+          description="Adjust advertising quotas from your available pool. You can reallocate ads between agents."
         >
-          {/* Classified Ads */}
-          <div>
-            <AgencyFormInput
-              label={`Classified Ads (Available: ${agency.classifiedAds})`}
-              name="classifiedAds"
-              type="number"
-              value={form.classifiedAds}
-              onChange={handleChange}
-              min="0"
-              max={agency.classifiedAds}
-              disabled={agency.classifiedAds === 0}
-              required
-            />
-            {agency.classifiedAds === 0 ? (
-              <p className="text-xs text-rose-500 mt-1">
-                You are out of classified ads. Contact admin to get more.
-              </p>
-            ) : (
-              <p className="text-xs text-gray-500 mt-1">
-                You can assign 0 to {agency.classifiedAds} classified ads
-              </p>
-            )}
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Classified Ads */}
+            <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+              <AgencyFormInput
+                label={`Classified Ads`}
+                name="classifiedAds"
+                type="number"
+                value={form.classifiedAds}
+                onChange={handleChange}
+                min="0"
+                max={calculateMaxAds('classifiedAds')}
+                disabled={calculateMaxAds('classifiedAds') === 0}
+                required
+              />
+              <div className="mt-2">
+                <p className="text-sm text-blue-700 font-medium">
+                  Available: {getAvailableAds('classifiedAds')} ads
+                </p>
+                <p className="text-xs text-blue-600">
+                  Current: {originalAgent.classifiedAds} ads
+                </p>
+                {calculateMaxAds('classifiedAds') === 0 ? (
+                  <p className="text-xs text-rose-600 mt-1">
+                    No classified ads available for reallocation
+                  </p>
+                ) : (
+                  <p className="text-xs text-blue-600 mt-1">
+                    You can assign 0 to {calculateMaxAds('classifiedAds')} ads
+                  </p>
+                )}
+              </div>
+            </div>
 
-          {/* Video Ads */}
-          <div>
-            <AgencyFormInput
-              label={`Video Ads (Available: ${agency.videoAds})`}
-              name="videoAds"
-              type="number"
-              value={form.videoAds}
-              onChange={handleChange}
-              min="0"
-              max={agency.videoAds}
-              disabled={agency.videoAds === 0}
-              required
-            />
-            {agency.videoAds === 0 ? (
-              <p className="text-xs text-rose-500 mt-1">
-                You are out of video ads. Contact admin to get more.
-              </p>
-            ) : (
-              <p className="text-xs text-gray-500 mt-1">
-                You can assign 0 to {agency.videoAds} video ads
-              </p>
-            )}
-          </div>
+            {/* Video Ads */}
+            <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+              <AgencyFormInput
+                label={`Video Ads`}
+                name="videoAds"
+                type="number"
+                value={form.videoAds}
+                onChange={handleChange}
+                min="0"
+                max={calculateMaxAds('videoAds')}
+                disabled={calculateMaxAds('videoAds') === 0}
+                required
+              />
+              <div className="mt-2">
+                <p className="text-sm text-purple-700 font-medium">
+                  Available: {getAvailableAds('videoAds')} ads
+                </p>
+                <p className="text-xs text-purple-600">
+                  Current: {originalAgent.videoAds} ads
+                </p>
+                {calculateMaxAds('videoAds') === 0 ? (
+                  <p className="text-xs text-rose-600 mt-1">
+                    No video ads available for reallocation
+                  </p>
+                ) : (
+                  <p className="text-xs text-purple-600 mt-1">
+                    You can assign 0 to {calculateMaxAds('videoAds')} ads
+                  </p>
+                )}
+              </div>
+            </div>
 
-          {/* Featured Ads */}
-          <div>
-            <AgencyFormInput
-              label={`Featured Ads (Available: ${agency.featuredAds})`}
-              name="featuredAds"
-              type="number"
-              value={form.featuredAds}
-              onChange={handleChange}
-              min="0"
-              max={agency.featuredAds}
-              disabled={agency.featuredAds === 0}
-              required
-            />
-            {agency.featuredAds === 0 ? (
-              <p className="text-xs text-rose-500 mt-1">
-                You are out of featured ads. Contact admin to get more.
-              </p>
-            ) : (
-              <p className="text-xs text-gray-500 mt-1">
-                You can assign 0 to {agency.featuredAds} featured ads
-              </p>
-            )}
+            {/* Featured Ads */}
+            <div className="bg-amber-50 rounded-lg p-4 border border-amber-100">
+              <AgencyFormInput
+                label={`Featured Ads`}
+                name="featuredAds"
+                type="number"
+                value={form.featuredAds}
+                onChange={handleChange}
+                min="0"
+                max={calculateMaxAds('featuredAds')}
+                disabled={calculateMaxAds('featuredAds') === 0}
+                required
+              />
+              <div className="mt-2">
+                <p className="text-sm text-amber-700 font-medium">
+                  Available: {getAvailableAds('featuredAds')} ads
+                </p>
+                <p className="text-xs text-amber-600">
+                  Current: {originalAgent.featuredAds} ads
+                </p>
+                {calculateMaxAds('featuredAds') === 0 ? (
+                  <p className="text-xs text-rose-600 mt-1">
+                    No featured ads available for reallocation
+                  </p>
+                ) : (
+                  <p className="text-xs text-amber-600 mt-1">
+                    You can assign 0 to {calculateMaxAds('featuredAds')} ads
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
+          
+          {(form.classifiedAds === 0 && form.videoAds === 0 && form.featuredAds === 0) && (
+            <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <p className="text-yellow-800 text-sm">
+                <span className="font-semibold">Note:</span> This agent won't be able to create promoted properties if all advertising quotas are removed.
+              </p>
+            </div>
+          )}
         </AgencyFormSection>
 
         {/* ------- submit ------- */}
-        <button
-          type="submit"
-          disabled={submitting}
-          className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400"
-        >
-          {submitting ? "Updating..." : "Update Agent"}
-        </button>
+        <div className="flex gap-4 pt-6 border-t border-gray-200">
+          <button
+            type="button"
+            onClick={() => window.history.back()}
+            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-8 py-3 rounded-lg font-medium transition-colors flex items-center gap-2"
+          >
+            {submitting ? (
+              <>
+                <Spinner size="small" />
+                Updating Agent...
+              </>
+            ) : (
+              "Update Agent Account"
+            )}
+          </button>
+        </div>
       </form>
     </div>
   );
