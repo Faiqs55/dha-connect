@@ -117,6 +117,7 @@ const page = () => {
 
                 <div className="absolute right-5 top-5">
                   <Link className="text-sm bg-green-700 rounded-md text-white px-2 py-0.5" href={`/agency/dashboard/agents/${agent._id}`}>Update</Link>
+                  <Link className="text-sm bg-red-700 rounded-md text-white px-2 py-0.5" href={`/agency/dashboard/agents/${agent._id}`}>Delete</Link>
                 </div>
               </div>
             </div>
