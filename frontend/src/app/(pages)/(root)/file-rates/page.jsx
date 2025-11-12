@@ -3,9 +3,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import phaseService from "@/services/phase.service";
 import Link from "next/link";
 import { FiShare2, FiX, FiLink, FiCopy } from "react-icons/fi";
-import { FaFacebookF, FaTwitter, FaLinkedinIn, FaWhatsapp, FaEnvelope, FaMicrosoft } from "react-icons/fa";
-import { SiGmail } from "react-icons/si";
-import { HiOutlineQrCode, HiOutlineUsers } from "react-icons/hi2";
+import { FaFacebookF, FaTwitter, FaLinkedinIn, FaWhatsapp, FaEnvelope, FaInstagram } from "react-icons/fa";
+import { HiOutlineQrCode } from "react-icons/hi2";
 import {
   Area,
   AreaChart,
@@ -226,31 +225,10 @@ function ShareModal({ phaseName, shareUrl, onClose }) {
       iconColor: "text-white",
     },
     {
-      name: "Mail",
-      href: `mailto:?subject=${encodeURIComponent(phaseName)}&body=${encodeURIComponent(shareUrl)}`,
-      icon: FaEnvelope,
-      iconBgColor: "bg-blue-500",
-      iconColor: "text-white",
-    },
-    {
-      name: "Outlook",
-      href: `https://outlook.live.com/owa/?path=/mail/action/compose&subject=${encodeURIComponent(phaseName)}&body=${encodeURIComponent(shareUrl)}`,
-      icon: FaMicrosoft,
-      iconBgColor: "bg-[#0078d4]",
-      iconColor: "text-white",
-    },
-    {
-      name: "Microsoft Teams",
-      href: `https://teams.microsoft.com/share?href=${encodeURIComponent(shareUrl)}`,
-      icon: HiOutlineUsers,
-      iconBgColor: "bg-[#6264a7]",
-      iconColor: "text-white",
-    },
-    {
-      name: "Gmail",
-      href: `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(phaseName)}&body=${encodeURIComponent(shareUrl)}`,
-      icon: SiGmail,
-      iconBgColor: "bg-[#ea4335]",
+      name: "Instagram",
+      href: `https://www.instagram.com/?url=${encodeURIComponent(shareUrl)}`,
+      icon: FaInstagram,
+      iconBgColor: "bg-gradient-to-br from-purple-500 to-pink-500",
       iconColor: "text-white",
     },
     {
@@ -272,6 +250,13 @@ function ShareModal({ phaseName, shareUrl, onClose }) {
       href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
       icon: FaLinkedinIn,
       iconBgColor: "bg-[#0a66c2]",
+      iconColor: "text-white",
+    },
+    {
+      name: "Mail",
+      href: `mailto:?subject=${encodeURIComponent(phaseName)}&body=${encodeURIComponent(shareUrl)}`,
+      icon: FaEnvelope,
+      iconBgColor: "bg-blue-500",
       iconColor: "text-white",
     },
   ];

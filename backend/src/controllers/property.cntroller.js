@@ -2,6 +2,14 @@ const { Agency } = require("../models/agency.model");
 const { Agent } = require("../models/agent.model");
 const { Property } = require("../models/property.model");
 
+// Define adType order for consistent sorting
+const AD_TYPE_ORDER = {
+  'featuredAds': 1,
+  'videoAds': 2, 
+  'classifiedAds': 3,
+  'none': 4
+};
+
 const createPropertyController = async (req, res) => {
   try {
     let agent = req.agent;
@@ -189,10 +197,18 @@ const getAllProperties = async (req, res) => {
     const properties = await Property.find(filter)
       .populate('agent')
       .populate('agency')
-      .sort({ createdAt: -1 });
+      .sort({ 
+        // Sort by adType according to AD_TYPE_ORDER, then by creation date
+        createdAt: -1 
+      });
+
+    // Sort properties by adType order
+    const sortedProperties = properties.sort((a, b) => {
+      return AD_TYPE_ORDER[a.adType] - AD_TYPE_ORDER[b.adType];
+    });
 
     // Add virtual fields to response
-    const propertiesWithExpiration = properties.map(property => ({
+    const propertiesWithExpiration = sortedProperties.map(property => ({
       ...property._doc,
       daysRemaining: property.daysRemaining
     }));
@@ -250,8 +266,13 @@ const getAgentPropertiesController = async (req, res) => {
         .json({ success: false, message: "Could not Find Properties" });
     }
 
+    // Sort properties by adType order
+    const sortedProperties = properties.sort((a, b) => {
+      return AD_TYPE_ORDER[a.adType] - AD_TYPE_ORDER[b.adType];
+    });
+
     // Add virtual fields to response
-    const propertiesWithExpiration = properties.map(property => ({
+    const propertiesWithExpiration = sortedProperties.map(property => ({
       ...property._doc,
       daysRemaining: property.daysRemaining
     }));
@@ -588,8 +609,13 @@ const getAgencyProperties = async (req, res) => {
       });
     }
 
+    // Sort properties by adType order
+    const sortedProperties = properties.sort((a, b) => {
+      return AD_TYPE_ORDER[a.adType] - AD_TYPE_ORDER[b.adType];
+    });
+
     // Add virtual fields to response
-    const propertiesWithExpiration = properties.map(property => ({
+    const propertiesWithExpiration = sortedProperties.map(property => ({
       ...property._doc,
       daysRemaining: property.daysRemaining
     }));
@@ -727,9 +753,14 @@ const getExpiredPropertiesController = async (req, res) => {
       .populate('agency')
       .sort({ expiresAt: -1 });
 
+    // Sort expired properties by adType order as well
+    const sortedProperties = expiredProperties.sort((a, b) => {
+      return AD_TYPE_ORDER[a.adType] - AD_TYPE_ORDER[b.adType];
+    });
+
     res.status(200).json({
       success: true,
-      data: expiredProperties,
+      data: sortedProperties,
       count: expiredProperties.length,
       message: `Found ${expiredProperties.length} expired properties`
     });
