@@ -64,10 +64,11 @@ export const maps = [
     lat: 31.4650952383866,
     long: 74.45340595840612,
     overlay: "/layer2.png",
-    north: 31.49676666666666, // top latitude (3rd or 4th corner)
-    south: 31.44984166666666, // bottom latitude (1st corner)
-    east: 74.49367222222223, // right longitude (2nd or 3rd corner)
-    west: 74.43157777777779,
+    north: 31.5000667,
+  south: 31.4385417,
+  east: 74.4985472,
+  west: 74.4212306,
+
     sectors: [
       {
         id: 1,
