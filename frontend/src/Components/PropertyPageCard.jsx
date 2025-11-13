@@ -6,7 +6,58 @@ import { IoLogoWhatsapp } from "react-icons/io5";
 import Link from "next/link";
 import Image from "next/image";
 
+// Phone number formatting function
+const formatPhoneNumber = (value) => {
+  if (!value) return { tel: null, whatsapp: null };
+  
+  // Remove all spaces and special characters
+  const cleaned = value.toString().replace(/[^0-9+]/g, "");
+  if (!cleaned) return { tel: null, whatsapp: null };
+
+  let telNumber, whatsappNumber;
+
+  // Format for tel link
+  if (cleaned.startsWith("0")) {
+    // Remove leading 0 and add +92
+    telNumber = `+92${cleaned.substring(1)}`;
+  } else if (cleaned.startsWith("92")) {
+    // Add + if it starts with 92
+    telNumber = `+${cleaned}`;
+  } else if (cleaned.startsWith("+92")) {
+    // Already in correct format
+    telNumber = cleaned;
+  } else {
+    // Assume it's a local number without 0, add +92
+    telNumber = `+92${cleaned}`;
+  }
+
+  // Format for WhatsApp link
+  if (cleaned.startsWith("0")) {
+    // Remove leading 0 and use 92
+    whatsappNumber = `92${cleaned.substring(1)}`;
+  } else if (cleaned.startsWith("+92")) {
+    // Remove the + prefix
+    whatsappNumber = cleaned.substring(1);
+  } else if (cleaned.startsWith("92")) {
+    // Already in correct format for WhatsApp
+    whatsappNumber = cleaned;
+  } else {
+    // Assume it's a local number without 0, use 92
+    whatsappNumber = `92${cleaned}`;
+  }
+
+  return {
+    tel: telNumber,
+    whatsapp: `https://wa.me/${whatsappNumber}`
+  };
+};
+
 const PropertyPageCard = ({ data }) => {
+  const links = formatPhoneNumber(data?.agent?.phone);
+  
+  // Create WhatsApp message with property details
+  const whatsappMessage = `I'm interested in this property: ${data.title}. Property Link: ${typeof window !== 'undefined' ? window.location.origin : ''}/properties/${data._id}. This offer is valid for 24 hours.`;
+
   return (
     <div className="w-full bg-white border border-gray-300 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
       {/* IMAGE SECTION */}
@@ -94,8 +145,9 @@ const PropertyPageCard = ({ data }) => {
           <a
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-green-50 hover:bg-green-100 text-green-700 font-medium rounded-lg transition-colors duration-200 text-sm min-h-[44px]"
-            href={`tel:+92${data?.agent?.phone}`}
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-green-50 hover:bg-green-100 text-green-700 font-medium rounded-lg transition-colors duration-200 text-sm min-h-[44px] disabled:opacity-50"
+            href={links.tel ? `tel:${links.tel}` : "#"}
+            aria-disabled={!links.tel}
           >
             <IoMdCall className="text-lg" />
             <span className="hidden xs:inline">Call</span>
@@ -104,8 +156,9 @@ const PropertyPageCard = ({ data }) => {
           <a
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 px-3 py-2.5 bg-[#25D366] hover:bg-[#20bd5a] text-white font-medium rounded-lg transition-colors duration-200 text-sm min-w-[44px] min-h-[44px]"
-            href={`https://wa.me/92${data?.agent?.phone}`}
+            className="flex items-center justify-center gap-2 px-3 py-2.5 bg-[#25D366] hover:bg-[#20bd5a] text-white font-medium rounded-lg transition-colors duration-200 text-sm min-w-[44px] min-h-[44px] disabled:opacity-50"
+            href={links.whatsapp ? `${links.whatsapp}?text=${encodeURIComponent(whatsappMessage)}` : "#"}
+            aria-disabled={!links.whatsapp}
           >
             <IoLogoWhatsapp className="text-xl" />
           </a>

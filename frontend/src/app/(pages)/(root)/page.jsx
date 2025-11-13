@@ -12,13 +12,11 @@ import PropertiesCard from "@/Components/PropertiesCard";
 import WidgetSearchFrom from "@/Components/WidgetSearchFrom";
 import FAQ from "@/Components/FAQ";
 import { FaRegEnvelope } from "react-icons/fa6";
-import { body } from "@/static-data/electedBody";
 import { BsWhatsapp } from "react-icons/bs";
 import propertyService from "@/services/property.service";
 import QuickLinkHome from "@/Components/QuickLinksHome";
 import Link from "next/link";
-
-const bodyData = body.find((b) => b.timeline === "current");
+import electedBodiesService from "@/services/electedBodies.service";
 
 const page = () => {
   const [agenciesData, setAgenciesData] = useState(null);
@@ -27,6 +25,95 @@ const page = () => {
   const [vProperties, setVProperties] = useState(null);
   const [cProperties, setCProperties] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [currentElectedBody, setCurrentElectedBody] = useState([]);
+  const [electedBodyLoading, setElectedBodyLoading] = useState(true);
+  const [electedBodyError, setElectedBodyError] = useState(null);
+
+  // Phone number formatting function
+  const formatPhoneNumber = (value) => {
+    if (!value) return { tel: null, whatsapp: null };
+    
+    // Remove all spaces and special characters
+    const cleaned = value.toString().replace(/[^0-9+]/g, "");
+    if (!cleaned) return { tel: null, whatsapp: null };
+
+    let telNumber, whatsappNumber;
+
+    // Format for tel link
+    if (cleaned.startsWith("0")) {
+      // Remove leading 0 and add +92
+      telNumber = `+92${cleaned.substring(1)}`;
+    } else if (cleaned.startsWith("92")) {
+      // Add + if it starts with 92
+      telNumber = `+${cleaned}`;
+    } else if (cleaned.startsWith("+92")) {
+      // Already in correct format
+      telNumber = cleaned;
+    } else {
+      // Assume it's a local number without 0, add +92
+      telNumber = `+92${cleaned}`;
+    }
+
+    // Format for WhatsApp link
+    if (cleaned.startsWith("0")) {
+      // Remove leading 0 and use 92
+      whatsappNumber = `92${cleaned.substring(1)}`;
+    } else if (cleaned.startsWith("+92")) {
+      // Remove the + prefix
+      whatsappNumber = cleaned.substring(1);
+    } else if (cleaned.startsWith("92")) {
+      // Already in correct format for WhatsApp
+      whatsappNumber = cleaned;
+    } else {
+      // Assume it's a local number without 0, use 92
+      whatsappNumber = `92${cleaned}`;
+    }
+
+    return {
+      tel: telNumber,
+      whatsapp: `https://wa.me/${whatsappNumber}`
+    };
+  };
+
+  // Fetch current elected body members
+  useEffect(() => {
+    const fetchCurrentElectedBody = async () => {
+      try {
+        setElectedBodyLoading(true);
+        const res = await electedBodiesService.getMembers({ status: "current" });
+        
+        if (!res?.success) {
+          throw new Error(res?.message || "Unable to load elected body members.");
+        }
+        
+        // Sort the members by designation order
+        const sortedMembers = (res.data || []).sort((a, b) => {
+          const order = [
+            "President",
+            "Senior Vice President", 
+            "Vice President",
+            "Director Information",
+          ];
+          const aIndex = order.indexOf(a.designation);
+          const bIndex = order.indexOf(b.designation);
+
+          if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+          if (aIndex !== -1) return -1;
+          if (bIndex !== -1) return 1;
+          return 0;
+        });
+        
+        setCurrentElectedBody(sortedMembers);
+      } catch (err) {
+        console.error("Error fetching elected body:", err);
+        setElectedBodyError(err.message);
+      } finally {
+        setElectedBodyLoading(false);
+      }
+    };
+
+    fetchCurrentElectedBody();
+  }, []);
 
   const getAgencies = async () => {
     const query = { status: "Approved" };
@@ -111,9 +198,8 @@ const page = () => {
               Real Data. Real Brokers. Real Properties.
             </h3>
             <HeroForm />
-            {/* <HeroSearchForm color="#fff" /> */}
             <h3 className="text-white text-xl sm:text-3xl text-center mt-[40px]">
-              We’ve 38705 properties for you!
+              We've 38705 properties for you!
             </h3>
           </ContainerCenter>
         </div>
@@ -206,10 +292,18 @@ const page = () => {
         </ContainerCenter>
       </section>
 
-      {/* ELECTED BODIES  */}
+      {/* ELECTED BODIES - Using Home Page Card Design */}
       <ContainerCenter className="py-20">
         <h2 className="mb-10 text-3xl capitalize">Current Elected Body</h2>
-        {bodyData && (
+        {electedBodyLoading ? (
+          <div className="py-12 text-center text-slate-500">Loading elected body members...</div>
+        ) : electedBodyError ? (
+          <div className="py-12 text-center text-red-500">{electedBodyError}</div>
+        ) : currentElectedBody.length === 0 ? (
+          <div className="py-12 text-center text-slate-500">
+            No current elected body members found.
+          </div>
+        ) : (
           <Carousel
             autoPlay={true}
             autoPlayInterval={3000}
@@ -217,53 +311,43 @@ const page = () => {
             gap={20}
             navButtonOffset={0}
           >
-            {bodyData.people
-              .slice()
-              .sort((a, b) => {
-                const order = [
-                  "President",
-                  "Senior Vice President",
-                  "Vice President",
-                  "Director Information",
-                ];
-                const aIndex = order.indexOf(a.designation);
-                const bIndex = order.indexOf(b.designation);
-
-                if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
-                if (aIndex !== -1) return -1;
-                if (bIndex !== -1) return 1;
-                return 0;
-              })
-              .map((p) => (
+            {currentElectedBody.map((member) => {
+              const links = formatPhoneNumber(member.whatsappNo);
+              return (
                 <div
-                  key={p.id}
+                  key={member._id}
                   className="p-5 shadow bg-gradient-to-t from-blue-50 to-[#114085] rounded-lg"
                 >
                   <div className="shadow overflow-hidden rounded-md w-full h-[300px] sm:h-[350px] md:h-[200px]">
                     <img
-                      className="object-center object-cover w-full"
-                      src={p.img}
-                      alt={p.name}
+                      className="object-center object-cover w-full h-full"
+                      src={member.photo}
+                      alt={member.name}
                     />
                   </div>
                   <div className="mt-5">
-                    <h3 className="text-lg font-semibold">{p.designation}</h3>
-                    <p className="text-sm text-gray-600">{p.name}</p>
+                    <h3 className="text-lg font-semibold text-white">{member.designation}</h3>
+                    <p className="text-sm text-slate-200">{member.name}</p>
                     <a
-                      className="text-white bg-blue-900 font-semibold text-center mt-3 rounded-md block px-2 py-1 text-sm"
-                      href={`tel:+92${p.phone.replaceAll(" ", "").slice(1)}`}
+                      className="text-white bg-blue-900 font-semibold text-center mt-3 rounded-md block px-2 py-1 text-sm disabled:opacity-50"
+                      href={links.tel ? `tel:${links.tel}` : "#"}
+                      aria-disabled={!links.tel}
                     >
                       Call
                     </a>
                     <a
-                      className="text-white justify-center flex items-center gap-3 bg-green-700 font-semibold text-center mt-3 rounded-md px-2 py-1 text-sm"
-                      href={`tel:+92${p.phone.replaceAll(" ", "").slice(1)}`}
+                      className="text-white justify-center flex items-center gap-3 bg-green-700 font-semibold text-center mt-3 rounded-md px-2 py-1 text-sm disabled:opacity-50"
+                      href={links.whatsapp || "#"}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-disabled={!links.whatsapp}
                     >
                       <BsWhatsapp /> WhatsApp
                     </a>
                   </div>
                 </div>
-              ))}
+              );
+            })}
           </Carousel>
         )}
       </ContainerCenter>

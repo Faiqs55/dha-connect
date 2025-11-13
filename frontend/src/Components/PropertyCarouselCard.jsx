@@ -3,8 +3,58 @@ import { LuBuilding2 } from "react-icons/lu";
 import { IoLogoWhatsapp } from "react-icons/io5";
 import Link from "next/link";
 
+// Phone number formatting function
+const formatPhoneNumber = (value) => {
+  if (!value) return { tel: null, whatsapp: null };
+  
+  // Remove all spaces and special characters
+  const cleaned = value.toString().replace(/[^0-9+]/g, "");
+  if (!cleaned) return { tel: null, whatsapp: null };
+
+  let telNumber, whatsappNumber;
+
+  // Format for tel link
+  if (cleaned.startsWith("0")) {
+    // Remove leading 0 and add +92
+    telNumber = `+92${cleaned.substring(1)}`;
+  } else if (cleaned.startsWith("92")) {
+    // Add + if it starts with 92
+    telNumber = `+${cleaned}`;
+  } else if (cleaned.startsWith("+92")) {
+    // Already in correct format
+    telNumber = cleaned;
+  } else {
+    // Assume it's a local number without 0, add +92
+    telNumber = `+92${cleaned}`;
+  }
+
+  // Format for WhatsApp link
+  if (cleaned.startsWith("0")) {
+    // Remove leading 0 and use 92
+    whatsappNumber = `92${cleaned.substring(1)}`;
+  } else if (cleaned.startsWith("+92")) {
+    // Remove the + prefix
+    whatsappNumber = cleaned.substring(1);
+  } else if (cleaned.startsWith("92")) {
+    // Already in correct format for WhatsApp
+    whatsappNumber = cleaned;
+  } else {
+    // Assume it's a local number without 0, use 92
+    whatsappNumber = `92${cleaned}`;
+  }
+
+  return {
+    tel: telNumber,
+    whatsapp: `https://wa.me/${whatsappNumber}`
+  };
+};
 
 const PropertyCarouselCard = ({ p }) => {
+  const links = formatPhoneNumber(p?.agent?.phone);
+  
+  // Create WhatsApp message with property details
+  const whatsappMessage = `I'm interested in this property: ${p.title}. Property Link: ${typeof window !== 'undefined' ? window.location.origin : ''}/properties/${p._id}. This offer is valid for 24 hours.`;
+
   return (
     <div
       key={p._id}
@@ -28,12 +78,16 @@ const PropertyCarouselCard = ({ p }) => {
         <span className="flex items-center gap-2 text-sm mb-1">
           <LuBuilding2 className="text-xs text-gray-500" /> {p.type}
         </span>
-        {/* <span className="flex items-center gap-2 text-sm">
-          <LuGitCompareArrows className="text-xs text-gray-500" /> {p.minArea}{" "}
-          sqft to {p.maxArea} sqft
-        </span> */}
-        <a target="_blank" href={`https://wa.me/92${p?.agent?.phone}`} className="flex items-center gap-3 text-green-700 justify-center py-2 rounded-md mt-2 bg-green-100 font-semibold"><IoLogoWhatsapp className="text-xl"/> <span>WhatApp</span></a>
-
+        <a 
+          target="_blank" 
+          rel="noopener noreferrer"
+          href={links.whatsapp ? `${links.whatsapp}?text=${encodeURIComponent(whatsappMessage)}` : "#"} 
+          className="flex items-center gap-3 text-green-700 justify-center py-2 rounded-md mt-2 bg-green-100 font-semibold disabled:opacity-50"
+          aria-disabled={!links.whatsapp}
+        >
+          <IoLogoWhatsapp className="text-xl"/> 
+          <span>WhatApp</span>
+        </a>
       </div>
     </div>
   );
