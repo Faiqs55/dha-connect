@@ -1,40 +1,48 @@
-"use client";
-import { maps } from "@/static-data/mapsData"
-import Link from "next/link";
-
+import ContainerCenter from '@/Components/ContainerCenter'
+import Link from 'next/link'
+import React from 'react'
 
 const page = () => {
-  return (
-    <section className="py-12 px-4 md:px-12 bg-white">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-semibold text-gray-800 mb-10 pl-2">
-          Society Maps in Lahore
-        </h2>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
-          {maps.map((map, index) => (
-            <Link
-              key={index}
-              href={`/maps/${map.phase}`}
-              className="w-full max-w-sm bg-white  overflow-hidden shadow  transition-shadow duration-300"
-            >
-              <div className="overflow-hidden">
-                <img
-                  src={map.img}
-                  alt={map.title}
-                  className=" object-cover  transition-transform duration-500"
-                />
-              </div>
-              <div className="bg-white p-3">
-                <h3 className="text-lg font-medium text-black">
-                  {map.title}
-                </h3>
-              </div>
-            </Link>
-          ))}
-        </div>
+    const links = [
+        {
+            link: "/maps/download",
+            label: "Download Maps",
+        },
+        {
+            link: "/maps/google-maps",
+            label: "Google Maps",
+        },
+        {
+            link: "/maps/google-360",
+            label: "Google 360 View",
+        },
+        {
+            link: "/maps/air-view",
+            label: "360 Air View",
+        },
+    ]
+
+  return (
+    <>
+    <div className="mt-9 w-full flex justify-center items-center">
+      <div className="flex justify-center items-center">
+        <h1 className="text-center font-bold text-1xl sm:text-2xl md:text-2xl lg:text-3xl">
+          MAPS IN DHA LAHORE
+        </h1>
       </div>
-    </section>
+    </div>
+
+    <ContainerCenter className="mt-10">
+        <div className='grid gap-5'>
+        {links.map(l => (
+            <Link href={l.link} key={l.label} className='p-4 shadow hover:text-blue-800'>
+                <h4 className='text-center font-semibold underline text-lg'>{l.label}</h4>
+            </Link>
+        ))}
+    </div>
+    </ContainerCenter>
+    </>
   )
 }
 

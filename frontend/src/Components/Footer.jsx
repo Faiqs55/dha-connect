@@ -40,16 +40,16 @@ const Footer = () => {
           <div>
             <h4 className="text-[21px] mb-5">Contact Us</h4>
             <address className="flex flex-col not-italic text-[#707070] font-semibold gap-2">
-              <span>438 Block J3, Johar Town, Lahore</span>
+              <span>Address : <a className="text-blue-500" href="https://maps.app.goo.gl/LDETWfGoX4rMPkKYA">CCA II, 180 Broadway Main Blvd, Sector W DHA Phase 8, Lahore, 54000</a></span>
               <span>
-                Phone:{
+                Phone : {
                   <a className="text-blue-500" href="tel:+923215678920">
                     +92 321 5678920
                   </a>
                 }
               </span>
               <span>
-                Email:{
+                Email : {
                   <a className="text-blue-500" href="mailto:info@dhaconnects.com">
                     info@dhaconnects.com
                   </a>

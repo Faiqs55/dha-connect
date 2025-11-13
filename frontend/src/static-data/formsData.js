@@ -107,8 +107,22 @@ export const forms = [
       // ✅ Add more finance forms here in the same format
     ],
   },
-   {
+  {
     id: 3,
+    name: "NDC FORMS",
+    formList: [
+      {
+        id: 1,
+        name: "NDC Farm Form",
+        pdf: "/forms/ndc-farm.pdf",
+      },
+       
+      // ✅ Add more finance forms here in the same format
+    ],
+
+  },
+   {
+    id: 4,
     name: "TRANSFER FORMS",
     formList: [
       {
@@ -281,7 +295,7 @@ export const forms = [
     ],
   },
    {
-    id: 4,
+    id: 5,
     name: "LAND FORMS",
     formList: [
       {
@@ -313,7 +327,7 @@ export const forms = [
     ],
   },
   {
-    id: 5,
+    id: 6,
     name: "MAINTENANCE FORMS",
     formList: [
       {
@@ -338,7 +352,7 @@ export const forms = [
 
   },
    {
-    id: 6,
+    id: 7,
     name: "MISCELLANEOUS FORMS",
     formList: [
       {
@@ -375,7 +389,7 @@ export const forms = [
     ],
   },
    {
-    id: 7,
+    id: 8,
     name: "SPORTS FORMS",
     formList: [
       {
@@ -422,7 +436,7 @@ export const forms = [
     ],
   },
    {
-    id: 8,
+    id: 9,
     name: "SECURITY FORMS",
     formList: [
       {
@@ -439,19 +453,6 @@ export const forms = [
     ],
   },
   
-   {
-    id: 9,
-    name: "NDC FORMS",
-    formList: [
-      {
-        id: 1,
-        name: "NDC Farm Form",
-        pdf: "/forms/ndc-farm.pdf",
-      },
-       
-      // ✅ Add more finance forms here in the same format
-    ],
-
-  },
+   
     
 ];
