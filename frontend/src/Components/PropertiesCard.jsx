@@ -6,7 +6,58 @@ import { IoLogoWhatsapp } from "react-icons/io5";
 import Link from "next/link";
 import Image from "next/image";
 
+// Phone number formatting function
+const formatPhoneNumber = (value) => {
+  if (!value) return { tel: null, whatsapp: null };
+  
+  // Remove all spaces and special characters
+  const cleaned = value.toString().replace(/[^0-9+]/g, "");
+  if (!cleaned) return { tel: null, whatsapp: null };
+
+  let telNumber, whatsappNumber;
+
+  // Format for tel link
+  if (cleaned.startsWith("0")) {
+    // Remove leading 0 and add +92
+    telNumber = `+92${cleaned.substring(1)}`;
+  } else if (cleaned.startsWith("92")) {
+    // Add + if it starts with 92
+    telNumber = `+${cleaned}`;
+  } else if (cleaned.startsWith("+92")) {
+    // Already in correct format
+    telNumber = cleaned;
+  } else {
+    // Assume it's a local number without 0, add +92
+    telNumber = `+92${cleaned}`;
+  }
+
+  // Format for WhatsApp link
+  if (cleaned.startsWith("0")) {
+    // Remove leading 0 and use 92
+    whatsappNumber = `92${cleaned.substring(1)}`;
+  } else if (cleaned.startsWith("+92")) {
+    // Remove the + prefix
+    whatsappNumber = cleaned.substring(1);
+  } else if (cleaned.startsWith("92")) {
+    // Already in correct format for WhatsApp
+    whatsappNumber = cleaned;
+  } else {
+    // Assume it's a local number without 0, use 92
+    whatsappNumber = `92${cleaned}`;
+  }
+
+  return {
+    tel: telNumber,
+    whatsapp: `https://wa.me/${whatsappNumber}`
+  };
+};
+
 const PropertiesCard = ({ data }) => {
+  const links = formatPhoneNumber(data?.agent?.phone);
+  
+  // Create WhatsApp message with property details
+  const whatsappMessage = `I'm interested in this property: ${data.title}. Property Link: ${typeof window !== 'undefined' ? window.location.origin : ''}/properties/${data._id}. This offer is valid for 24 hours.`;
+
   return (
     <div className="flex flex-col md:flex-row border border-gray-300 rounded-md overflow-hidden">
       {/* CARD IMG  */}
@@ -49,6 +100,7 @@ const PropertiesCard = ({ data }) => {
         <div className="btns flex gap-2.5 mt-3">
           <a
           target="_blank"
+          rel="noopener noreferrer"
             className="flex text-sm sm:text-base items-center gap-2 px-2 sm:px-5 py-1 sm:py-2 bg-blue-100 text-blue-700 font-semibold rounded-md"
             href={`mailto:${data?.agent?.email}`}
           >
@@ -57,16 +109,20 @@ const PropertiesCard = ({ data }) => {
           </a>
           <a
           target="_blank"
-            className="flex text-sm sm:text-base items-center gap-2 px-2 sm:px-5 py-1 sm:py-2 bg-blue-100 text-blue-700 font-semibold rounded-md"
-            href={`tel:+92${data?.agent?.phone}`}
+          rel="noopener noreferrer"
+            className="flex text-sm sm:text-base items-center gap-2 px-2 sm:px-5 py-1 sm:py-2 bg-blue-100 text-blue-700 font-semibold rounded-md disabled:opacity-50"
+            href={links.tel ? `tel:${links.tel}` : "#"}
+            aria-disabled={!links.tel}
           >
             <IoMdCall className="text-lg" />
             Call
           </a>
           <a
             target="_blank"
-            className="flex text-sm sm:text-base items-center gap-2 px-2 sm:px-5 py-1 sm:py-2 bg-blue-100 text-blue-700 font-semibold rounded-md"
-            href={`https://wa.me/92${data?.agent?.phone}`}
+            rel="noopener noreferrer"
+            className="flex text-sm sm:text-base items-center gap-2 px-2 sm:px-5 py-1 sm:py-2 bg-blue-100 text-blue-700 font-semibold rounded-md disabled:opacity-50"
+            href={links.whatsapp ? `${links.whatsapp}?text=${encodeURIComponent(whatsappMessage)}` : "#"}
+            aria-disabled={!links.whatsapp}
           >
             <IoLogoWhatsapp className="text-lg" />
           </a>
