@@ -50,7 +50,7 @@ const FAQ = () => {
   return (
     <section className="w-full mt-15">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl mb-10">Frequently Asked Questions</h2>
+        <h2 className="text-2xl mb-10">Frequently Asked Questions</h2>
 
         <div className="divide-y divide-gray-200 border border-gray-100 rounded-lg bg-white shadow-sm">
           {faqData.map((item, index) => (
