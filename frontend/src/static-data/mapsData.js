@@ -215,6 +215,24 @@ sectors: [
       },
     ],
   },
+  {
+    img: "/p7.jpg",
+    title: "Phase 7 Lahore",
+    phase: "phase-7",
+    id: 1,
+    lat: 31.467641251543036, 
+    long: 74.48361291465277,
+    overlay: "/layer7.png",
+    north: 31.507121,
+  south: 31.433752,
+  east: 74.509529,
+  west: 74.447508,
+
+
+    sectors: [
+     
+    ],
+  },
 ];
 
 
