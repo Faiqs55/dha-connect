@@ -62,6 +62,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const headerRef = useRef(null);
   const dropdownRefs = useRef({});
+  const mobileMenuRef = useRef(null);
   const pathname = usePathname();
   const router = useRouter();
   const [navbarHeight, setNavbarHeight] = useState(0);
@@ -77,7 +78,6 @@ const Navbar = () => {
   // Toggle dropdown with better UX
   const toggleDropdown = useCallback((dropdownName) => {
     setOpenDropdown((prev) => {
-      // Close if clicking the same dropdown, otherwise open new one
       if (prev === dropdownName) {
         return null;
       }
@@ -105,21 +105,21 @@ const Navbar = () => {
   // Close dropdowns when clicking outside - improved version
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if click is outside all dropdowns
+      // Check if click is outside mobile menu
+      if (menuOpen && mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        // Only close if click is outside AND not on mobile menu button
+        if (!event.target.closest('.mobile-menu-button')) {
+          closeAll();
+        }
+      }
+
+      // Check if click is outside dropdowns (for desktop)
       const isOutsideDropdown = Object.values(dropdownRefs.current).every(
         (ref) => ref && !ref.contains(event.target)
       );
 
-      // Check if click is outside mobile menu
-      const isOutsideMobileMenu = !event.target.closest('.mobile-menu-button');
-
-      if (isOutsideDropdown && isOutsideMobileMenu) {
+      if (isOutsideDropdown && openDropdown && !event.target.closest('.mobile-menu-button')) {
         setOpenDropdown(null);
-      }
-
-      // Close mobile menu when clicking on a link (for touch devices)
-      if (event.target.closest('a') && menuOpen) {
-        closeAll();
       }
     };
 
@@ -130,7 +130,7 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
     };
-  }, [menuOpen, closeAll]);
+  }, [menuOpen, openDropdown, closeAll]);
 
   // Close dropdowns on route change
   useEffect(() => {
@@ -167,13 +167,19 @@ const Navbar = () => {
     if (href === '/') {
       return pathname === '/';
     }
-    return pathname.startsWith(href.split('?')[0]); // Ignore query params for active state
+    return pathname.startsWith(href.split('?')[0]);
   }, [pathname]);
 
   // Check if dropdown should be considered active
   const isDropdownActive = useCallback((dropdownLinks) => {
     return dropdownLinks.some(link => isActive(link.href));
   }, [isActive]);
+
+  // Handle link click in mobile menu
+  const handleMobileLinkClick = useCallback((e) => {
+    // Allow the link to work normally, just close the menu
+    closeAll();
+  }, [closeAll]);
 
   // Render navigation items with improved UX
   const renderNavItem = (item, index) => {
@@ -215,7 +221,7 @@ const Navbar = () => {
                 <Link
                   key={link.href}
                   href={link.href}
-                  onClick={closeAll}
+                  onClick={handleMobileLinkClick}
                   className={`block px-4 py-2 text-sm hover:bg-gray-100 transition-colors duration-200 whitespace-nowrap ${
                     isActive(link.href) 
                       ? "text-blue-600 bg-blue-50 font-semibold" 
@@ -236,7 +242,7 @@ const Navbar = () => {
       <Link
         key={item.href}
         href={item.href}
-        onClick={closeAll}
+        onClick={handleMobileLinkClick}
         className={`px-3 lg:py-2 py-3 hover:bg-gray-700 lg:hover:bg-[#114085] text-sm duration-300 text-gray-200 lg:text-gray-700 lg:hover:text-white font-semibold border-b-[1px] lg:border-none block border-gray-600 whitespace-nowrap ${
           isActive(item.href) ? "lg:text-[#114085] lg:font-bold" : ""
         }`}
@@ -287,6 +293,7 @@ const Navbar = () => {
 
             {/* Navigation Menu */}
             <div
+              ref={mobileMenuRef}
               className={`${
                 menuOpen ? "left-0 opacity-100" : "left-[-100%] opacity-0 lg:opacity-100"
               } lg:left-0 flex lg:items-center justify-between flex-wrap flex-1 lg:gap-1 lg:border-t-2 xl:border-none border-gray-300 lg:pt-3 pb-5 absolute lg:relative flex-col lg:flex-row bg-gray-800 lg:bg-transparent w-[85%] sm:w-[70%] lg:w-auto h-screen lg:h-auto top-0 transition-all duration-300 ease-in-out lg:transition-none z-40`}
@@ -312,7 +319,7 @@ const Navbar = () => {
               <div className="justify-self-end gap-2.5 flex flex-col lg:flex-row px-4 lg:px-0 mt-4 lg:mt-0">
                 <Link
                   href="/maps"
-                  onClick={closeAll}
+                  onClick={handleMobileLinkClick}
                   className="bg-[#114085] text-xs font-semibold text-white px-4 py-3 lg:py-2 rounded-sm text-center hover:bg-[#0d3368] transition-colors duration-200 whitespace-nowrap"
                 >
                   Society Maps
@@ -321,8 +328,9 @@ const Navbar = () => {
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-[#000] text-xs font-semibold text-white px-4 py-3 lg:py-2 rounded-sm text-center hover:bg-gray-800 transition-colors duration-200 mt-2 lg:mt-0 whitespace-nowrap"
                   href="https://classads.jang.com.pk/search_adds.asp"
+                  onClick={handleMobileLinkClick}
+                  className="bg-[#000] text-xs font-semibold text-white px-4 py-3 lg:py-2 rounded-sm text-center hover:bg-gray-800 transition-colors duration-200 mt-2 lg:mt-0 whitespace-nowrap"
                 >
                   Jang Classified
                 </a>

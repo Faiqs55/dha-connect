@@ -96,9 +96,9 @@ const QuickLinkHome = () => {
   ];
 
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center py-10 px-4 sm:px-6 md:px-10 lg:px-20 xl:px-28 bg-white">
+    <section className="min-h-screen flex flex-col items-center justify-center py-10 bg-white">
       <div className="w-full mb-8 text-left">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl text-gray-800 tracking-tight pl-3">
+        <h2 className="text-2xl text-gray-800 tracking-tight pl-3">
           Quick Links
         </h2>
       </div>
@@ -109,7 +109,6 @@ const QuickLinkHome = () => {
           grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 
           gap-6 sm:gap-8 lg:gap-10 
           w-full
-          max-w-[1300px] 
           justify-items-center
         "
       >

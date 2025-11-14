@@ -120,7 +120,7 @@ const page = () => {
                       className="shadow overflow-hidden rounded-md block w-full h-[250px] sm:h-[350px] md:h-[200px]"
                     >
                       <img
-                        className="object-center object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+                        className="object-center object-cover w-full transition-transform duration-300 hover:scale-105"
                         src={member.photo}
                         alt={member.name}
                       />
