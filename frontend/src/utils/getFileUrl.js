@@ -6,10 +6,8 @@ export const getFileUrl = (filePath) => {
     return filePath;
   }
   
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  // Remove /api from the URL if present
-  const baseUrl = apiUrl?.replace('/api', '');
-  
+  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    
   // Normalize path separators - replace backslashes with forward slashes
   const normalizedPath = filePath.replace(/\\/g, '/');
   
