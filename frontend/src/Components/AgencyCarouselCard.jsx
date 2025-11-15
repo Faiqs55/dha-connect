@@ -1,5 +1,6 @@
 import { IoLocationSharp } from "react-icons/io5";
 import Link from "next/link";
+import { getLogoUrl } from "@/utils/getFileUrl";
 
 const AgencyCarouselCard = ({ a }) => {
   return (
@@ -10,7 +11,7 @@ const AgencyCarouselCard = ({ a }) => {
     >
       <img
         className="w-[70px] p-3 border-[1px] rounded-md border-gray-300"
-        src={a.agencyLogo}
+        src={getLogoUrl(a.agencyLogo)}
         alt={a.agencyName}
       />
       <div className="flex flex-col gap-1 flex-1">

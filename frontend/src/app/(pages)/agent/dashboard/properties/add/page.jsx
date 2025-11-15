@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { FaRegTrashAlt } from "react-icons/fa";
 import AlertResult from "@/Components/AlertResult";
 import propertyService from "@/services/property.service";
@@ -44,7 +43,7 @@ const Tab = ({ value, current, set, label }) => (
 );
 
 /* ---------- main page ---------- */
-export default function page() {
+export default function AddPropertyPage() {
   const basicInputStyles = "border border-gray-300 rounded-md px-3 py-2";
   const { value: token, isLoaded } = useLocalStorage("agentToken", null);
 
@@ -249,21 +248,6 @@ export default function page() {
     setVideoPreview("");
   };
 
-  /* ---------- Cloudinary upload ---------- */
-  const uploadToCloudinary = async (file, resourceType = "image") => {
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("upload_preset", "dha-agency-logo"); 
-
-      const url = `https://api.cloudinary.com/v1_1/dhdgrfseu/${resourceType}/upload`;
-      const { data } = await axios.post(url, fd);
-      return data.secure_url;
-    } catch (error) {
-      throw new Error("Cloudinary upload failed");
-    }
-  };
-
   /* ---------- submit ---------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -273,14 +257,6 @@ export default function page() {
     setToast(null);
 
     try {
-      const imageUrls = await Promise.all(
-        imageFiles.map((f) => uploadToCloudinary(f, "image"))
-      );
-      const featureImageUrl = await uploadToCloudinary(featureImageFile, "image");
-      const videoUrl = videoFile
-        ? await uploadToCloudinary(videoFile, "video")
-        : "";
-
       // Convert "normal" to "none" for backend compatibility
       const backendAdType = adType === "normal" ? "none" : adType;
 
@@ -306,9 +282,10 @@ export default function page() {
           .split(",")
           .map((s) => s.trim())
           .filter(Boolean),
-        images: imageUrls,
-        video: videoUrl,
-        thumbnailImage: featureImageUrl,
+        // Send files directly - they will be handled by Multer
+        images: imageFiles,
+        featureImage: featureImageFile,
+        video: videoFile,
         // Add plot-specific fields
         ...(type === "Plots" && {
           plotAmenities,
@@ -354,7 +331,7 @@ export default function page() {
         getCurrentAgent();
       }
     } catch (err) {
-      setToast({ success: false, message: err.message });
+      setToast({ success: false, message: err.message || "An error occurred while adding property" });
     } finally {
       setSubmitting(false);
     }

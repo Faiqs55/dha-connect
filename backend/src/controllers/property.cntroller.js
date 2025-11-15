@@ -33,11 +33,28 @@ const createPropertyController = async (req, res) => {
       body.status = "pending";
     }
 
-    // Create property data object with proper field mapping
+    // Handle file paths from Multer
+    const imagePaths = req.files['images'] ? req.files['images'].map(file => file.path) : [];
+    const featureImagePath = req.files['featureImage'] ? req.files['featureImage'][0].path : null;
+    const videoPath = req.files['video'] ? req.files['video'][0].path : null;
+
+    // Validate required files
+    if (!featureImagePath || imagePaths.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Feature image and at least one property image are required"
+      });
+    }
+
+    // Create property data object with file paths
     const propertyData = {
       ...body,
       agency: agent.agency,
       agent: agent._id,
+      // Use file paths instead of Cloudinary URLs
+      images: imagePaths,
+      thumbnailImage: featureImagePath,
+      video: videoPath || undefined,
       // Ensure proper field names match schema
       category: body.category,
       type: body.type,
@@ -48,9 +65,6 @@ const createPropertyController = async (req, res) => {
       phase: body.phase,
       address: body.address,
       description: body.description,
-      images: body.images,
-      thumbnailImage: body.thumbnailImage,
-      video: body.video,
       adType: body.adType,
       // Handle conditional fields
       ...(body.bedrooms && { bedrooms: body.bedrooms }),
@@ -107,6 +121,7 @@ const createPropertyController = async (req, res) => {
     });
   }
 };
+
 
 const getSinglePropertyController = async (req, res) => {
   try {
@@ -323,6 +338,11 @@ const updatePropertyController = async (req, res) => {
       return res.status(404).json({ success: false, message: "Agent not found" });
     }
 
+    // Handle file paths from Multer
+    const imagePaths = req.files['images'] ? req.files['images'].map(file => file.path) : null;
+    const featureImagePath = req.files['featureImage'] ? req.files['featureImage'][0].path : null;
+    const videoPath = req.files['video'] ? req.files['video'][0].path : null;
+
     // Handle ad type changes - only check agent's ad count
     if (oldAdType !== newAdType) {
       // If changing FROM a paid ad type TO "none"
@@ -378,9 +398,13 @@ const updatePropertyController = async (req, res) => {
     delete body.expiresAt;
     delete body.isPermanent;
 
-    // Update the property with new schema fields
+    // Update the property with new file paths if provided
     const updateData = {
       ...body,
+      // Update file paths only if new files were uploaded
+      ...(imagePaths && { images: imagePaths }),
+      ...(featureImagePath && { thumbnailImage: featureImagePath }),
+      ...(videoPath !== undefined && { video: videoPath }),
       // Ensure proper field mapping for new schema
       ...(body.type && { type: body.type }),
       ...(body.subType && { subType: body.subType }),
@@ -418,6 +442,7 @@ const updatePropertyController = async (req, res) => {
     });
   }
 };
+
 
 const updatePropertyStatusController = async (req, res) => {
   try {

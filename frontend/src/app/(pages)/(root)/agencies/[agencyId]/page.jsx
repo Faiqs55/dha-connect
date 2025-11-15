@@ -11,6 +11,7 @@ import PropertiesCard from "@/Components/PropertiesCard";
 import AgencyFilters from "@/Components/AgencyFilters";
 import agencyService from "@/services/agency.service";
 import Spinner from "@/Components/Spinner";
+import { getAgentProfileUrl, getLogoUrl, getVideoUrl } from "@/utils/getFileUrl";
 
 
 const page = () => {
@@ -81,7 +82,7 @@ const page = () => {
           <div className="bg-blue-100 p-7 rounded-md">
             <img
               className="w-[150px]"
-              src={agency.agency.agencyLogo}
+              src={getLogoUrl(agency.agency.agencyLogo)}
               alt=""
             />
           </div>
@@ -206,7 +207,7 @@ const page = () => {
                           <div className="w-[200px] h-[200px] sm:border-r border-gray-400 mx-auto sm:mx-0">
                             <img
                               className="w-full h-full object-center object-cover"
-                              src={agent.image}
+                              src={getAgentProfileUrl(agent.image)}
                               alt="Agents Image"
                             />
                           </div>
@@ -224,7 +225,7 @@ const page = () => {
                               <div className="rounded-md overflow-hidden w-fit flex items-center gap-2.5">
                                 <img
                                   className="w-[40px]"
-                                  src={agency.agency.agencyLogo}
+                                  src={getLogoUrl(agency.agency.agencyLogo)}
                                   alt=""
                                 />
                               </div>
@@ -273,9 +274,9 @@ const page = () => {
                       <video
                         controls
                         className="w-full h-auto max-h-[500px]"
-                        poster={agency.agency.agencyLogo}
+                        poster={getLogoUrl(agency.agency.agencyLogo)}
                       >
-                        <source src={agency.agency.agencyVideo} type="video/mp4" />
+                        <source src={getVideoUrl(agency.agency.agencyVideo)} type="video/mp4" />
                         Your browser does not support the video tag.
                       </video>
                     </div>

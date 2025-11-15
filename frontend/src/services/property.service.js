@@ -11,18 +11,41 @@ class Property {
         return;
       }
 
+      // Create FormData for file upload
+      const formData = new FormData();
+      
+      // Append all fields to FormData
+      Object.keys(data).forEach(key => {
+        if (key === 'images' && Array.isArray(data[key])) {
+          // Append each image file
+          data[key].forEach(file => {
+            formData.append('images', file);
+          });
+        } else if (key === 'featureImage' && data[key] instanceof File) {
+          formData.append('featureImage', data[key]);
+        } else if (key === 'video' && data[key] instanceof File) {
+          formData.append('video', data[key]);
+        } else if (Array.isArray(data[key])) {
+          // Handle arrays (like otherFeatures, plotAmenities)
+          formData.append(key, JSON.stringify(data[key]));
+        } else {
+          formData.append(key, data[key]);
+        }
+      });
+
       const res = await fetch(`${this.apiURL}/property`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
+          // Don't set Content-Type, let browser set it with boundary
         },
-        body: JSON.stringify(data),
+        body: formData,
       });
 
       return res.json();
     } catch (error) {
       console.log(error);
+      return { success: false, message: "Network error occurred" };
     }
   }
 
@@ -33,13 +56,38 @@ class Property {
         return { success: false, message: "Authentication token is required" };
       }
 
+      // Create FormData for file upload
+      const formData = new FormData();
+      
+      // Append all fields to FormData
+      Object.keys(data).forEach(key => {
+        if (key === 'images' && Array.isArray(data[key])) {
+          // Append each image file
+          data[key].forEach(file => {
+            // Check if it's a File object or existing URL
+            if (file instanceof File) {
+              formData.append('images', file);
+            }
+          });
+        } else if (key === 'featureImage' && data[key] instanceof File) {
+          formData.append('featureImage', data[key]);
+        } else if (key === 'video' && data[key] instanceof File) {
+          formData.append('video', data[key]);
+        } else if (Array.isArray(data[key])) {
+          // Handle arrays (like otherFeatures, plotAmenities)
+          formData.append(key, JSON.stringify(data[key]));
+        } else {
+          formData.append(key, data[key]);
+        }
+      });
+
       const res = await fetch(`${this.apiURL}/property/${id}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
+          // Don't set Content-Type, let browser set it with boundary
         },
-        body: JSON.stringify(data),
+        body: formData,
       });
 
       return res.json();

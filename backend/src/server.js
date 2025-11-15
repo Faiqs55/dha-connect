@@ -10,12 +10,14 @@ const { electedBodyRouter } = require("./routes/electedBody.routes");
 const phaseRoutes = require("./routes/phaseRoutes");
 const phaseNameRoutes = require("./routes/phaseNameRoutes");
 const contactQueryRoutes = require("./routes/contactQueryRoutes");
+const path = require("path")
 
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 8000;
 
 // MIDDLEWARE
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({

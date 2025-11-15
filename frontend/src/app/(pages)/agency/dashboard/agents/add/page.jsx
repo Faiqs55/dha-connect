@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
-import axios from "axios";
 import agentService from "@/services/agent.service";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import AgencyFormSection from "@/Components/AgencyFormSection";
@@ -11,16 +10,13 @@ import Link from "next/link";
 import agencyService from "@/services/agency.service";
 import Spinner from "@/Components/Spinner";
 
-const cloudName = "dhdgrfseu";
-const uploadPreset = "dha-agency-logo";
-
 const emptyForm = {
   name: "",
   designation: "",
   phone: "",
   email: "",
   password: "",
-  image: "", // Cloudinary URL
+  image: "", // Now this will be the file path
   classifiedAds: 0,
   videoAds: 0,
   featuredAds: 0,
@@ -134,46 +130,38 @@ export default function AddAgentPage() {
     setSubmitting(true);
     setToast(null);
 
-    /* 1. upload image */
-    let url;
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("upload_preset", uploadPreset);
+      // Create FormData for file upload
+      const formData = new FormData();
       
-      const { data } = await axios.post(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        fd
-      );
-      url = data.secure_url;
-    } catch (error) {
-      console.error("Image upload failed:", error);
-      setToast({ 
-        success: false, 
-        message: "Failed to upload agent image. Please try again." 
+      // Append all form fields
+      Object.keys(form).forEach(key => {
+        formData.append(key, form[key]);
       });
-      setSubmitting(false);
-      return;
-    }
 
-    /* 2. save agent */
-    try {
-      const payload = { 
-        ...form, 
-        image: url
-        // Note: The backend expects the ad fields directly, not nested in adQuotas
-      };
+      // Append image file
+      formData.append('image', file);
 
-      const res = await agentService.addAgent(token, payload);
+      // Save agent with file upload using fetch directly
+      const apiURL = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${apiURL}/agent`, {
+        method: "POST",
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const result = await res.json();
 
       setToast({
-        success: res.success,
-        message: res.success 
+        success: result.success,
+        message: result.success 
           ? "Agent added successfully! They can now log in and start adding properties." 
-          : res.message || "Failed to add agent. Please try again.",
+          : result.message || "Failed to add agent. Please try again.",
       });
 
-      if (res.success) {
+      if (result.success) {
         setForm(emptyForm);
         setFile(null);
         setPreview(null);
@@ -184,15 +172,14 @@ export default function AddAgentPage() {
           setAgency(agencyRes.data);
         }
       }
-    } catch (error) {
-      console.error("Error adding agent:", error);
-      setToast({
-        success: false,
-        message: "An unexpected error occurred while adding the agent. Please try again.",
+    } catch (err) {
+      setToast({ 
+        success: false, 
+        message: err.message || "An unexpected error occurred while adding the agent. Please try again." 
       });
+    } finally {
+      setSubmitting(false);
     }
-    
-    setSubmitting(false);
   };
 
   if(!agency){

@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
-import axios from "axios";
 import agentService from "@/services/agent.service";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import AgencyFormSection from "@/Components/AgencyFormSection";
@@ -11,16 +10,14 @@ import Link from "next/link";
 import agencyService from "@/services/agency.service";
 import Spinner from "@/Components/Spinner";
 import { useParams } from "next/navigation";
-
-const cloudName = "dhdgrfseu";
-const uploadPreset = "dha-agency-logo";
+import { getAgentProfileUrl } from "@/utils/getFileUrl";
 
 const emptyForm = {
   name: "",
   designation: "",
   phone: "",
   email: "",
-  image: "", // Cloudinary URL
+  image: "", // Now this will be the file path
   classifiedAds: 0,
   videoAds: 0,
   featuredAds: 0,
@@ -37,6 +34,7 @@ export default function UpdateAgentPage() {
   const [agent, setAgent] = useState(null);
   const [originalAgent, setOriginalAgent] = useState(null);
   const [originalImage, setOriginalImage] = useState(null);
+  const [loading, setLoading] = useState(true);
   const agentId = useParams().agentId;
 
   useEffect(() => {
@@ -75,11 +73,16 @@ export default function UpdateAgentPage() {
           featuredAds: agentData.featuredAds || 0,
         });
         
-        // Set preview for existing image
+        // Set preview for existing image using the utility function
         if (agentData.image) {
-          setPreview(agentData.image);
+          setPreview(getAgentProfileUrl(agentData.image));
         }
       }
+      setLoading(false);
+    }).catch(error => {
+      console.error("Error loading data:", error);
+      setToast({ success: false, message: "Failed to load agent data" });
+      setLoading(false);
     });
   }, [token, isLoaded, agentId]);
 
@@ -129,8 +132,8 @@ export default function UpdateAgentPage() {
     }));
   };
 
-  /* ---------- logo ---------- */
-  const handleLogo = (e) => {
+  /* ---------- image handling ---------- */
+  const handleImage = (e) => {
     const f = e.target.files[0];
     if (!f) return;
     if (f.size > 5 * 1024 * 1024)
@@ -139,36 +142,19 @@ export default function UpdateAgentPage() {
     setPreview(URL.createObjectURL(f));
   };
 
-  const removeLogo = () => {
+  const removeImage = () => {
     setFile(null);
     setPreview(null);
-    setForm(f => ({ ...f, image: "" }));
+    // Clear the image from form data
+    setForm(prev => ({ ...prev, image: "" }));
   };
 
-  /* ---------- delete image from cloudinary ---------- */
-  const deleteImageFromCloudinary = async (imageUrl) => {
-    if (!imageUrl) return;
-    
-    try {
-      // Extract public_id from Cloudinary URL
-      const parts = imageUrl.split('/');
-      const fileNameWithExtension = parts[parts.length - 1];
-      const publicId = fileNameWithExtension.split('.')[0];
-      
-      // Cloudinary delete API call
-      await axios.delete(`https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`, {
-        data: {
-          public_id: publicId,
-          upload_preset: uploadPreset
-        }
-      });
-      
-      return true;
-    } catch (error) {
-      console.error("Error deleting image from Cloudinary:", error);
-      return false;
-    }
+  const triggerImagePicker = () => {
+    document.getElementById('agent-image-input').click();
   };
+
+  /* ---------- toast helper ---------- */
+  const fireToast = (ok, msg) => setToast({ success: ok, message: msg });
 
   /* ---------- submit ---------- */
   const handleSubmit = async (e) => {
@@ -176,27 +162,18 @@ export default function UpdateAgentPage() {
     
     // Validate required fields
     if (!form.name || !form.designation || !form.email || !form.phone) {
-      return setToast({ success: false, message: "Please fill in all required agent information fields." });
+      return fireToast(false, "Please fill in all required agent information fields.");
     }
 
     // Final validation for ad quotas
     if (!isValidAdValue('classifiedAds', form.classifiedAds)) {
-      return setToast({ 
-        success: false, 
-        message: `Invalid classified ads allocation. Maximum allowed is ${calculateMaxAds('classifiedAds')}.` 
-      });
+      return fireToast(false, `Invalid classified ads allocation. Maximum allowed is ${calculateMaxAds('classifiedAds')}.`);
     }
     if (!isValidAdValue('videoAds', form.videoAds)) {
-      return setToast({ 
-        success: false, 
-        message: `Invalid video ads allocation. Maximum allowed is ${calculateMaxAds('videoAds')}.` 
-      });
+      return fireToast(false, `Invalid video ads allocation. Maximum allowed is ${calculateMaxAds('videoAds')}.`);
     }
     if (!isValidAdValue('featuredAds', form.featuredAds)) {
-      return setToast({ 
-        success: false, 
-        message: `Invalid featured ads allocation. Maximum allowed is ${calculateMaxAds('featuredAds')}.` 
-      });
+      return fireToast(false, `Invalid featured ads allocation. Maximum allowed is ${calculateMaxAds('featuredAds')}.`);
     }
 
     // Check if all ads are being removed
@@ -208,82 +185,67 @@ export default function UpdateAgentPage() {
     setSubmitting(true);
     setToast(null);
 
-    let imageUrl = originalImage; // Default to original image
-    let imageChanged = false;
-    let oldImageToDelete = null;
-
-    /* Image handling logic */
-    if (file) {
-      // New image selected - upload new one and delete old one
-      try {
-        const fd = new FormData();
-        fd.append("file", file);
-        fd.append("upload_preset", uploadPreset);
-        
-        const { data } = await axios.post(
-          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-          fd
-        );
-        imageUrl = data.secure_url;
-        imageChanged = true;
-        
-        // Mark old image for deletion if it exists and is different from new one
-        if (originalImage && originalImage !== imageUrl) {
-          oldImageToDelete = originalImage;
-        }
-      } catch (error) {
-        console.error("Image upload failed:", error);
-        setToast({ 
-          success: false, 
-          message: "Failed to upload agent image. Please try again." 
-        });
-        setSubmitting(false);
-        return;
-      }
-    } else if (!preview && originalImage) {
-      // Image was removed and no new image selected
-      imageUrl = ""; // Remove image
-      imageChanged = true;
-      oldImageToDelete = originalImage;
-    }
-
-    /* Prepare payload according to agent model */
-    const payload = { 
-      name: form.name,
-      designation: form.designation,
-      phone: form.phone,
-      email: form.email,
-      image: imageUrl,
-      classifiedAds: form.classifiedAds,
-      videoAds: form.videoAds,
-      featuredAds: form.featuredAds
-    };
-
     try {
-      /* Update agent via service */
-      const res = await agentService.updateAgent(token, agentId, payload);
+      // Create FormData for file upload
+      const formData = new FormData();
       
-      setToast({
-        success: res.success,
-        message: res.success 
-          ? "Agent updated successfully! Changes have been saved." 
-          : res.message || "Failed to update agent. Please try again.",
+      // Append all form fields except _id
+      Object.keys(form).forEach(key => {
+        if (key !== '_id') {
+          formData.append(key, form[key]);
+        }
       });
 
-      if (res.success) {
+      // Append image file if new one is selected
+      if (file) {
+        formData.append('image', file);
+      }
+
+      // If no file and no image in form, we need to explicitly remove the image
+      if (!file && !form.image) {
+        formData.append('image', ''); // Explicitly send empty to remove image
+      }
+
+      // Update agent with file upload using fetch directly
+      const apiURL = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${apiURL}/agent/${agentId}`, {
+        method: "PUT",
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const result = await res.json();
+
+      fireToast(
+        result.success, 
+        result.success 
+          ? "Agent updated successfully! Changes have been saved." 
+          : result.message || "Failed to update agent. Please try again."
+      );
+
+      if (result.success) {
         // Update local state with new data
-        setAgent({ ...agent, ...payload });
-        setOriginalAgent({ ...originalAgent, ...payload });
+        const updatedAgent = { ...agent, ...form };
+        if (result.data && result.data.agent) {
+          Object.assign(updatedAgent, result.data.agent);
+        }
+        
+        setAgent(updatedAgent);
+        setOriginalAgent(updatedAgent);
         
         // Update image references
-        if (imageUrl) {
-          setOriginalImage(imageUrl);
+        if (updatedAgent.image) {
+          setOriginalImage(updatedAgent.image);
+          setPreview(getAgentProfileUrl(updatedAgent.image));
+        } else {
+          setOriginalImage(null);
+          setPreview(null);
         }
 
-        // Delete old image from Cloudinary if needed
-        if (oldImageToDelete) {
-          await deleteImageFromCloudinary(oldImageToDelete);
-        }
+        // Clear file state
+        setFile(null);
 
         // Refresh agency data to get updated ad counts
         const agencyRes = await agencyService.getMyAgency(token);
@@ -291,22 +253,34 @@ export default function UpdateAgentPage() {
           setAgency(agencyRes.data);
         }
       }
-    } catch (error) {
-      console.error("Error updating agent:", error);
-      setToast({
-        success: false,
-        message: "An unexpected error occurred while updating the agent. Please try again.",
-      });
+    } catch (err) {
+      fireToast(false, err.message || "An unexpected error occurred while updating the agent. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
-    
-    setSubmitting(false);
   };
 
-  if (!agency || !agent) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center min-h-64">
         <Spinner/>
         <span className="ml-3 text-gray-600">Loading agent information...</span>
+      </div>
+    );
+  }
+
+  if (!agency || !agent) {
+    return (
+      <div className="flex justify-center items-center min-h-64">
+        <div className="text-center">
+          <p className="text-red-600 mb-2">Failed to load agent data</p>
+          <Link
+            href="/agency/dashboard/agents"
+            className="text-blue-600 hover:text-blue-800 underline"
+          >
+            Return to Agents List
+          </Link>
+        </div>
       </div>
     );
   }
@@ -343,38 +317,58 @@ export default function UpdateAgentPage() {
           <input 
             type="file" 
             hidden 
-            onChange={handleLogo} 
+            onChange={handleImage} 
             accept="image/*" 
             id="agent-image-input"
           />
+          
           {!preview ? (
             <div
-              onClick={() => document.getElementById('agent-image-input').click()}
+              onClick={triggerImagePicker}
               onDrop={(e) => {
                 e.preventDefault();
                 const f = e.dataTransfer.files[0];
-                if (f) handleLogo({ target: { files: [f] } });
+                if (f) handleImage({ target: { files: [f] } });
               }}
               onDragOver={(e) => e.preventDefault()}
-              className="bg-gray-200 py-6 rounded text-center cursor-pointer hover:bg-gray-300"
+              className="border-2 border-dashed border-gray-300 rounded-xl p-8 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 text-center"
             >
-              Drag & Drop or <span className="underline">Browse</span>
+              <div className="flex flex-col items-center justify-center gap-3">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-700">Upload Agent Photo</p>
+                  <p className="text-sm text-gray-500 mt-1">Click to browse or drag & drop</p>
+                  <p className="text-xs text-gray-400 mt-2">JPG, PNG - Max 5MB</p>
+                </div>
+              </div>
             </div>
           ) : (
-            <div className="relative bg-gray-200 py-6 flex justify-center">
-              <img src={preview} alt="agent" className="max-h-40" />
+            <div className="relative bg-white border border-gray-200 rounded-xl p-4">
+              <img 
+                src={preview} 
+                alt="Agent preview" 
+                className="w-32 h-32 object-cover mx-auto rounded-lg"
+              />
               <button
                 type="button"
-                onClick={removeLogo}
-                className="absolute top-4 right-4 bg-rose-500 text-white p-2 rounded"
+                onClick={removeImage}
+                className="absolute top-2 right-2 bg-rose-500 text-white p-2 rounded-full hover:bg-rose-600 transition-colors shadow-lg"
               >
-                <FaRegTrashAlt />
+                <FaRegTrashAlt className="text-sm" />
               </button>
+              <p className="text-center text-sm text-gray-500 mt-2">
+                {file ? "New image preview" : "Current agent image"}
+              </p>
             </div>
           )}
+          
           {originalImage && !preview && (
-            <p className="text-sm text-gray-500 mt-2">
-              Previous image will be used if no new image is selected
+            <p className="text-sm text-gray-500 mt-2 text-center">
+              No image selected. Agent will have no profile image if you proceed.
             </p>
           )}
         </AgencyFormSection>

@@ -7,6 +7,7 @@ import { MdOutlineGroupAdd } from "react-icons/md";
 import AlertResult from "@/Components/AlertResult";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import electedBodiesService from "@/services/electedBodies.service";
+import { getElectedBodyPhotoUrl } from "@/utils/getFileUrl";
 
 const statusBadges = {
   current: "bg-emerald-100 text-emerald-700",
@@ -245,7 +246,7 @@ export default function ElectedBodiesDashboard() {
                         <div className="relative h-12 w-12 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
                           {member.photo ? (
                             <img
-                              src={member.photo}
+                              src={getElectedBodyPhotoUrl(member.photo)}
                               alt={member.name}
                               className="h-full w-full object-cover"
                               loading="lazy"

@@ -2,12 +2,9 @@
 import { useState, useRef } from "react";
 import { FaRegTrashAlt, FaUpload, FaGlobe, FaMapMarkerAlt, FaUserTie, FaShareAlt, FaVideo } from "react-icons/fa";
 import { MdBusiness, MdEmail, MdPhone, MdInfo, MdLock } from "react-icons/md";
-import axios from "axios";
 import { useRouter } from "next/navigation";
-import agencyService from "@/services/agency.service";
 import AlertResult from "@/Components/AlertResult";
 import Link from "next/link";
-import Spinner from "@/Components/Spinner";
 
 /* ---------- helpers ---------- */
 const FormBlock = ({ heading, children, icon }) => (
@@ -172,21 +169,6 @@ export default function CreateAgencyPage() {
 
   const triggerVideoPicker = () => videoFileRef.current?.click();
 
-  /* ---------- Cloudinary upload ---------- */
-  const uploadToCloudinary = async (file, resourceType = "image") => {
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("upload_preset", "dha-agency-logo");
-
-      const url = `https://api.cloudinary.com/v1_1/dhdgrfseu/${resourceType}/upload`;
-      const { data } = await axios.post(url, fd);
-      return data.secure_url;
-    } catch (error) {
-      throw new Error(`Failed to upload ${resourceType}. Please try again.`);
-    }
-  };
-
   /* ---------- submit ---------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -201,36 +183,49 @@ export default function CreateAgencyPage() {
     setToast(null);
 
     try {
-      // Upload logo
-      const logoUrl = await uploadToCloudinary(logoFile, "image");
-
-      // Upload video if exists
-      let videoUrl = "";
-      if (videoFile) {
-        videoUrl = await uploadToCloudinary(videoFile, "video");
-      }
-
-      // Save agency
-      const payload = { 
-        ...form, 
-        agencyLogo: logoUrl,
-        agencyVideo: videoUrl
-      };
+      // Create FormData for file upload
+      const formData = new FormData();
       
-      const res = await agencyService.addAgency(payload);
-
-      setToast({
-        success: res.success,
-        message: res.message || (res.success ? "Agency created successfully" : "Failed to create agency"),
+      // Append all form fields
+      Object.keys(form).forEach(key => {
+        formData.append(key, form[key]);
       });
 
-      if (res.success) {
+      // Append logo file
+      formData.append('agencyLogo', logoFile);
+
+      // Append video file if exists
+      if (videoFile) {
+        formData.append('agencyVideo', videoFile);
+      }
+
+      // Save agency with file upload using fetch directly since we need FormData
+      const apiURL = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${apiURL}/agency`, {
+        method: "POST",
+        body: formData,
+        // Note: Don't set Content-Type header when using FormData,
+        // let the browser set it with the correct boundary
+      });
+
+      const result = await res.json();
+
+      setToast({
+        success: result.success,
+        message: result.message || (result.success ? "Agency created successfully" : "Failed to create agency"),
+      });
+
+      if (result.success) {
         // Reset form
         setForm(emptyForm);
         setLogoFile(null);
         setLogoPreview(null);
         setVideoFile(null);
         setVideoPreview(null);
+        
+        // Clear file inputs
+        if (logoFileRef.current) logoFileRef.current.value = "";
+        if (videoFileRef.current) videoFileRef.current.value = "";
       }
     } catch (err) {
       setToast({ success: false, message: err.message || "An error occurred while creating agency" });

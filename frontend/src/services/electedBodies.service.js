@@ -1,110 +1,120 @@
-class ElectedBodiesService {
-  constructor() {
+class ElectedBodies {
+  apiURL;
+  constructor(parameters) {
     this.apiURL = process.env.NEXT_PUBLIC_API_URL;
   }
 
-  buildQuery(params = {}) {
-    const query = new URLSearchParams();
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== "") {
-        query.append(key, value);
-      }
-    });
-    const queryString = query.toString();
-    return queryString ? `?${queryString}` : "";
-  }
-
-  async getMembers(params = {}) {
+  async createMember(token, data) {
     try {
-      const query = this.buildQuery(params);
-      const res = await fetch(`${this.apiURL}/elected-bodies${query}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      if (!token) {
+        return { success: false, message: "Authentication token is required" };
+      }
+
+      // Create FormData for file upload
+      const formData = new FormData();
+      
+      // Append all fields to FormData
+      Object.keys(data).forEach(key => {
+        if (key === 'photo' && data[key] instanceof File) {
+          formData.append('photo', data[key]);
+        } else {
+          formData.append(key, data[key]);
+        }
       });
 
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to fetch elected body members");
-      }
+      const res = await fetch(`${this.apiURL}/elected-bodies`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          // Don't set Content-Type, let browser set it with boundary
+        },
+        body: formData,
+      });
 
       return res.json();
     } catch (error) {
-      console.error("Error fetching elected body members:", error);
-      return { success: false, message: error.message };
+      console.log(error);
+      return { success: false, message: "Network error occurred while creating member" };
+    }
+  }
+
+  async updateMember(token, id, data) {
+    try {
+      if (!token) {
+        return { success: false, message: "Authentication token is required" };
+      }
+
+      // Create FormData for file upload
+      const formData = new FormData();
+      
+      // Append all fields to FormData
+      Object.keys(data).forEach(key => {
+        if (key === 'photo' && data[key] instanceof File) {
+          formData.append('photo', data[key]);
+        } else {
+          formData.append(key, data[key]);
+        }
+      });
+
+      const res = await fetch(`${this.apiURL}/elected-bodies/${id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          // Don't set Content-Type, let browser set it with boundary
+        },
+        body: formData,
+      });
+
+      return res.json();
+    } catch (error) {
+      console.log(error);
+      return { success: false, message: "Network error occurred while updating member" };
+    }
+  }
+
+  async getMembers(query = {}) {
+    try {
+      let fetchURL = `${this.apiURL}/elected-bodies`;
+      
+      if (query && Object.keys(query).length > 0) {
+        const params = new URLSearchParams();
+        Object.keys(query).forEach((key) => {
+          if (query[key] !== '' && query[key] !== undefined) {
+            params.append(key, query[key]);
+          }
+        });
+
+        const queryString = params.toString();
+        if (queryString) {
+          fetchURL += `?${queryString}`;
+        }
+      }
+
+      const res = await fetch(fetchURL);
+      return res.json();
+    } catch (error) {
+      console.log(error);
+      return { success: false, message: "Network error occurred while fetching members" };
     }
   }
 
   async getMemberById(id) {
     try {
-      const res = await fetch(`${this.apiURL}/elected-bodies/${id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to fetch elected body member");
-      }
-
+      const url = `${this.apiURL}/elected-bodies/${id}`;
+      const res = await fetch(url);
       return res.json();
     } catch (error) {
-      console.error("Error fetching elected body member:", error);
-      return { success: false, message: error.message };
-    }
-  }
-
-  async createMember(token, payload) {
-    try {
-      const res = await fetch(`${this.apiURL}/elected-bodies`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to create elected body member");
-      }
-
-      return res.json();
-    } catch (error) {
-      console.error("Error creating elected body member:", error);
-      return { success: false, message: error.message };
-    }
-  }
-
-  async updateMember(token, id, payload) {
-    try {
-      const res = await fetch(`${this.apiURL}/elected-bodies/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to update elected body member");
-      }
-
-      return res.json();
-    } catch (error) {
-      console.error("Error updating elected body member:", error);
-      return { success: false, message: error.message };
+      console.log(error);
+      return { success: false, message: "Network error occurred while fetching member" };
     }
   }
 
   async deleteMember(token, id) {
     try {
+      if (!token) {
+        return { success: false, message: "Authentication token is required" };
+      }
+
       const res = await fetch(`${this.apiURL}/elected-bodies/${id}`, {
         method: "DELETE",
         headers: {
@@ -113,19 +123,13 @@ class ElectedBodiesService {
         },
       });
 
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to delete elected body member");
-      }
-
       return res.json();
     } catch (error) {
-      console.error("Error deleting elected body member:", error);
-      return { success: false, message: error.message };
+      console.log(error);
+      return { success: false, message: "Network error occurred while deleting member" };
     }
   }
 }
 
-const electedBodiesService = new ElectedBodiesService();
+const electedBodiesService = new ElectedBodies();
 export default electedBodiesService;
-

@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import AlertResult from "@/Components/AlertResult";
 import Link from "next/link";
+import { getLogoUrl } from "@/utils/getFileUrl";
 
 const page = () => {
   const id = useParams().adminAgencyId;
@@ -100,7 +101,7 @@ const page = () => {
       </h1>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         <div className="p-5 bg-gray-200 rounded-md sm:col-span-2 lg:col-span-3 flex justify-center">
-          <img className="w-[100px]" src={agency.agencyLogo} alt="" />
+          <img className="w-[100px]" src={getLogoUrl(agency.agencyLogo)} alt="" />
         </div>
         <div className="p-5 bg-gray-200 rounded-md">
           <p>

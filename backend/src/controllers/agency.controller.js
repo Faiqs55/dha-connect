@@ -2,24 +2,77 @@ const { Agency } = require("../models/agency.model");
 const { Agent } = require("../models/agent.model");
 const { Property } = require("../models/property.model");
 const { User } = require("../models/user.model");
-const mongoose = require("mongoose");
+const path = require('path');
+const fs = require('fs');
 
 // ADD NEW AGENCY
 const addAgencyController = async (req, res) => {
   try {
     const data = req.body;
+    
+    // Handle file paths if files were uploaded
+    if (req.files) {
+      // Process logo file
+      if (req.files.agencyLogo) {
+        const logoFile = req.files.agencyLogo[0];
+        const agencyName = data.agencyName ? data.agencyName.replace(/\s+/g, '-') : 'agency';
+        const logoExtension = path.extname(logoFile.originalname);
+        const logoFilename = `${agencyName}-logo-${Date.now()}${logoExtension}`;
+        const logoPath = `uploads/agency/logo/${logoFilename}`;
+        
+        // Move file to correct location with new name
+        fs.renameSync(logoFile.path, logoPath);
+        data.agencyLogo = logoPath;
+      }
+
+      // Process video file
+      if (req.files.agencyVideo) {
+        const videoFile = req.files.agencyVideo[0];
+        const agencyName = data.agencyName ? data.agencyName.replace(/\s+/g, '-') : 'agency';
+        const videoExtension = path.extname(videoFile.originalname);
+        const videoFilename = `${agencyName}-video-${Date.now()}${videoExtension}`;
+        const videoPath = `uploads/agency/video/${videoFilename}`;
+        
+        // Move file to correct location with new name
+        fs.renameSync(videoFile.path, videoPath);
+        data.agencyVideo = videoPath;
+      }
+    }
+
     const agency = await Agency.create(data);
     if (!agency) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Failed to add new agency" });
+      // Clean up uploaded files if agency creation failed
+      if (data.agencyLogo && fs.existsSync(data.agencyLogo)) {
+        fs.unlinkSync(data.agencyLogo);
+      }
+      if (data.agencyVideo && fs.existsSync(data.agencyVideo)) {
+        fs.unlinkSync(data.agencyVideo);
+      }
+      
+      return res.status(401).json({ 
+        success: false, 
+        message: "Failed to add new agency" 
+      });
     }
+    
     if (agency) {
-      return res
-        .status(201)
-        .json({ success: true, message: "New Agency Added", data: agency });
+      return res.status(201).json({ 
+        success: true, 
+        message: "New Agency Added", 
+        data: agency 
+      });
     }
   } catch (error) {
+    // Clean up uploaded files if error occurred
+    if (req.files) {
+      if (req.files.agencyLogo) {
+        fs.unlinkSync(req.files.agencyLogo[0].path);
+      }
+      if (req.files.agencyVideo) {
+        fs.unlinkSync(req.files.agencyVideo[0].path);
+      }
+    }
+    
     res.status(500).json({
       success: false,
       message: error.message,
@@ -106,6 +159,47 @@ const updateAgency = async (req, res) => {
     const data = req.body;
     const user = req.user;
 
+    // Handle file paths if files were uploaded
+    if (req.files) {
+      // Process logo file
+      if (req.files.agencyLogo) {
+        const logoFile = req.files.agencyLogo[0];
+        const agencyName = data.agencyName ? data.agencyName.replace(/\s+/g, '-') : 'agency';
+        const logoExtension = path.extname(logoFile.originalname);
+        const logoFilename = `${agencyName}-logo-${Date.now()}${logoExtension}`;
+        const logoPath = `uploads/agency/logo/${logoFilename}`;
+        
+        // Move file to correct location with new name
+        fs.renameSync(logoFile.path, logoPath);
+        data.agencyLogo = logoPath;
+
+        // Delete old logo file if it exists
+        const existingAgency = await Agency.findById(id);
+        if (existingAgency.agencyLogo && fs.existsSync(existingAgency.agencyLogo)) {
+          fs.unlinkSync(existingAgency.agencyLogo);
+        }
+      }
+
+      // Process video file
+      if (req.files.agencyVideo) {
+        const videoFile = req.files.agencyVideo[0];
+        const agencyName = data.agencyName ? data.agencyName.replace(/\s+/g, '-') : 'agency';
+        const videoExtension = path.extname(videoFile.originalname);
+        const videoFilename = `${agencyName}-video-${Date.now()}${videoExtension}`;
+        const videoPath = `uploads/agency/video/${videoFilename}`;
+        
+        // Move file to correct location with new name
+        fs.renameSync(videoFile.path, videoPath);
+        data.agencyVideo = videoPath;
+
+        // Delete old video file if it exists
+        const existingAgency = await Agency.findById(id);
+        if (existingAgency.agencyVideo && fs.existsSync(existingAgency.agencyVideo)) {
+          fs.unlinkSync(existingAgency.agencyVideo);
+        }
+      }
+    }
+
     // CHECK IF THE USER IS NOT ADMIN TRYING TO PERFORM ADMIN ACTION
     if (
       "status" in data ||
@@ -168,8 +262,9 @@ const updateAgency = async (req, res) => {
       }
     }
 
-    const updatedAgency = await Agency.findByIdAndUpdate(id, data);
-    if (updateAgency && data.status === "Approved") {
+    const updatedAgency = await Agency.findByIdAndUpdate(id, data, { new: true });
+    
+    if (updatedAgency && data.status === "Approved") {
       const user = await User.create({
         name: updatedAgency.ceoName,
         role: "agency",
@@ -185,14 +280,31 @@ const updateAgency = async (req, res) => {
         });
       }
     }
-    res.status(200).json({ success: true, message: "Agency Updated." });
+    
+    res.status(200).json({ 
+      success: true, 
+      message: "Agency Updated.",
+      data: updatedAgency 
+    });
+    
   } catch (error) {
+    // Clean up uploaded files if error occurred
+    if (req.files) {
+      if (req.files.agencyLogo) {
+        fs.unlinkSync(req.files.agencyLogo[0].path);
+      }
+      if (req.files.agencyVideo) {
+        fs.unlinkSync(req.files.agencyVideo[0].path);
+      }
+    }
+    
     res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
+
 
 module.exports = {
   addAgencyController,

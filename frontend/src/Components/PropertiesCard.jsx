@@ -5,6 +5,7 @@ import { IoMdCall } from "react-icons/io";
 import { IoLogoWhatsapp } from "react-icons/io5";
 import Link from "next/link";
 import Image from "next/image";
+import { getPropertyImageUrl } from "@/utils/getFileUrl";
 
 // Phone number formatting function
 const formatPhoneNumber = (value) => {
@@ -68,7 +69,7 @@ const PropertiesCard = ({ data }) => {
         <Image
         fill
           className="object-cover object-center md:h-full w-full"
-          src={data.thumbnailImage}
+          src={getPropertyImageUrl(data.thumbnailImage)}
           alt=""
         />
       </div>

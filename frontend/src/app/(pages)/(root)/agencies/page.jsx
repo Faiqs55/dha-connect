@@ -7,6 +7,7 @@ import agencyService from '@/services/agency.service';
 import { MdEmail } from "react-icons/md";
 import { IoMdCall } from "react-icons/io";
 import Link from 'next/link';
+import { getLogoUrl } from '@/utils/getFileUrl';
 
 const phases = ["All Phases", "Phase 1", "Phase 2", "Phase 3", "Phase 4"];
 const cities = ["All Cities", "Lahore", "Islamabad", "Karachi", "Multan"];
@@ -146,7 +147,7 @@ const page = () => {
               <div className="flex justify-center border-b p-5 border-gray-300">
                 <img
                   className="w-[100px] h-[100px]"
-                  src={a.agencyLogo}
+                  src={getLogoUrl(a.agencyLogo)}
                   alt=""
                 />
               </div>

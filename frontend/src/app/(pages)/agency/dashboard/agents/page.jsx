@@ -6,6 +6,7 @@ import { MdEmail } from "react-icons/md";
 import { IoMdCall } from "react-icons/io";
 import { IoLogoWhatsapp } from "react-icons/io5";
 import Link from "next/link";
+import { getAgentProfileUrl } from "@/utils/getFileUrl";
 
 const page = () => {
   const [agents, setAgents] = useState([]);
@@ -83,7 +84,7 @@ const page = () => {
               <div className="w-[200px] h-[250px] overflow-hidden sm:border-r border-gray-400 mx-auto sm:mx-0">
                 <img
                   className="w-full h-full object-center object-cover"
-                  src={agent.image}
+                  src={getAgentProfileUrl(agent.image)}
                   alt=""
                 />
               </div>

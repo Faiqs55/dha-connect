@@ -4,20 +4,20 @@ class Agent {
     this.apiURL = process.env.NEXT_PUBLIC_API_URL;
   }
 
-  async addAgent(token, data) {
+ async addAgent(token, agentData) {
     try {
-      const res = await fetch(`${this.apiURL}/agent`, {
+      // For FormData, we don't set Content-Type header
+      let res = await fetch(`${this.apiURL}/agent`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(data),
+        body: agentData, // agentData should be FormData
       });
 
       return res.json();
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     }
   }
 
@@ -68,20 +68,19 @@ class Agent {
     }
   }
 
-  async updateAgent(token, id, payload){
+  async updateAgent(token, id, agentData) {
     try {
-      const res = await fetch(`${this.apiURL}/agent/${id}`, {
+      let res = await fetch(`${this.apiURL}/agent/${id}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(payload)
+        body: agentData, // agentData should be FormData
       });
 
       return res.json();
     } catch (error) {
-      console.log(error)
+      console.log(error.message);
     }
   }
 }

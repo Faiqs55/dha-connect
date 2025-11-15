@@ -7,11 +7,12 @@ const {
   getUserAgency,
 } = require("../controllers/agency.controller");
 const { protect } = require("../middlewares/authMiddleware");
+const { agencyUpload } = require("../middlewares/uploadMiddleware");
 const agencyRouter = express.Router();
 
-agencyRouter.route("/").post(addAgencyController).get(getAgenciesController);
+agencyRouter.route("/").post(agencyUpload, addAgencyController).get(getAgenciesController);
 
-agencyRouter.route("/singleAgency/:id").get(getSingleAgency).put(protect, updateAgency);
+agencyRouter.route("/singleAgency/:id").get(getSingleAgency).put(protect, agencyUpload, updateAgency);
 agencyRouter.route("/my").get(protect, getUserAgency)
 
 module.exports = {

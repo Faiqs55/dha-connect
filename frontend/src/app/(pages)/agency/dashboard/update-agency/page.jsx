@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaRegTrashAlt, FaUpload, FaGlobe, FaMapMarkerAlt, FaUserTie, FaShareAlt, FaVideo } from "react-icons/fa";
 import { MdBusiness, MdEmail, MdPhone, MdInfo } from "react-icons/md";
-import axios from "axios";
 import agencyService from "@/services/agency.service";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import AlertResult from "@/Components/AlertResult";
@@ -127,8 +126,6 @@ export default function UpdateAgencyPage() {
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [oldLogoToDelete, setOldLogoToDelete] = useState(null);
-  const [oldVideoToDelete, setOldVideoToDelete] = useState(null);
 
   const logoFileRef = useRef(null);
   const videoFileRef = useRef(null);
@@ -141,14 +138,21 @@ export default function UpdateAgencyPage() {
         .then((res) => {
           if (res.success) {
             const a = res.data;
-            setForm({ ...empty, ...a });
+            
+            // Remove unwanted fields from the form data
+            const { status, classifiedAds, videoAds, featuredAds, ...cleanData } = a;
+            
+            setForm({ ...empty, ...cleanData });
             if (a.agencyLogo) {
               setOriginalLogo(a.agencyLogo);
-              setLogoPreview(a.agencyLogo);
+              // Create full URL for preview
+              const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '');
+              setLogoPreview(`${apiBaseUrl}/${a.agencyLogo}`);
             }
             if (a.agencyVideo) {
               setOriginalVideo(a.agencyVideo);
-              setVideoPreview(a.agencyVideo);
+              const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '');
+              setVideoPreview(`${apiBaseUrl}/${a.agencyVideo}`);
             }
           } else throw new Error(res.message || "Failed to load agency data");
         })
@@ -173,12 +177,11 @@ export default function UpdateAgencyPage() {
     }
     setLogoFile(file);
     setLogoPreview(URL.createObjectURL(file));
-    if (originalLogo) setOldLogoToDelete(originalLogo);
   };
 
   const removeLogo = () => {
     setLogoFile(null);
-    setLogoPreview("");
+    setLogoPreview(null); // Set to null instead of original logo
     if (logoFileRef.current) logoFileRef.current.value = "";
   };
 
@@ -194,12 +197,11 @@ export default function UpdateAgencyPage() {
     }
     setVideoFile(file);
     setVideoPreview(URL.createObjectURL(file));
-    if (originalVideo) setOldVideoToDelete(originalVideo);
   };
 
   const removeVideo = () => {
     setVideoFile(null);
-    setVideoPreview("");
+    setVideoPreview(null); // Set to null instead of original video
     if (videoFileRef.current) videoFileRef.current.value = "";
   };
 
@@ -208,92 +210,76 @@ export default function UpdateAgencyPage() {
   /* ---------- toast helper ---------- */
   const fireToast = (ok, msg) => setToast({ success: ok, message: msg });
 
-  /* ---------- Cloudinary upload ---------- */
-  const uploadToCloudinary = async (file, resourceType = "image") => {
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("upload_preset", "dha-agency-logo");
-
-      const url = `https://api.cloudinary.com/v1_1/dhdgrfseu/${resourceType}/upload`;
-      const { data } = await axios.post(url, fd);
-      return data.secure_url;
-    } catch (error) {
-      throw new Error(`Failed to upload ${resourceType}. Please try again.`);
-    }
-  };
-
-  /* ---------- Cloudinary delete ---------- */
-  const deleteFromCloudinary = async (url) => {
-    try {
-      const parts = url.split("/");
-      const public_id = parts[parts.length - 1].split(".")[0];
-      await axios.post("/api/delete-logo", { public_id });
-    } catch (e) {
-      console.warn("Could not delete old file:", e);
-    }
-  };
-
   /* ---------- submit ---------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!token) return fireToast(false, "Not authenticated");
     setSubmitting(true);
 
-    let logoUrl = originalLogo;
-    let videoUrl = originalVideo;
-
     try {
-      /* ---------- 1. upload new logo ---------- */
-      if (logoFile) {
-        logoUrl = await uploadToCloudinary(logoFile, "image");
-        
-        /* ---------- 2. delete previous logo from Cloudinary ---------- */
-        if (oldLogoToDelete) {
-          await deleteFromCloudinary(oldLogoToDelete);
-        }
-      }
-
-      /* ---------- 3. upload new video ---------- */
-      if (videoFile) {
-        videoUrl = await uploadToCloudinary(videoFile, "video");
-        
-        /* ---------- 4. delete previous video from Cloudinary ---------- */
-        if (oldVideoToDelete) {
-          await deleteFromCloudinary(oldVideoToDelete);
-        }
-      }
-
-      const payload = {
-        agencyLogo: logoUrl,
-        agencyVideo: videoUrl,
-        agencyName: form.agencyName,
-        agencyEmail: form.agencyEmail,
-        ceoName: form.ceoName,
-        ceoPhone: form.ceoPhone,
-        whatsapp: form.whatsapp,
-        city: form.city,
-        phase: form.phase,
-        address: form.address,
-        facebook: form.facebook,
-        youtube: form.youtube,
-        twitter: form.twitter,
-        instagram: form.instagram,
-        about: form.about,
-        website: form.website,
-      };
-
-      const res = await agencyService.updateAgency(form._id, payload, token);
-
-      fireToast(res.success, res.message || (res.success ? "Agency updated successfully" : "Failed to update agency"));
+      // Create FormData for file upload
+      const formData = new FormData();
       
-      if (res.success) {
-        setOriginalLogo(logoUrl);
-        setLogoFile(null);
-        setOldLogoToDelete(null);
-        setOriginalVideo(videoUrl);
-        setVideoFile(null);
-        setOldVideoToDelete(null);
+      // Define allowed fields to avoid sending unwanted data
+      const allowedFields = [
+        'agencyName', 'agencyEmail', 'ceoName', 'ceoPhone', 'whatsapp',
+        'city', 'phase', 'address', 'facebook', 'youtube', 'twitter',
+        'instagram', 'about', 'website'
+      ];
+      
+      // Append only allowed form fields
+      allowedFields.forEach(key => {
+        if (form[key] !== undefined) {
+          formData.append(key, form[key]);
+        }
+      });
+
+      // Append logo file if new one is selected
+      if (logoFile) {
+        formData.append('agencyLogo', logoFile);
+      }
+
+      // Append video file if new one is selected
+      if (videoFile) {
+        formData.append('agencyVideo', videoFile);
+      }
+
+      // Update agency with file upload using fetch directly
+      const apiURL = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${apiURL}/agency/singleAgency/${form._id}`, {
+        method: "PUT",
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const result = await res.json();
+
+      fireToast(result.success, result.message || (result.success ? "Agency updated successfully" : "Failed to update agency"));
+
+      if (result.success) {
+        // Update previews with new file paths if they were uploaded
+        if (logoFile) {
+          setLogoFile(null);
+          // Refetch agency data to get updated file paths
+          const updatedAgency = await agencyService.getMyAgency(token);
+          if (updatedAgency.success && updatedAgency.data.agencyLogo) {
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '');
+            setLogoPreview(`${apiBaseUrl}/${updatedAgency.data.agencyLogo}`);
+            setOriginalLogo(updatedAgency.data.agencyLogo);
+          }
+        }
+        if (videoFile) {
+          setVideoFile(null);
+          // Refetch agency data to get updated file paths
+          const updatedAgency = await agencyService.getMyAgency(token);
+          if (updatedAgency.success && updatedAgency.data.agencyVideo) {
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '');
+            setVideoPreview(`${apiBaseUrl}/${updatedAgency.data.agencyVideo}`);
+            setOriginalVideo(updatedAgency.data.agencyVideo);
+          }
+        }
       }
     } catch (err) {
       fireToast(false, err.message || "An error occurred while updating agency");

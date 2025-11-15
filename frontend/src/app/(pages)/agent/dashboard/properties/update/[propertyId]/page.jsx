@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { FaRegTrashAlt } from "react-icons/fa";
 import AlertResult from "@/Components/AlertResult";
 import propertyService from "@/services/property.service";
@@ -9,6 +8,7 @@ import Link from "next/link";
 import agentService from "@/services/agent.service";
 import { useParams } from "next/navigation";
 import Spinner from "@/Components/Spinner";
+import { getPropertyImageUrl } from "@/utils/getFileUrl";
 
 /* ---------- helpers ---------- */
 const FormBlock = ({ heading, children }) => (
@@ -108,18 +108,22 @@ export default function UpdatePropertyPage() {
     }
     setPlotFileType(propertyData.plotFileType || "");
 
-    // Set media
+    // Set media - use getPropertyImageUrl for existing files
     if (propertyData.images && propertyData.images.length > 0) {
-      const existingPreviews = propertyData.images.map(url => ({ url, name: url }));
+      const existingPreviews = propertyData.images.map(url => ({ 
+        url: getPropertyImageUrl(url), 
+        name: url,
+        isExisting: true 
+      }));
       setPreviewList(existingPreviews);
     }
 
     if (propertyData.thumbnailImage) {
-      setFeatureImagePreview(propertyData.thumbnailImage);
+      setFeatureImagePreview(getPropertyImageUrl(propertyData.thumbnailImage));
     }
 
     if (propertyData.video) {
-      setVideoPreview(propertyData.video);
+      setVideoPreview(getPropertyImageUrl(propertyData.video));
     }
   };
 
@@ -274,7 +278,7 @@ export default function UpdatePropertyPage() {
   const fileToPreview = (file) =>
     new Promise((res) => {
       const reader = new FileReader();
-      reader.onload = (e) => res({ url: e.target.result, name: file.name });
+      reader.onload = (e) => res({ url: e.target.result, name: file.name, isExisting: false });
       reader.readAsDataURL(file);
     });
 
@@ -290,8 +294,15 @@ export default function UpdatePropertyPage() {
   };
 
   const removeImage = (idx) => {
-    setImageFiles((prev) => prev.filter((_, i) => i !== idx));
-    setPreviewList((prev) => prev.filter((_, i) => i !== idx));
+    const item = previewList[idx];
+    if (item.isExisting) {
+      // For existing images, just remove from preview but keep the original
+      setPreviewList((prev) => prev.filter((_, i) => i !== idx));
+    } else {
+      // For new images, remove from both files and preview
+      setImageFiles((prev) => prev.filter((_, i) => i !== idx - previewList.filter(p => p.isExisting).length));
+      setPreviewList((prev) => prev.filter((_, i) => i !== idx));
+    }
   };
 
   const addFeatureImage = (e) => {
@@ -322,21 +333,6 @@ export default function UpdatePropertyPage() {
     setVideoPreview("");
   };
 
-  /* ---------- Cloudinary upload ---------- */
-  const uploadToCloudinary = async (file, resourceType = "image") => {
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("upload_preset", "dha-agency-logo");
-
-      const url = `https://api.cloudinary.com/v1_1/dhdgrfseu/${resourceType}/upload`;
-      const { data } = await axios.post(url, fd);
-      return data.secure_url;
-    } catch (error) {
-      throw new Error("Failed To Upload Media. Please Try Again.");
-    }
-  };
-
   /* ---------- submit ---------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -349,27 +345,6 @@ export default function UpdatePropertyPage() {
     setToast(null);
 
     try {
-      let imageUrls = [];
-      
-      // Upload new images if any, otherwise use existing ones
-      if (imageFiles.length > 0) {
-        imageUrls = await Promise.all(
-          imageFiles.map((f) => uploadToCloudinary(f, "image"))
-        );
-      } else {
-        imageUrls = previewList.map(p => p.url);
-      }
-
-      let featureImageUrl = featureImagePreview;
-      if (featureImageFile) {
-        featureImageUrl = await uploadToCloudinary(featureImageFile, "image");
-      }
-
-      let videoUrl = videoPreview;
-      if (videoFile) {
-        videoUrl = await uploadToCloudinary(videoFile, "video");
-      }
-
       // Convert "normal" to "none" for backend compatibility
       const backendAdType = adType === "normal" ? "none" : adType;
 
@@ -395,9 +370,10 @@ export default function UpdatePropertyPage() {
           .split(",")
           .map((s) => s.trim())
           .filter(Boolean),
-        images: imageUrls,
-        video: videoUrl,
-        thumbnailImage: featureImageUrl,
+        // Send files directly - Multer will handle them
+        images: imageFiles,
+        featureImage: featureImageFile,
+        video: videoFile,
         // Add plot-specific fields
         ...(type === "Plots" && {
           plotAmenities,
@@ -553,6 +529,11 @@ export default function UpdatePropertyPage() {
                   >
                     <FaRegTrashAlt />
                   </button>
+                  {p.isExisting && (
+                    <div className="absolute bottom-1 left-1 bg-blue-500 text-white text-xs px-1 rounded">
+                      Existing
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
