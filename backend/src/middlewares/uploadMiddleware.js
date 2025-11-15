@@ -2,16 +2,28 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Ensure upload directories exist
+// Get absolute path to project root (go up two levels from src/middlewares)
+const projectRoot = path.resolve(__dirname, '../..'); // This should point to your project root
+
+// Create custom temp directory within project
+const customTempDir = path.join(projectRoot, 'temp_uploads');
+
+// Ensure temp directory exists
+if (!fs.existsSync(customTempDir)) {
+  fs.mkdirSync(customTempDir, { recursive: true });
+  console.log(`Created temp directory: ${customTempDir}`);
+}
+
+// Ensure upload directories exist with ABSOLUTE paths
 const createDirectories = () => {
   const directories = [
-    'uploads/agency/logo',
-    'uploads/agency/video',
-    'uploads/agents/profiles',
-    'uploads/property/images',
-    'uploads/property/feature-images',
-    'uploads/property/videos',
-    'uploads/elected-bodies/profiles' // Add elected bodies directory
+    path.join(projectRoot, 'uploads/agency/logo'),
+    path.join(projectRoot, 'uploads/agency/video'),
+    path.join(projectRoot, 'uploads/agents/profiles'),
+    path.join(projectRoot, 'uploads/property/images'),
+    path.join(projectRoot, 'uploads/property/feature-images'),
+    path.join(projectRoot, 'uploads/property/videos'),
+    path.join(projectRoot, 'uploads/elected-bodies/profiles')
   ];
   
   directories.forEach(dir => {
@@ -25,13 +37,25 @@ const createDirectories = () => {
 // Call this function when the server starts
 createDirectories();
 
-// Storage configuration for logo
+// Debug: Log the paths to verify
+console.log('Project root:', projectRoot);
+console.log('Temp dir:', customTempDir);
+console.log('Uploads dir:', path.join(projectRoot, 'uploads'));
+
+// Common multer configuration with custom temp directory
+const multerConfig = {
+  dest: customTempDir,
+  limits: {
+    fileSize: 100 * 1024 * 1024
+  }
+};
+
+// Storage configurations (same as before but with corrected paths)
 const logoStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/agency/logo');
+    cb(null, path.join(projectRoot, 'uploads/agency/logo'));
   },
   filename: function (req, file, cb) {
-    // Get agency name from request body and replace spaces with hyphens
     const agencyName = req.body.agencyName ? req.body.agencyName.replace(/\s+/g, '-') : 'agency';
     const extension = path.extname(file.originalname);
     const timestamp = Date.now();
@@ -39,10 +63,9 @@ const logoStorage = multer.diskStorage({
   }
 });
 
-// Storage configuration for video
 const videoStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/agency/video');
+    cb(null, path.join(projectRoot, 'uploads/agency/video'));
   },
   filename: function (req, file, cb) {
     const agencyName = req.body.agencyName ? req.body.agencyName.replace(/\s+/g, '-') : 'agency';
@@ -72,24 +95,26 @@ const videoFileFilter = (req, file, cb) => {
 
 // Create multer instances
 const uploadLogo = multer({ 
+  ...multerConfig,
   storage: logoStorage,
   fileFilter: imageFileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit for logo
+    fileSize: 5 * 1024 * 1024
   }
 });
 
 const uploadVideo = multer({ 
+  ...multerConfig,
   storage: videoStorage,
   fileFilter: videoFileFilter,
   limits: {
-    fileSize: 100 * 1024 * 1024 // 100MB limit for video
+    fileSize: 100 * 1024 * 1024
   }
 });
 
 // Middleware for handling both logo and video uploads
 const agencyUpload = multer({
-  storage: multer.diskStorage({}), // Default storage, we'll handle manually
+  ...multerConfig,
   fileFilter: (req, file, cb) => {
     if (file.fieldname === 'agencyLogo') {
       return imageFileFilter(req, file, cb);
@@ -104,14 +129,12 @@ const agencyUpload = multer({
   { name: 'agencyVideo', maxCount: 1 }
 ]);
 
-
 // Agent profile image storage
 const agentProfileStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/agents/profiles');
+    cb(null, path.join(projectRoot, 'uploads/agents/profiles'));
   },
   filename: function (req, file, cb) {
-    // Get agent name from request body and replace spaces with hyphens
     const agentName = req.body.name ? req.body.name.replace(/\s+/g, '-') : 'agent';
     const extension = path.extname(file.originalname);
     const timestamp = Date.now();
@@ -130,37 +153,23 @@ const agentProfileFilter = (req, file, cb) => {
 
 // Multer instance for agent profile
 const agentProfileUpload = multer({
+  ...multerConfig,
   storage: agentProfileStorage,
   fileFilter: agentProfileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB
+    fileSize: 5 * 1024 * 1024
   }
 });
 
 // Property media storage
 const propertyMediaStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // Create property media directories
-    const propertyDirs = [
-      'uploads/property/images',
-      'uploads/property/feature-images',
-      'uploads/property/videos'
-    ];
-    
-    propertyDirs.forEach(dir => {
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-        console.log(`Created directory: ${dir}`);
-      }
-    });
-
-    // Determine destination based on field name
     if (file.fieldname === 'featureImage') {
-      cb(null, 'uploads/property/feature-images');
+      cb(null, path.join(projectRoot, 'uploads/property/feature-images'));
     } else if (file.fieldname === 'images') {
-      cb(null, 'uploads/property/images');
+      cb(null, path.join(projectRoot, 'uploads/property/images'));
     } else if (file.fieldname === 'video') {
-      cb(null, 'uploads/property/videos');
+      cb(null, path.join(projectRoot, 'uploads/property/videos'));
     } else {
       cb(new Error('Unexpected field'), false);
     }
@@ -194,6 +203,7 @@ const propertyVideoFilter = (req, file, cb) => {
 
 // Multer instance for property media
 const propertyMediaUpload = multer({
+  ...multerConfig,
   storage: propertyMediaStorage,
   fileFilter: (req, file, cb) => {
     if (file.fieldname === 'featureImage' || file.fieldname === 'images') {
@@ -205,18 +215,18 @@ const propertyMediaUpload = multer({
     }
   },
   limits: {
-    fileSize: 50 * 1024 * 1024 // 50MB limit for all files
+    fileSize: 50 * 1024 * 1024
   }
 }).fields([
   { name: 'featureImage', maxCount: 1 },
-  { name: 'images', maxCount: 10 }, // Allow up to 10 images
+  { name: 'images', maxCount: 10 },
   { name: 'video', maxCount: 1 }
 ]);
 
 // Elected bodies profile photo storage
 const electedBodyStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/elected-bodies/profiles');
+    cb(null, path.join(projectRoot, 'uploads/elected-bodies/profiles'));
   },
   filename: function (req, file, cb) {
     const memberName = req.body.name ? req.body.name.replace(/\s+/g, '-') : 'member';
@@ -237,10 +247,11 @@ const electedBodyFilter = (req, file, cb) => {
 
 // Multer instance for elected body profile
 const electedBodyUpload = multer({
+  ...multerConfig,
   storage: electedBodyStorage,
   fileFilter: electedBodyFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB
+    fileSize: 5 * 1024 * 1024
   }
 });
 
@@ -250,5 +261,5 @@ module.exports = {
   agencyUpload,
   agentProfileUpload,
   propertyMediaUpload,
-  electedBodyUpload // Add the new middleware
+  electedBodyUpload
 };

@@ -44,7 +44,7 @@ pids/
 # Temp files
 tmp/
 temp/
-
+temp_uploads/
 # Dependency lock files (optional if you only use one)
 # package-lock.json
 # yarn.lock
