@@ -1,6 +1,9 @@
 const { Agency } = require("../models/agency.model");
 const { Agent } = require("../models/agent.model");
 const { generateToken } = require("../utils/generateToken");
+const fs = require('fs');
+const path = require('path');
+
 
 const LoginAgentController = async (req, res) => {
   try {
@@ -70,6 +73,11 @@ const addAgentController = async (req, res) => {
         .json({ success: false, message: "You don't have enough ads to allocate." });
     }
 
+    // Handle file upload if image was uploaded
+    if (req.file) {
+      data.image = req.file.path; // Multer saves the file and we get the path
+    }
+
     const agent = await Agent.create(data);
 
     if (!agent) {
@@ -101,7 +109,8 @@ const addAgentController = async (req, res) => {
           email: agent.email,
           classifiedAds: agent.classifiedAds,
           videoAds: agent.videoAds,
-          featuredAds: agent.featuredAds
+          featuredAds: agent.featuredAds,
+          image: agent.image // Include the image path
         },
         agencyRemainingAds: {
           classifiedAds: agency.classifiedAds,
@@ -111,6 +120,11 @@ const addAgentController = async (req, res) => {
       }
     });
   } catch (error) {
+    // Clean up uploaded file if error occurred
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    
     res.status(500).json({
       success: false,
       message: error.message,
@@ -209,6 +223,15 @@ const updateAgentController = async (req, res) => {
       });
     }
 
+    // Handle file upload if new image was uploaded
+    if (req.file) {
+      // Delete old image file if it exists
+      if (agent.image && fs.existsSync(agent.image)) {
+        fs.unlinkSync(agent.image);
+      }
+      data.image = req.file.path; // Set new image path
+    }
+
     const agency = await Agency.findById(user.agency);
     
     // Calculate the difference in ad allocation
@@ -267,6 +290,11 @@ const updateAgentController = async (req, res) => {
       message: "Agent has been updated",
     });
   } catch (error) {
+    // Clean up uploaded file if error occurred
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    
     res.status(500).json({
       success: false,
       message: error.message,

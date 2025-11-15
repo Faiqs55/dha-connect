@@ -6,6 +6,7 @@ import propertyService from "@/services/property.service";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { getPropertyImageUrl } from "@/utils/getFileUrl";
 
 const AgentPropertiesPage = () => {
   const [categoryFilter, setCategoryFilter] = useState("All");
@@ -143,7 +144,7 @@ const AgentPropertiesPage = () => {
                   <div className="h-40 w-full relative">
                     <Image
                       className="object-cover object-center"
-                      src={p.thumbnailImage}
+                      src={getPropertyImageUrl(p.thumbnailImage)}
                       fill
                       alt={p.title}
                     />

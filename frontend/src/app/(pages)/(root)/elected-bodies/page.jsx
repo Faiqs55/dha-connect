@@ -8,6 +8,7 @@ import logo from "@/assets/dha-connect-logo.png";
 import { useSearchParams } from "next/navigation";
 import { BsWhatsapp } from "react-icons/bs";
 import electedBodiesService from "@/services/electedBodies.service";
+import { getElectedBodyPhotoUrl } from "@/utils/getFileUrl";
 
 const page = () => {
   const timeline = useSearchParams().get("timeline");
@@ -121,7 +122,7 @@ const page = () => {
                     >
                       <img
                         className="object-center object-cover w-full transition-transform duration-300 hover:scale-105"
-                        src={member.photo}
+                        src={getElectedBodyPhotoUrl(member.photo)}
                         alt={member.name}
                       />
                     </Link>

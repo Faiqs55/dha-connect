@@ -13,6 +13,16 @@ const createElectedBodyMember = async (req, res) => {
     ensureAdmin(req.user);
     const payload = req.body;
 
+    // Handle file upload
+    if (req.file) {
+      payload.photo = req.file.path;
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Profile photo is required"
+      });
+    }
+
     const member = await ElectedBody.create(payload);
 
     res.status(201).json({
@@ -54,6 +64,7 @@ const getElectedBodyMembers = async (req, res) => {
       createdAt: -1,
     });
 
+    // Return file paths directly - frontend will convert to URLs
     res
       .status(200)
       .json({ success: true, message: "Members fetched", data: members });
@@ -94,6 +105,11 @@ const updateElectedBodyMember = async (req, res) => {
     ensureAdmin(req.user);
     const { id } = req.params;
     const payload = req.body;
+
+    // Handle file upload if a new photo is provided
+    if (req.file) {
+      payload.photo = req.file.path;
+    }
 
     const member = await ElectedBody.findByIdAndUpdate(id, payload, {
       new: true,
@@ -151,4 +167,3 @@ module.exports = {
   updateElectedBodyMember,
   deleteElectedBodyMember,
 };
-

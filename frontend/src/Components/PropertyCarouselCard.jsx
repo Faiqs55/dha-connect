@@ -2,6 +2,7 @@ import React from "react";
 import { LuBuilding2 } from "react-icons/lu";
 import { IoLogoWhatsapp } from "react-icons/io5";
 import Link from "next/link";
+import { getPropertyImageUrl } from "@/utils/getFileUrl";
 
 // Phone number formatting function
 const formatPhoneNumber = (value) => {
@@ -60,7 +61,7 @@ const PropertyCarouselCard = ({ p }) => {
       key={p._id}
       className="w-full flex flex-col gap-3 justify-center p-6 rounded-md"
     >
-      <img className="w-full rounded-md h-[200px] object-center object-cover" src={p.thumbnailImage} alt="" />
+      <img className="w-full rounded-md h-[200px] object-center object-cover" src={getPropertyImageUrl(p.thumbnailImage)} alt="" />
 
       <div className="flex flex-col">
         <h3 className="font-semibold text-base">

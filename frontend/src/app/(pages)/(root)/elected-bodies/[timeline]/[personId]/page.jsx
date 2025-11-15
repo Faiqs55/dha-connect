@@ -2,6 +2,7 @@ import ContainerCenter from "@/Components/ContainerCenter";
 import Link from "next/link";
 import { BsWhatsapp, BsTelephoneFill, BsPlayFill } from "react-icons/bs";
 import { notFound } from "next/navigation";
+import { getElectedBodyPhotoUrl } from "@/utils/getFileUrl";
 
 const formatPhoneNumber = (value) => {
   if (!value) {
@@ -88,7 +89,7 @@ const MemberProfilePage = async ({ params }) => {
                 <div className="absolute -inset-1 rounded-3xl bg-gradient-to-br from-emerald-400/50 via-teal-400/40 to-sky-400/50 blur-[40px]" />
                 <div className="relative h-48 w-48 overflow-hidden rounded-[28px] border border-emerald-400/30 bg-slate-950/40 shadow-2xl sm:h-56 sm:w-56">
                   <img
-                    src={member.photo}
+                    src={getElectedBodyPhotoUrl(member.photo)}
                     alt={member.name}
                     className="h-full w-full object-cover object-top"
                     loading="lazy"

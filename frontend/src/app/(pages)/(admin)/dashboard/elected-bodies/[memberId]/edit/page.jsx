@@ -6,7 +6,7 @@ import AlertResult from "@/Components/AlertResult";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import electedBodiesService from "@/services/electedBodies.service";
 import { FiArrowLeft, FiUpload, FiX } from "react-icons/fi";
-import axios from "axios";
+import { getElectedBodyPhotoUrl } from "@/utils/getFileUrl";
 
 const defaultForm = {
   name: "",
@@ -19,9 +19,6 @@ const defaultForm = {
   status: "current",
   isActive: true,
 };
-
-const cloudName = "dhdgrfseu";
-const uploadPreset = "dha-agency-logo";
 
 export default function EditElectedMemberPage() {
   const router = useRouter();
@@ -57,7 +54,7 @@ export default function EditElectedMemberPage() {
           isActive:
             typeof res.data.isActive === "boolean" ? res.data.isActive : true,
         });
-        setPhotoPreview(res.data.photo || "");
+        setPhotoPreview(getElectedBodyPhotoUrl(res.data.photo) || "");
       } catch (error) {
         console.error(error);
         setToast({ success: false, message: error.message });
@@ -121,29 +118,19 @@ export default function EditElectedMemberPage() {
     setSubmitting(true);
 
     try {
-      let photoUrl = photoPreview;
-
-      if (photoFile) {
-        const fd = new FormData();
-        fd.append("file", photoFile);
-        fd.append("upload_preset", uploadPreset);
-
-        const { data } = await axios.post(
-          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-          fd
-        );
-        photoUrl = data.secure_url;
-      }
-
       const payload = {
         ...formData,
-        photo: photoUrl,
         email: formData.email?.trim() || undefined,
         whatsappNo: formData.whatsappNo?.trim() || undefined,
         agencyBelong: formData.agencyBelong?.trim() || undefined,
         profileSummary: formData.profileSummary?.trim() || undefined,
         uploadVideo: formData.uploadVideo?.trim() || undefined,
       };
+
+      // Only include photo if a new file was selected
+      if (photoFile) {
+        payload.photo = photoFile;
+      }
 
       const res = await electedBodiesService.updateMember(
         token,
@@ -406,4 +393,3 @@ export default function EditElectedMemberPage() {
     </>
   );
 }
-

@@ -17,6 +17,7 @@ import propertyService from "@/services/property.service";
 import QuickLinkHome from "@/Components/QuickLinksHome";
 import Link from "next/link";
 import electedBodiesService from "@/services/electedBodies.service";
+import { getElectedBodyPhotoUrl } from "@/utils/getFileUrl";
 
 const page = () => {
   const [agenciesData, setAgenciesData] = useState(null);
@@ -321,7 +322,7 @@ const page = () => {
                   <div className="shadow overflow-hidden rounded-md w-full h-[300px] sm:h-[350px] md:h-[200px]">
                     <img
                       className="object-center object-cover w-full"
-                      src={member.photo}
+                      src={getElectedBodyPhotoUrl(member.photo)}
                       alt={member.name}
                     />
                   </div>

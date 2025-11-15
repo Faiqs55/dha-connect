@@ -6,7 +6,6 @@ import AlertResult from "@/Components/AlertResult";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import electedBodiesService from "@/services/electedBodies.service";
 import { FiArrowLeft, FiUpload, FiX } from "react-icons/fi";
-import axios from "axios";
 
 const initialFormState = {
   name: "",
@@ -19,9 +18,6 @@ const initialFormState = {
   status: "current",
   isActive: true,
 };
-
-const cloudName = "dhdgrfseu";
-const uploadPreset = "dha-agency-logo";
 
 export default function AddElectedMemberPage() {
   const router = useRouter();
@@ -86,19 +82,9 @@ export default function AddElectedMemberPage() {
     setSubmitting(true);
 
     try {
-      // Upload image to Cloudinary
-      const fd = new FormData();
-      fd.append("file", photoFile);
-      fd.append("upload_preset", uploadPreset);
-
-      const { data } = await axios.post(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        fd
-      );
-
       const payload = {
         ...formData,
-        photo: data.secure_url,
+        photo: photoFile, // Send file directly
         email: formData.email?.trim() || undefined,
         whatsappNo: formData.whatsappNo?.trim() || undefined,
         agencyBelong: formData.agencyBelong?.trim() || undefined,
@@ -147,7 +133,7 @@ export default function AddElectedMemberPage() {
           Add Elected Body Member
         </h1>
         <p className="text-sm text-slate-500 max-w-2xl">
-          Craft a standout profile highlighting each official’s role, contact
+          Craft a standout profile highlighting each official's role, contact
           details, and achievements to keep residents informed and engaged.
         </p>
       </header>
@@ -345,4 +331,3 @@ export default function AddElectedMemberPage() {
     </>
   );
 }
-

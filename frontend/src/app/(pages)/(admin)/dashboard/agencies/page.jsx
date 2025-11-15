@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import agencyService from "@/services/agency.service";
+import { getLogoUrl } from "@/utils/getFileUrl";
 
 const page = () => {
   const [agencies, setAgencies] = useState(null);
@@ -97,7 +98,7 @@ const page = () => {
               key={a._id}
             >
               <div className="border-b sm:border-r sm:border-b-0 border-gray-300 p-5 ">
-                <img className="w-[100px]" src={a.agencyLogo} alt="" />
+                <img className="w-[100px]" src={getLogoUrl(a.agencyLogo)} alt="" />
               </div>
 
               <div className="flex flex-col flex-1 sm:px-5 p-5">
